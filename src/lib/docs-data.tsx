@@ -112,7 +112,7 @@ All endpoints support both mainnet and testnet automatically via \`NETWORK_TYPE\
 - **On-chain**: Credential hashes and status metadata (Soroban smart contracts)
 - **Off-chain**: Encrypted credential payloads (user-controlled vaults)
 
-## Identity Model
+## Identity Model 1.0
 
 Uses DID:pkh format:
 
@@ -124,6 +124,8 @@ did:pkh:stellar:{network}:{wallet_address}
 - **Wallet Address**: Stellar public key (G...)
 
 No additional identity infrastructure required - Stellar wallet keys serve as identity.
+
+> **Note**: Version 1.0 is the first version in ACTA. Version 2.0 is currently being developed where the official Stellar DID will be used.
 
 ## Credential Flow
 
@@ -137,7 +139,7 @@ No additional identity infrastructure required - Stellar wallet keys serve as id
 
 ### Verification Flow
 
-1. Verifier queries credential status via API
+1. Verifier queries credential status via API / dApp
 2. API checks Issuance contract on-chain status
 3. Status returned (valid, revoked, invalid)
 4. Optional: Retrieve full credential data from Vault
@@ -891,7 +893,7 @@ Todos los endpoints soportan automáticamente mainnet y testnet vía la configur
 - **On-chain**: Hashes de credenciales y metadatos de estado (contratos inteligentes Soroban)  
 - **Off-chain**: Payload cifrado de la credencial (bóvedas controladas por el usuario)  
 
-## Modelo de identidad
+## Modelo de identidad 1.0
 
 Usa el formato DID:pkh:
 
@@ -903,6 +905,8 @@ did:pkh:stellar:{network}:{wallet_address}
 - **wallet_address**: clave pública de Stellar (G...)  
 
 No se requiere infraestructura de identidad adicional: las claves de la wallet Stellar actúan como identidad.
+
+> **Nota**: La versión 1.0 es la primera versión en ACTA. Se está trabajando en la versión 2.0 donde se usará el DID oficial de Stellar.
 
 ## Flujo de credenciales
 
@@ -916,7 +920,7 @@ No se requiere infraestructura de identidad adicional: las claves de la wallet S
 
 ### Flujo de verificación
 
-1. El verificador consulta el estado de la credencial vía API  
+1. El verificador consulta el estado de la credencial vía API / dApp  
 2. La API revisa el estado on-chain en el contrato de Emisión  
 3. Se devuelve el estado (válida, revocada, inválida)  
 4. Opcional: se recupera la credencial completa desde la bóveda  
