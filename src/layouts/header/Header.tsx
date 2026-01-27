@@ -1,6 +1,6 @@
 "use client"
 
-import { Search, Globe, ChevronDown } from "lucide-react"
+import { Search, Globe, ChevronDown, MessageCircle, Code } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -46,6 +46,7 @@ export function Header({ onSearchOpen }: HeaderProps) {
           asChild
         >
           <a href="https://dapp.acta.build/" target="_blank" rel="noopener noreferrer">
+            <Code className="w-4 h-4 mr-2" />
             {t.dApp}
           </a>
         </Button>
@@ -55,6 +56,7 @@ export function Header({ onSearchOpen }: HeaderProps) {
           asChild
         >
           <a href="https://discord.gg/DsUSE3aMDZ" target="_blank" rel="noopener noreferrer">
+            <MessageCircle className="w-4 h-4 mr-2" />
             {t.discord}
           </a>
         </Button>
@@ -64,6 +66,7 @@ export function Header({ onSearchOpen }: HeaderProps) {
           asChild
         >
           <a href="https://acta.build" target="_blank" rel="noopener noreferrer">
+            <Globe className="w-4 h-4 mr-2" />
             {t.website}
           </a>
         </Button>
