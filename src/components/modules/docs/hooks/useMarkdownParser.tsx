@@ -1,7 +1,17 @@
 import React from "react"
 import { slugifyHeading } from "@/lib/utils"
 
-export function useMarkdownParser(content: string) {
+// Map topic names to slugs
+const topicToSlug: Record<string, string> = {
+  "Architecture": "architecture",
+  "Getting Started": "getting-started",
+  "React SDK": "sdk-overview",
+  "Arquitectura": "architecture",
+  "Primeros Pasos": "getting-started",
+  "React SDK": "sdk-overview",
+}
+
+export function useMarkdownParser(content: string, onNavigate?: (slug: string) => void) {
   const renderContent = (text: string) => {
     const lines = text.split('\n')
     const elements: React.ReactNode[] = []
@@ -113,22 +123,47 @@ export function useMarkdownParser(content: string) {
           elements.push(
             <section key={elements.length} className="mt-6">
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {cards.map((card, idx) => (
-                  <div
-                    key={idx}
-                    className="rounded-xl border border-border bg-card/40 px-4 py-4 shadow-sm hover:border-primary/60 hover:shadow-md transition-colors"
-                  >
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">
-                      {headerCells[0]}
-                    </p>
-                    <div className="text-sm font-semibold text-foreground mb-1">
-                      {processInlineFormatting(card.topic)}
+                {cards.map((card, idx) => {
+                  // Extract plain text from topic (remove markdown formatting)
+                  const topicText = card.topic.replace(/\*\*/g, "").trim()
+                  const slug = topicToSlug[topicText]
+                  const isClickable = slug && onNavigate
+
+                  const cardContent = (
+                    <>
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">
+                        {headerCells[0]}
+                      </p>
+                      <div className="text-sm font-semibold text-foreground mb-1">
+                        {processInlineFormatting(card.topic)}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {processInlineFormatting(card.description)}
+                      </p>
+                    </>
+                  )
+
+                  if (isClickable) {
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => onNavigate(slug)}
+                        className="rounded-xl border border-border bg-card/40 px-4 py-4 shadow-sm hover:border-primary/60 hover:shadow-md transition-colors cursor-pointer text-left w-full"
+                      >
+                        {cardContent}
+                      </button>
+                    )
+                  }
+
+                  return (
+                    <div
+                      key={idx}
+                      className="rounded-xl border border-border bg-card/40 px-4 py-4 shadow-sm hover:border-primary/60 hover:shadow-md transition-colors"
+                    >
+                      {cardContent}
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      {processInlineFormatting(card.description)}
-                    </p>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </section>,
           )

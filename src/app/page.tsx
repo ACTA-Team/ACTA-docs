@@ -41,7 +41,7 @@ function DocsPageContent() {
         {/* Content Area */}
         <div className="flex-1 flex overflow-hidden">
           {/* Main Content */}
-          <Content page={currentPage} />
+          <Content page={currentPage} onNavigate={setCurrentSlug} />
 
           {/* Table of Contents */}
           <TableOfContents items={currentPage.tocItems} />

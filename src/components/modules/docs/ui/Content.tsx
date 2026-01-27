@@ -8,9 +8,10 @@ import type { DocPage } from "@/@types/docs"
 
 interface ContentProps {
   page: DocPage
+  onNavigate?: (slug: string) => void
 }
 
-export function Content({ page }: ContentProps) {
+export function Content({ page, onNavigate }: ContentProps) {
   const { sectionLabel, copied, handleCopy, t } = useContent({ page })
 
   return (
@@ -44,7 +45,7 @@ export function Content({ page }: ContentProps) {
 
         {/* Content */}
         <div className="prose prose-invert max-w-none">
-          <MarkdownContent content={page.content} />
+          <MarkdownContent content={page.content} onNavigate={onNavigate} />
         </div>
       </div>
     </main>
