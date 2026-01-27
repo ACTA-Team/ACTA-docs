@@ -57,12 +57,12 @@ function CollapsibleSection({
     <div className="mb-4">
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between px-3 py-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground/70 hover:text-muted-foreground transition-colors"
+        className="w-full flex items-center justify-between px-3 py-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground/70 hover:text-muted-foreground transition-colors min-w-0"
       >
-        <span>{title}</span>
+        <span className="truncate">{title}</span>
         <ChevronRight
           className={cn(
-            "w-3 h-3 transition-transform duration-150",
+            "w-3 h-3 transition-transform duration-150 flex-shrink-0 ml-2",
             isExpanded && "rotate-90"
           )}
         />
@@ -90,7 +90,7 @@ function NavItem({ item, isActive, onClick }: NavItemProps) {
     <button
       onClick={onClick}
       className={cn(
-        "w-full flex items-center gap-2.5 px-3 py-1.5 text-[13px] rounded-md",
+        "w-full flex items-start gap-2.5 px-3 py-1.5 text-[13px] rounded-md",
         "transition-colors duration-100",
         isActive
           ? "bg-sidebar-primary/15 text-sidebar-primary font-medium"
@@ -99,13 +99,13 @@ function NavItem({ item, isActive, onClick }: NavItemProps) {
     >
       <span
         className={cn(
-          "transition-colors",
+          "transition-colors flex-shrink-0 mt-0.5",
           isActive ? "text-sidebar-primary" : "text-muted-foreground/50"
         )}
       >
         {iconMap[item.slug]}
       </span>
-      <span>{item.title}</span>
+      <span className="text-left break-words leading-relaxed">{item.title}</span>
     </button>
   );
 }
@@ -129,7 +129,7 @@ export function Sidebar({ currentSlug, onNavigate }: SidebarProps) {
   };
 
   return (
-    <aside className="w-60 h-screen bg-sidebar flex flex-col">
+    <aside className="w-60 h-screen bg-sidebar flex flex-col flex-shrink-0">
       {/* Logo */}
       <div className="px-4 py-5">
         <div className="flex items-center gap-2.5">
