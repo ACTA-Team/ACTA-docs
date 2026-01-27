@@ -1,6 +1,7 @@
 "use client"
 
-import { Search, Globe, ChevronDown, MessageCircle, Code } from "lucide-react"
+import { Search, Globe, ChevronDown, Code } from "lucide-react"
+import { DiscordIcon } from "@/components/ui/discord-icon"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -38,36 +39,33 @@ export function Header({ onSearchOpen }: HeaderProps) {
       </div>
 
       {/* Right Actions */}
-      <div className="flex items-center gap-3 ml-6">
+      <div className="flex items-center gap-2 ml-6">
         <Button 
           variant="outline" 
-          size="sm" 
-          className="bg-secondary border-border text-foreground hover:bg-muted"
+          size="icon"
+          className="bg-secondary border-border text-foreground hover:bg-muted h-9 w-9"
           asChild
         >
-          <a href="https://dapp.acta.build/" target="_blank" rel="noopener noreferrer">
-            <Code className="w-4 h-4 mr-2" />
-            {t.dApp}
+          <a href="https://dapp.acta.build/" target="_blank" rel="noopener noreferrer" aria-label={t.dApp}>
+            <Code className="w-4 h-4" />
           </a>
         </Button>
         <Button 
-          size="sm" 
-          className="bg-[#5865F2] text-white hover:bg-[#4752c4]"
+          size="icon"
+          className="bg-[#5865F2] text-white hover:bg-[#4752c4] h-9 w-9"
           asChild
         >
-          <a href="https://discord.gg/DsUSE3aMDZ" target="_blank" rel="noopener noreferrer">
-            <MessageCircle className="w-4 h-4 mr-2" />
-            {t.discord}
+          <a href="https://discord.gg/DsUSE3aMDZ" target="_blank" rel="noopener noreferrer" aria-label={t.discord}>
+            <DiscordIcon className="w-5 h-5" />
           </a>
         </Button>
         <Button 
-          size="sm" 
-          className="bg-primary text-primary-foreground hover:bg-primary/90"
+          size="icon"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 h-9 w-9"
           asChild
         >
-          <a href="https://acta.build" target="_blank" rel="noopener noreferrer">
-            <Globe className="w-4 h-4 mr-2" />
-            {t.website}
+          <a href="https://acta.build" target="_blank" rel="noopener noreferrer" aria-label={t.website}>
+            <Globe className="w-4 h-4" />
           </a>
         </Button>
         
