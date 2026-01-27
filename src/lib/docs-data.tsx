@@ -902,11 +902,7 @@ Common HTTP status codes:
     slug: "api-health-status",
     title: "Health & Status",
     section: "API Reference",
-    tocItems: [
-      "Health Check",
-      "API Status",
-      "Network Configuration",
-    ],
+    tocItems: ["Health Check", "API Status", "Network Configuration"],
     content: `
 # Health & Status Endpoints
 
@@ -1123,11 +1119,7 @@ curl -X POST https://acta.build/api/mainnet/public/api-keys \\
     slug: "api-contract-info",
     title: "Contract Info",
     section: "API Reference",
-    tocItems: [
-      "Get Contract Version",
-      "Query Parameters",
-      "Response",
-    ],
+    tocItems: ["Get Contract Version", "Query Parameters", "Response"],
     content: `
 # Contract Info Endpoints
 

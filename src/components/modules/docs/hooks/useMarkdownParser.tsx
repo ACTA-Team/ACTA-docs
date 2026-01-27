@@ -205,7 +205,7 @@ export function useMarkdownParser(
           // End code block
           const codeContent = codeBlock.join("\n");
           const language = codeLanguage || "text";
-          
+
           elements.push(
             <div key={elements.length} className="mb-6">
               <div className="bg-[#1e1e1e] border border-border rounded-lg overflow-hidden">
@@ -226,7 +226,8 @@ export function useMarkdownParser(
                   }}
                   codeTagProps={{
                     style: {
-                      fontFamily: "ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace",
+                      fontFamily:
+                        "ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace",
                     },
                   }}
                 >
