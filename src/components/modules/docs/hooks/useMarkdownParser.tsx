@@ -56,7 +56,9 @@ export function useMarkdownParser(
         }
 
         // Check for bold link **[text](url)**
-        const boldLinkMatch = remaining.match(/^\*\*\[([^\]]+)\]\(([^)]+)\)\*\*/);
+        const boldLinkMatch = remaining.match(
+          /^\*\*\[([^\]]+)\]\(([^)]+)\)\*\*/
+        );
         if (boldLinkMatch) {
           parts.push(
             <strong key={key++} className="font-semibold text-foreground">
@@ -233,15 +235,24 @@ export function useMarkdownParser(
 
           // Check if it's an install command with package name
           // Match: npm install package, yarn add package, pnpm add package
-          const installMatch = codeContent.trim().match(/^(npm|yarn|pnpm)\s+(install|add)\s+(.+)$/m);
+          const installMatch = codeContent
+            .trim()
+            .match(/^(npm|yarn|pnpm)\s+(install|add)\s+(.+)$/m);
           if (installMatch && installMatch[3]) {
-            const packageName = installMatch[3].trim().replace(/['"]/g, '');
+            const packageName = installMatch[3].trim().replace(/['"]/g, "");
             elements.push(
-              <InstallCommandTabs key={elements.length} packageName={packageName} />
+              <InstallCommandTabs
+                key={elements.length}
+                packageName={packageName}
+              />
             );
           } else {
             elements.push(
-              <CodeBlock key={elements.length} code={codeContent} language={language} />
+              <CodeBlock
+                key={elements.length}
+                code={codeContent}
+                language={language}
+              />
             );
           }
           codeBlock = [];

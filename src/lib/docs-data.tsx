@@ -1694,6 +1694,997 @@ Revokes a VC by ID.
 **Note:** The \`issue\` method automatically stores the credential in the vault and marks it as valid in a single transaction.
     `,
   },
+
+  // dApp Section
+  "dapp-overview": {
+    slug: "dapp-overview",
+    title: "Overview",
+    section: "dApp",
+    tocItems: [
+      "What is the ACTA dApp?",
+      "Key Features",
+      "Getting Started",
+      "Access the dApp",
+    ],
+    content: `
+# ACTA dApp Overview
+
+The ACTA dApp is a modern web application that provides a user-friendly interface to issue, manage, share, and authorize verifiable credentials. Built with Next.js 16, React 19, and the ACTA SDK, it offers a complete credential management solution without requiring programming knowledge.
+
+## What is the ACTA dApp?
+
+The ACTA dApp is a decentralized application that allows you to:
+
+- **Issue credentials** to users and manage issuer authorization
+- **Maintain a vault** of credentials with search, share, and revoke actions
+- **Share credentials** with zero-knowledge proofs for privacy
+- **Authorize issuers** to control who can issue credentials to your vault
+- **Verify credentials** on-chain and verify ZK proofs
+- **Manage API keys** for programmatic access
+
+All operations are performed directly on the Stellar blockchain through Soroban smart contracts, ensuring non-custodial credential management.
+
+## Key Features
+
+### Credential Management
+
+- Create and issue verifiable credentials
+- Store credentials in your personal vault
+- Search and filter credentials
+- Share credentials with selective field disclosure
+- Revoke credentials when needed
+
+### Issuer Authorization
+
+- Authorize specific wallets to issue credentials to your vault
+- Manage authorized issuers list
+- Control who can create credentials for you
+
+### Zero-Knowledge Proofs
+
+- Generate ZK proofs for credential predicates
+- Share credentials with privacy-preserving proofs
+- Verify proofs without revealing private data
+- Support for multiple predicate types (age verification, expiration, status)
+
+### API Key Management
+
+- Create and manage API keys for testnet and mainnet
+- Standard role keys with 6-month expiration
+- Easy integration with the ACTA API
+
+### Guided Onboarding
+
+- Interactive tutorials for first-time users
+- Quick start guide with step-by-step instructions
+- Contextual help throughout the application
+
+## Getting Started
+
+To start using the ACTA dApp:
+
+1. **Connect your wallet** - Link your Stellar wallet (Freighter, etc.)
+2. **Choose network** - Select testnet (for testing) or mainnet
+3. **Create your vault** - Initialize your personal credential vault
+4. **Authorize issuers** - Grant permissions to trusted wallets
+5. **Start issuing** - Create and manage your credentials
+
+See the [Getting Started Guide](#dapp-getting-started) for detailed instructions.
+
+## Access the dApp
+
+The ACTA dApp is available at:
+
+\`\`\`
+https://dapp.acta.build
+\`\`\`
+
+No installation required - simply visit the URL in your web browser and connect your Stellar wallet to get started.
+    `,
+  },
+  "dapp-getting-started": {
+    slug: "dapp-getting-started",
+    title: "Getting Started",
+    section: "dApp",
+    tocItems: [
+      "Step 1: Connect Wallet",
+      "Step 2: Create Vault",
+      "Step 3: Authorize Issuers",
+      "Step 4: Issue Credentials",
+      "Next Steps",
+    ],
+    content: `
+# Getting Started with ACTA dApp
+
+Follow these steps to start using the ACTA dApp for credential management.
+
+## Step 1: Connect Wallet and Choose Network
+
+The first step is to connect your Stellar wallet to the dApp.
+
+1. Visit [https://dapp.acta.build](https://dapp.acta.build)
+2. Click on the wallet connection button
+3. Select your Stellar wallet (Freighter, WalletConnect, etc.)
+4. Approve the connection request
+5. Choose your network:
+   - **Testnet** - For testing and development
+   - **Mainnet** - For production use
+
+Once connected, your wallet address will be displayed in the header.
+
+## Step 2: Create Your Personal Vault
+
+Your vault is your secure storage for credentials. Each wallet address has its own isolated vault.
+
+1. Navigate to the **Dashboard** or **Vault** section
+2. If you don't have a vault yet, you'll see an option to create one
+3. Click **Create Vault** or **Initialize Vault**
+4. Sign the transaction with your wallet
+5. Your vault is now ready to store credentials
+
+The vault creation is a one-time operation per wallet address.
+
+## Step 3: Authorize Issuers
+
+Before you can receive credentials, you need to authorize wallets that can issue credentials to your vault.
+
+1. Go to the **Authorize** section in the sidebar
+2. Enter the wallet address of the issuer you want to authorize
+3. Click **Authorize Issuer**
+4. Sign the transaction with your wallet
+5. The authorized issuer will appear in your authorized issuers list
+
+**Note:** Only authorized issuers can create credentials in your vault. This gives you control over who can issue credentials to you.
+
+## Step 4: Issue Credentials
+
+Once you have a vault and authorized issuers, you can start issuing credentials.
+
+1. Navigate to the **Issue** section
+2. Fill in the credential form:
+   - **Credential ID** - Unique identifier
+   - **Credential Data** - The actual credential information (JSON format)
+   - **Owner** - The wallet address that will receive the credential
+   - **Issuer DID** (optional) - Your issuer DID
+3. Click **Issue Credential**
+4. Sign the transaction with your wallet
+5. The credential will be stored in the owner's vault and marked as valid
+
+The credential is now on-chain and can be verified by anyone.
+
+## Next Steps
+
+After completing the initial setup:
+
+- **View Credentials** - Go to the **Vault** or **Credentials** section to see all your credentials
+- **Share Credentials** - Use the share feature to create shareable links with ZK proofs
+- **Manage API Keys** - Create API keys for programmatic access in the **API Keys** section
+- **Explore Tutorials** - Check out the **Tutorials** section for guided walkthroughs
+
+For more information about specific features, see the [dApp Features](#dapp-features) guide.
+    `,
+  },
+  "dapp-features": {
+    slug: "dapp-features",
+    title: "Features",
+    section: "dApp",
+    tocItems: [
+      "Issue Credentials",
+      "Vault Management",
+      "Share Credentials",
+      "Authorize Issuers",
+      "API Key Management",
+      "Zero-Knowledge Proofs",
+    ],
+    content: `
+# dApp Features
+
+Detailed overview of all features available in the ACTA dApp.
+
+## Issue Credentials
+
+Create and issue verifiable credentials to any Stellar wallet address.
+
+### How to Issue
+
+1. Navigate to **Issue** in the sidebar
+2. Fill in the credential form:
+   - **Credential ID**: Unique identifier for the credential
+   - **Credential Data**: JSON data containing the credential information
+   - **Owner**: Stellar wallet address (G...) that will receive the credential
+   - **Issuer DID** (optional): Your DID identifier
+3. Click **Issue Credential**
+4. Sign the transaction
+
+The credential is automatically:
+- Stored in the owner's vault
+- Marked as valid on-chain
+- Available for verification
+
+## Vault Management
+
+Your vault is your personal credential storage. Each wallet has an isolated vault.
+
+### View Credentials
+
+1. Go to **Vault** or **Credentials** section
+2. See all credentials stored in your vault
+3. Use search and filters to find specific credentials
+4. Click on a credential to view details
+
+### Credential Actions
+
+- **View Details** - See full credential information
+- **Share** - Create a shareable link with selective field disclosure
+- **Revoke** - Revoke a credential if needed
+- **Verify** - Check the on-chain status
+
+## Share Credentials
+
+Share credentials with privacy-preserving zero-knowledge proofs.
+
+### Sharing Flow
+
+1. Go to your **Vault** and select a credential
+2. Click **Share** button
+3. Choose which fields to reveal
+4. Select a ZK predicate (optional):
+   - Age ≥ 18
+   - Not expired
+   - Status is valid
+5. Click **Generate ZK Proof**
+6. Copy the share link
+
+The share link contains:
+- Only the selected revealed fields
+- ZK proof for the selected predicate
+- Public signals for verification
+
+Recipients can verify the proof without seeing your private data.
+
+## Authorize Issuers
+
+Control who can issue credentials to your vault.
+
+### Authorize an Issuer
+
+1. Go to **Authorize** section
+2. Enter the wallet address of the issuer
+3. Click **Authorize Issuer**
+4. Sign the transaction
+
+### Manage Authorized Issuers
+
+- View all authorized issuers
+- Revoke authorization if needed
+- Only authorized issuers can create credentials in your vault
+
+## API Key Management
+
+Create and manage API keys for programmatic access to the ACTA API.
+
+### Create API Key
+
+1. Navigate to **API Keys** section
+2. Choose network (Testnet or Mainnet)
+3. Enter a name for your API key (optional)
+4. Click **Create API Key**
+5. **Save the key immediately** - it won't be shown again
+
+API keys have:
+- **Standard role** - Access to public endpoints
+- **6-month expiration** - Keys expire after 6 months
+- **Network-specific** - Separate keys for testnet and mainnet
+
+### Use API Keys
+
+Use your API key in API requests:
+
+\`\`\`
+X-ACTA-Key: your_api_key_here
+\`\`\`
+
+See the [API Reference](#api-overview) for all available endpoints.
+
+## Zero-Knowledge Proofs
+
+The dApp supports sharing credentials with zero-knowledge proofs for privacy-preserving verification. See the [Zero-Knowledge Proofs](#zk-overview) section for detailed information about ZK circuits, predicates, and verification.
+    `,
+  },
+  // Zero-Knowledge Proofs Section
+  "zk-overview": {
+    slug: "zk-overview",
+    title: "Overview",
+    section: "Zero-Knowledge Proofs",
+    tocItems: [
+      "What are Zero-Knowledge Proofs?",
+      "How ZK Proofs Work in ACTA",
+      "Key Benefits",
+      "Architecture",
+    ],
+    content: `
+# Zero-Knowledge Proofs Overview
+
+ACTA supports zero-knowledge proofs (ZK) that allow you to prove credential predicates without revealing private data. This enables privacy-preserving credential sharing and verification.
+
+## What are Zero-Knowledge Proofs?
+
+Zero-knowledge proofs are cryptographic protocols that allow one party (the prover) to prove to another party (the verifier) that a statement is true without revealing any information beyond the validity of the statement itself.
+
+In the context of ACTA:
+- **Prover**: The credential holder who wants to prove something about their credential
+- **Verifier**: The party who needs to verify the proof (e.g., a service requiring age verification)
+- **Statement**: A predicate about the credential (e.g., "age ≥ 18", "not expired", "status is valid")
+
+## How ZK Proofs Work in ACTA
+
+1. **Credential Holder** selects which fields to reveal and chooses a predicate to prove
+2. **Proof Generation** happens client-side using Noir circuits and bb.js
+3. **Share Link** is created containing the revealed fields and the ZK proof
+4. **Verification** happens on-chain via Soroban smart contracts (Protocol 25)
+
+### Generation vs Verification
+
+- **Generation**: Client-side in the browser using Noir and bb.js
+- **Verification**: On-chain via Soroban ZK verifier contract
+- **Replay Protection**: Uses nullifiers to prevent proof reuse
+
+## Key Benefits
+
+### Privacy
+
+- Only selected fields are revealed to verifiers
+- Private data (like exact age or expiration date) remains hidden
+- Selective disclosure gives you control over what information to share
+
+### Security
+
+- Cryptographic proofs are mathematically verifiable
+- No need to trust a third party
+- On-chain verification ensures proof integrity
+- Nullifiers prevent replay attacks
+
+### Flexibility
+
+- Multiple predicate types available
+- Can combine with selective field disclosure
+- Works with any credential structure
+
+## Architecture
+
+### Components
+
+1. **Noir Circuits** - Define the logic for each predicate
+   - Written in Noir language
+   - Compiled to ACIR (Abstract Circuit Intermediate Representation)
+   - Served as JSON files from the dApp
+
+2. **Proof Generation** - Client-side using:
+   - \`@noir-lang/noir_js\` - Noir JavaScript bindings
+   - \`@aztec/bb.js\` - Barretenberg backend for proof generation
+
+3. **Proof Verification** - On-chain via:
+   - Soroban ZK verifier contract
+   - Protocol 25 support for ZK verification
+   - Verification keys (vk) stored in contract
+
+### Flow
+
+\`\`\`
+Credential Holder → Select Fields → Choose Predicate → Generate Proof (Client) → Share Link
+                                                                                      ↓
+Verifier ← Verify Proof (On-chain) ← Receive Share Link ← Credential Holder
+\`\`\`
+
+See the [Circuits](#zk-circuits) section for detailed information about available predicates and their implementation.
+    `,
+  },
+  "zk-circuits": {
+    slug: "zk-circuits",
+    title: "Circuits",
+    section: "Zero-Knowledge Proofs",
+    tocItems: [
+      "Age ≥ 18 (isAdult)",
+      "Not Expired (notExpired)",
+      "Status is Valid (isValid)",
+      "Circuit Structure",
+      "ACIR Artifacts",
+    ],
+    content: `
+# ZK Circuits
+
+ACTA uses Noir circuits to define ZK proof predicates. Each circuit is compiled to ACIR (Abstract Circuit Intermediate Representation) and used for proof generation and verification.
+
+## Age ≥ 18 (isAdult)
+
+Proves that a person is at least 18 years old without revealing their exact age.
+
+### Circuit Code
+
+\`\`\`rust
+fn main(age: u8) {
+    assert(age > 18);
+}
+\`\`\`
+
+### Inputs
+
+- **Private Input**: \`age: u8\` - The person's age (not revealed)
+
+### Output
+
+- **Public Output**: \`bool\` → \`true\` if \`age >= 18\`, otherwise the circuit fails
+
+### How It Works
+
+1. Extract birth date from credential
+2. Calculate age from birth date to current date
+3. Pass age to circuit as private input
+4. Circuit asserts \`age > 18\`
+5. Generate proof without revealing the actual age value
+
+### Use Cases
+
+- Age verification for age-restricted services
+- Compliance with legal age requirements
+- Privacy-preserving age checks
+
+### ACIR Artifact
+
+\`\`\`
+noir_workshop.json
+\`\`\`
+
+## Not Expired (notExpired)
+
+Proves that a credential has not expired without revealing the expiration date.
+
+### Circuit Code
+
+\`\`\`rust
+fn main(expiry_ts: u64, now_ts: u64) {
+    assert(expiry_ts > now_ts);
+}
+\`\`\`
+
+### Inputs
+
+- **Private Inputs**: 
+  - \`expiry_ts: u64\` - Expiration timestamp in milliseconds (not revealed)
+  - \`now_ts: u64\` - Current timestamp in milliseconds (computed off-chain)
+
+### Output
+
+- **Public Output**: \`bool\` → \`true\` if \`expiry_ts > now_ts\`, otherwise the circuit fails
+
+### How It Works
+
+1. Extract expiration date from credential
+2. Get current timestamp (computed off-chain)
+3. Pass both timestamps to circuit as private inputs
+4. Circuit asserts \`expiry_ts > now_ts\`
+5. Generate proof without revealing the actual expiration date
+
+### Use Cases
+
+- Verify credential is still valid
+- Check if credential hasn't expired
+- Time-based access control
+
+### ACIR Artifact
+
+\`\`\`
+noir_not_expired.json
+\`\`\`
+
+## Status is Valid (isValid)
+
+Proves that a credential has a valid status without revealing other status details.
+
+### Circuit Code
+
+\`\`\`rust
+fn main(valid: Field) {
+    assert(valid == 1);
+}
+\`\`\`
+
+### Inputs
+
+- **Private Input**: \`valid: Field\` - Status flag (1 for valid, 0 for invalid)
+
+### Output
+
+- **Public Output**: \`bool\` → \`true\` if \`valid == 1\`, otherwise the circuit fails
+
+### How It Works
+
+1. Extract status from credential
+2. Convert status to flag: \`status === 'valid' ? 1 : 0\`
+3. Pass flag to circuit as private input
+4. Circuit asserts \`valid == 1\`
+5. Generate proof without revealing other status information
+
+### Use Cases
+
+- Verify credential is not revoked
+- Check credential state
+- Status-based authorization
+
+### ACIR Artifact
+
+\`\`\`
+noir_valid_status.json
+\`\`\`
+
+## Circuit Structure
+
+All circuits follow a similar structure:
+
+1. **Input Definition** - Private inputs that won't be revealed
+2. **Assertion Logic** - The condition to prove
+3. **Compilation** - Compiled to ACIR JSON format
+4. **Deployment** - ACIR files served from \`public/zk/\` directory
+
+### Compilation
+
+Circuits are compiled using \`nargo\`:
+
+\`\`\`bash
+nargo compile
+\`\`\`
+
+This generates the ACIR JSON file in \`target/\` directory.
+
+## ACIR Artifacts
+
+ACIR (Abstract Circuit Intermediate Representation) files are the compiled circuits:
+
+- \`noir_workshop.json\` - Age ≥ 18 circuit
+- \`noir_not_expired.json\` - Not expired circuit
+- \`noir_valid_status.json\` - Status is valid circuit
+
+These files are:
+- Loaded by the dApp from \`public/zk/\` directory
+- Used for proof generation in the browser
+- Referenced by the on-chain verifier contract
+
+### Publishing Circuits
+
+To publish a circuit for use in the dApp:
+
+1. Compile the circuit: \`nargo compile\`
+2. Copy ACIR JSON to \`dApp-ACTA/public/zk/\`
+3. The dApp will load it automatically
+
+See the [zk-test repository](https://github.com/ACTA-Team/zk-test) for circuit source code and compilation instructions.
+    `,
+  },
+  "zk-generation": {
+    slug: "zk-generation",
+    title: "Proof Generation",
+    section: "Zero-Knowledge Proofs",
+    tocItems: [
+      "Overview",
+      "Generation Process",
+      "Input Preparation",
+      "Circuit Execution",
+      "Proof Artifacts",
+      "Integration in dApp",
+    ],
+    content: `
+# ZK Proof Generation
+
+ZK proofs in ACTA are generated client-side in the browser using Noir circuits and bb.js backend.
+
+## Overview
+
+Proof generation happens entirely in the user's browser:
+- No data is sent to servers during generation
+- Private inputs remain private
+- Proofs are generated using cryptographic libraries
+
+### Technologies
+
+- **Noir** - Circuit language and JavaScript bindings (\`@noir-lang/noir_js\`)
+- **bb.js** - Barretenberg backend (\`@aztec/bb.js\`) for proof generation
+- **ACIR** - Compiled circuit representation loaded from JSON files
+
+## Generation Process
+
+### Step 1: Select Fields and Predicate
+
+When sharing a credential in the dApp:
+
+1. **Select Fields to Reveal**
+   - Choose which credential fields should be visible
+   - Other fields remain private
+
+2. **Choose ZK Predicate**
+   - Select from available predicates:
+     - \`isAdult\` - Age ≥ 18
+     - \`notExpired\` - Credential not expired
+     - \`isValid\` - Status is valid
+
+### Step 2: Input Preparation
+
+The dApp extracts and prepares inputs based on the selected predicate:
+
+#### For \`isAdult\`:
+
+\`\`\`typescript
+// Extract birth date from credential
+const dob = credential.birthDate;
+const ageYears = calculateAge(dob);
+
+// Input: { age: ageYears }
+\`\`\`
+
+#### For \`notExpired\`:
+
+\`\`\`typescript
+// Extract expiration and current timestamp
+const expiry_ts = Date.parse(credential.expirationDate);
+const now_ts = Date.now();
+
+// Input: { expiry_ts, now_ts }
+\`\`\`
+
+#### For \`isValid\`:
+
+\`\`\`typescript
+// Convert status to flag
+const valid = credential.status === 'valid' ? '1' : '0';
+
+// Input: { valid }
+\`\`\`
+
+### Step 3: Circuit Execution
+
+1. **Load ACIR** - Fetch the circuit JSON from \`public/zk/\`
+2. **Initialize Noir** - Create Noir instance with ACIR
+3. **Initialize Backend** - Create bb.js backend
+4. **Execute Circuit** - Run circuit with private inputs
+5. **Generate Witness** - Create witness from execution result
+
+\`\`\`typescript
+const { Noir } = await import('@noir-lang/noir_js');
+const { UltraHonkBackend } = await import('@aztec/bb.js');
+
+// Load ACIR
+const acir = await fetch('/zk/noir_workshop.json').then(r => r.json());
+
+// Initialize
+const noir = new Noir(acir);
+const backend = new UltraHonkBackend(acir.bytecode);
+
+// Execute
+const execRes = await noir.execute({ age: ageYears });
+
+// Generate proof
+const proofData = await backend.generateProof(execRes.witness);
+\`\`\`
+
+### Step 4: Proof Artifacts
+
+The generation produces:
+
+- **Proof** - The cryptographic proof (base64 encoded)
+- **Public Inputs** - Public signals that are part of the proof
+- **Statement** - Metadata about the predicate and revealed fields
+
+\`\`\`typescript
+{
+  proof: string,           // Base64 encoded proof
+  publicInputs: string[],  // Public signals
+  statement: {
+    kind: 'isAdult' | 'notExpired' | 'isValid',
+    selectedKeys: string[],
+    // ... predicate-specific parameters
+  }
+}
+\`\`\`
+
+## Proof Artifacts
+
+### Proof Structure
+
+The proof is a JSON object containing:
+
+\`\`\`json
+{
+  "publicInputs": ["..."],
+  "proof": "base64_encoded_proof_bytes"
+}
+\`\`\`
+
+### Public Inputs
+
+Public inputs are values that are part of the proof but don't reveal private data:
+- For \`isAdult\`: Empty (age is private)
+- For \`notExpired\`: Empty (timestamps are private)
+- For \`isValid\`: Empty (status flag is private)
+
+### Statement Metadata
+
+The statement contains:
+- \`kind\` - Predicate type
+- \`selectedKeys\` - Fields that were revealed
+- Predicate-specific parameters (for reference, not part of proof)
+
+## Integration in dApp
+
+The proof generation is integrated in the dApp's share flow:
+
+1. User selects credential to share
+2. Chooses fields to reveal
+3. Selects ZK predicate
+4. Clicks **Generate ZK Proof**
+5. Proof is generated client-side
+6. Share link is created with proof included
+
+### Code Location
+
+- Generation logic: \`dApp-ACTA/src/lib/zk/generate.ts\`
+- Integration: \`dApp-ACTA/src/components/modules/credentials/hooks/useShareCredential.ts\`
+
+### Security Notes
+
+- All generation happens client-side
+- Private inputs never leave the browser
+- Proofs are cryptographically secure
+- No server-side processing required
+    `,
+  },
+  "zk-verification": {
+    slug: "zk-verification",
+    title: "Proof Verification",
+    section: "Zero-Knowledge Proofs",
+    tocItems: [
+      "Overview",
+      "On-Chain Verification",
+      "Verification Process",
+      "Nullifiers and Replay Protection",
+      "Verification Result",
+      "API Endpoint",
+    ],
+    content: `
+# ZK Proof Verification
+
+ZK proofs in ACTA are verified on-chain via Soroban smart contracts using Protocol 25 ZK verification support.
+
+## Overview
+
+Unlike proof generation (which is client-side), verification happens on-chain:
+- **Location**: Soroban ZK verifier contract
+- **Method**: Protocol 25 ZK verification
+- **Security**: Cryptographic verification with replay protection
+- **Trust**: No need to trust third parties
+
+### Why On-Chain Verification?
+
+- **Immutability** - Verification results are permanently recorded
+- **Trustless** - No need to trust verification servers
+- **Transparency** - Verification logic is on-chain
+- **Replay Protection** - Nullifiers prevent proof reuse
+
+## On-Chain Verification
+
+Verification is performed by the Soroban ZK verifier contract:
+
+1. **Contract Receives**:
+   - Circuit ID (identifies which circuit to use)
+   - Proof (the cryptographic proof)
+   - Public inputs (public signals)
+   - Nullifier (for replay protection)
+
+2. **Contract Verifies**:
+   - Loads verification key (vk) for the circuit
+   - Verifies the proof cryptographically
+   - Checks nullifier hasn't been used before
+   - Records verification result on-chain
+
+3. **Result**:
+   - Transaction hash
+   - Ledger number
+   - Verification status (verified/not verified)
+
+## Verification Process
+
+### Step 1: Prepare Verification Payload
+
+From the shared credential link, extract:
+
+\`\`\`typescript
+{
+  statement: {
+    kind: 'isAdult' | 'notExpired' | 'isValid',
+    // ... other metadata
+  },
+  proof: string,              // Base64 encoded proof
+  publicSignals: string[],    // Public inputs
+  commitment: string,          // Credential commitment
+  nonce: string,              // Nonce for nullifier
+  credentialId: string,       // Credential identifier
+  verifierContractId?: string // Optional contract override
+}
+\`\`\`
+
+### Step 2: Generate Nullifier
+
+Nullifier prevents replay attacks by making each proof unique:
+
+\`\`\`typescript
+// Nullifier = hash(commitment + nonce + proof_hash)
+const nullifier = await generateNullifier({
+  commitment,
+  nonce,
+  proof
+});
+\`\`\`
+
+### Step 3: Call Verification API
+
+Send verification request to ACTA API:
+
+\`\`\`bash
+POST /contracts/zk-verifier/verify
+\`\`\`
+
+**Request Body:**
+
+\`\`\`json
+{
+  "circuitId": "isAdult",
+  "proof": "base64_proof",
+  "publicInputs": ["..."],
+  "nullifier": "hex_nullifier",
+  "verifierContractId": "C..."
+}
+\`\`\`
+
+### Step 4: On-Chain Verification
+
+The API:
+1. Invokes the Soroban ZK verifier contract
+2. Contract verifies the proof using stored verification key
+3. Checks nullifier hasn't been used
+4. Records verification on-chain
+5. Returns transaction hash and result
+
+### Step 5: Verification Result
+
+**Response:**
+
+\`\`\`json
+{
+  "verified": true,
+  "txHash": "abc123...",
+  "ledger": 12345,
+  "network": "testnet"
+}
+\`\`\`
+
+## Nullifiers and Replay Protection
+
+Nullifiers ensure each proof can only be verified once, preventing replay attacks.
+
+### How Nullifiers Work
+
+1. **Generate Nullifier**:
+   \`\`\`
+   nullifier = SHA-256(commitment + nonce + proof_hash)
+   \`\`\`
+
+2. **Check on-Chain**:
+   - Contract maintains a set of used nullifiers
+   - If nullifier exists → proof already used → reject
+   - If nullifier doesn't exist → add to set → verify proof
+
+3. **Uniqueness**:
+   - Each proof instance has unique commitment + nonce
+   - Even same credential + predicate = different nullifier
+   - Prevents proof reuse
+
+### Benefits
+
+- **Replay Protection** - Same proof can't be verified twice
+- **Privacy** - Nullifier doesn't reveal credential content
+- **Efficiency** - Simple hash check on-chain
+
+## Verification Result
+
+### Success Response
+
+\`\`\`json
+{
+  "verified": true,
+  "txHash": "transaction_hash",
+  "ledger": 12345,
+  "network": "testnet",
+  "result": { ... }
+}
+\`\`\`
+
+### Failure Response
+
+\`\`\`json
+{
+  "verified": false,
+  "error": "error_message",
+  "network": "testnet"
+}
+\`\`\`
+
+### Common Errors
+
+- \`Invalid payload\` - Missing required fields
+- \`No proof to verify\` - Predicate kind is 'none'
+- \`Missing commitment\` - Commitment not provided
+- \`Missing nonce\` - Nonce not provided
+- \`Invalid proof format\` - Proof structure is invalid
+- \`Proof verification failed\` - Cryptographic verification failed
+- \`Nullifier already used\` - Proof was already verified
+
+## API Endpoint
+
+### POST /contracts/zk-verifier/verify
+
+Verifies a ZK proof on-chain via Soroban contract.
+
+**Headers:**
+
+\`\`\`
+X-ACTA-Key: your_api_key_here
+\`\`\`
+
+**Request Body:**
+
+\`\`\`json
+{
+  "circuitId": "isAdult",
+  "proof": "base64_encoded_proof",
+  "publicInputs": ["public_signal_1", "public_signal_2"],
+  "nullifier": "hex_nullifier_string",
+  "verifierContractId": "C..."
+}
+\`\`\`
+
+**Response:**
+
+\`\`\`json
+{
+  "verified": true,
+  "txHash": "abc123...",
+  "ledger": 12345,
+  "result": {},
+  "network": "testnet"
+}
+\`\`\`
+
+**Example:**
+
+\`\`\`bash
+curl -X POST https://acta.build/api/testnet/contracts/zk-verifier/verify \\
+  -H "X-ACTA-Key: your_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "circuitId": "isAdult",
+    "proof": "...",
+    "publicInputs": [],
+    "nullifier": "..."
+  }'
+\`\`\`
+
+### Parameters
+
+- **circuitId** (required): Circuit identifier (\`"isAdult"\`, \`"notExpired"\`, \`"isValid"\`)
+- **proof** (required): Base64 encoded proof
+- **publicInputs** (required): Array of public input strings
+- **nullifier** (required): Hex-encoded nullifier for replay protection
+- **verifierContractId** (optional): Override verifier contract ID
+    `,
+  },
 };
 
 export const navigationItemsEn = {
@@ -1717,6 +2708,17 @@ export const navigationItemsEn = {
     { slug: "api-vault-read", title: "Vault Operations (Read)" },
     { slug: "api-vault-write", title: "Vault Operations (Write)" },
     { slug: "api-credentials", title: "Credential Operations" },
+  ],
+  dapp: [
+    { slug: "dapp-overview", title: "Overview" },
+    { slug: "dapp-getting-started", title: "Getting Started" },
+    { slug: "dapp-features", title: "Features" },
+  ],
+  "zk-proofs": [
+    { slug: "zk-overview", title: "Overview" },
+    { slug: "zk-circuits", title: "Circuits" },
+    { slug: "zk-generation", title: "Proof Generation" },
+    { slug: "zk-verification", title: "Proof Verification" },
   ],
 };
 
@@ -3411,6 +4413,997 @@ Revoca una VC por ID.
 **Nota:** El método \`issue\` almacena automáticamente la credencial en la bóveda y la marca como válida en una sola transacción.
     `,
   },
+
+  // dApp Section
+  "dapp-overview": {
+    slug: "dapp-overview",
+    title: "Resumen",
+    section: "dApp",
+    tocItems: [
+      "¿Qué es el dApp de ACTA?",
+      "Características principales",
+      "Primeros pasos",
+      "Acceder al dApp",
+    ],
+    content: `
+# Resumen del dApp de ACTA
+
+El dApp de ACTA es una aplicación web moderna que proporciona una interfaz amigable para emitir, gestionar, compartir y autorizar credenciales verificables. Construido con Next.js 16, React 19 y el SDK de ACTA, ofrece una solución completa de gestión de credenciales sin requerir conocimientos de programación.
+
+## ¿Qué es el dApp de ACTA?
+
+El dApp de ACTA es una aplicación descentralizada que te permite:
+
+- **Emitir credenciales** a usuarios y gestionar la autorización de emisores
+- **Mantener una bóveda** de credenciales con búsqueda, compartición y revocación
+- **Compartir credenciales** con pruebas de conocimiento cero para privacidad
+- **Autorizar emisores** para controlar quién puede emitir credenciales a tu bóveda
+- **Verificar credenciales** on-chain y verificar pruebas ZK
+- **Gestionar API keys** para acceso programático
+
+Todas las operaciones se realizan directamente en la blockchain Stellar a través de contratos inteligentes Soroban, garantizando una gestión de credenciales no custodiada.
+
+## Características principales
+
+### Gestión de Credenciales
+
+- Crear y emitir credenciales verificables
+- Almacenar credenciales en tu bóveda personal
+- Buscar y filtrar credenciales
+- Compartir credenciales con divulgación selectiva de campos
+- Revocar credenciales cuando sea necesario
+
+### Autorización de Emisores
+
+- Autorizar wallets específicas para emitir credenciales a tu bóveda
+- Gestionar la lista de emisores autorizados
+- Controlar quién puede crear credenciales para ti
+
+### Pruebas de Conocimiento Cero
+
+- Generar pruebas ZK para predicados de credenciales
+- Compartir credenciales con pruebas que preservan la privacidad
+- Verificar pruebas sin revelar datos privados
+- Soporte para múltiples tipos de predicados (verificación de edad, expiración, estado)
+
+### Gestión de API Keys
+
+- Crear y gestionar API keys para testnet y mainnet
+- Keys con rol estándar con expiración de 6 meses
+- Integración fácil con la API de ACTA
+
+### Onboarding Guiado
+
+- Tutoriales interactivos para usuarios primerizos
+- Guía de inicio rápido con instrucciones paso a paso
+- Ayuda contextual en toda la aplicación
+
+## Primeros pasos
+
+Para comenzar a usar el dApp de ACTA:
+
+1. **Conecta tu wallet** - Vincula tu wallet Stellar (Freighter, etc.)
+2. **Elige la red** - Selecciona testnet (para pruebas) o mainnet
+3. **Crea tu bóveda** - Inicializa tu bóveda personal de credenciales
+4. **Autoriza emisores** - Otorga permisos a wallets confiables
+5. **Comienza a emitir** - Crea y gestiona tus credenciales
+
+Consulta la [Guía de Primeros Pasos](#dapp-getting-started) para instrucciones detalladas.
+
+## Acceder al dApp
+
+El dApp de ACTA está disponible en:
+
+\`\`\`
+https://dapp.acta.build
+\`\`\`
+
+No se requiere instalación - simplemente visita la URL en tu navegador web y conecta tu wallet Stellar para comenzar.
+    `,
+  },
+  "dapp-getting-started": {
+    slug: "dapp-getting-started",
+    title: "Primeros Pasos",
+    section: "dApp",
+    tocItems: [
+      "Paso 1: Conectar Wallet",
+      "Paso 2: Crear Bóveda",
+      "Paso 3: Autorizar Emisores",
+      "Paso 4: Emitir Credenciales",
+      "Siguientes pasos",
+    ],
+    content: `
+# Primeros Pasos con el dApp de ACTA
+
+Sigue estos pasos para comenzar a usar el dApp de ACTA para la gestión de credenciales.
+
+## Paso 1: Conectar Wallet y Elegir Red
+
+El primer paso es conectar tu wallet Stellar al dApp.
+
+1. Visita [https://dapp.acta.build](https://dapp.acta.build)
+2. Haz clic en el botón de conexión de wallet
+3. Selecciona tu wallet Stellar (Freighter, WalletConnect, etc.)
+4. Aprueba la solicitud de conexión
+5. Elige tu red:
+   - **Testnet** - Para pruebas y desarrollo
+   - **Mainnet** - Para uso en producción
+
+Una vez conectado, tu dirección de wallet se mostrará en el header.
+
+## Paso 2: Crear tu Bóveda Personal
+
+Tu bóveda es tu almacenamiento seguro para credenciales. Cada dirección de wallet tiene su propia bóveda aislada.
+
+1. Navega a la sección **Dashboard** o **Vault**
+2. Si aún no tienes una bóveda, verás una opción para crear una
+3. Haz clic en **Create Vault** o **Initialize Vault**
+4. Firma la transacción con tu wallet
+5. Tu bóveda ahora está lista para almacenar credenciales
+
+La creación de la bóveda es una operación única por dirección de wallet.
+
+## Paso 3: Autorizar Emisores
+
+Antes de poder recibir credenciales, necesitas autorizar wallets que puedan emitir credenciales a tu bóveda.
+
+1. Ve a la sección **Authorize** en el sidebar
+2. Ingresa la dirección de wallet del emisor que quieres autorizar
+3. Haz clic en **Authorize Issuer**
+4. Firma la transacción con tu wallet
+5. El emisor autorizado aparecerá en tu lista de emisores autorizados
+
+**Nota:** Solo los emisores autorizados pueden crear credenciales en tu bóveda. Esto te da control sobre quién puede emitir credenciales para ti.
+
+## Paso 4: Emitir Credenciales
+
+Una vez que tengas una bóveda y emisores autorizados, puedes comenzar a emitir credenciales.
+
+1. Navega a la sección **Issue**
+2. Completa el formulario de credencial:
+   - **Credential ID** - Identificador único
+   - **Credential Data** - La información real de la credencial (formato JSON)
+   - **Owner** - La dirección de wallet que recibirá la credencial
+   - **Issuer DID** (opcional) - Tu DID de emisor
+3. Haz clic en **Issue Credential**
+4. Firma la transacción con tu wallet
+5. La credencial se almacenará en la bóveda del propietario y se marcará como válida
+
+La credencial ahora está on-chain y puede ser verificada por cualquiera.
+
+## Siguientes pasos
+
+Después de completar la configuración inicial:
+
+- **Ver Credenciales** - Ve a la sección **Vault** o **Credentials** para ver todas tus credenciales
+- **Compartir Credenciales** - Usa la función de compartir para crear enlaces compartibles con pruebas ZK
+- **Gestionar API Keys** - Crea API keys para acceso programático en la sección **API Keys**
+- **Explorar Tutoriales** - Revisa la sección **Tutorials** para guías paso a paso
+
+Para más información sobre funcionalidades específicas, consulta la guía de [Funcionalidades del dApp](#dapp-features).
+    `,
+  },
+  "dapp-features": {
+    slug: "dapp-features",
+    title: "Funcionalidades",
+    section: "dApp",
+    tocItems: [
+      "Emitir Credenciales",
+      "Gestión de Bóveda",
+      "Compartir Credenciales",
+      "Autorizar Emisores",
+      "Gestión de API Keys",
+      "Pruebas de Conocimiento Cero",
+    ],
+    content: `
+# Funcionalidades del dApp
+
+Vista detallada de todas las funcionalidades disponibles en el dApp de ACTA.
+
+## Emitir Credenciales
+
+Crea y emite credenciales verificables a cualquier dirección de wallet Stellar.
+
+### Cómo Emitir
+
+1. Navega a **Issue** en el sidebar
+2. Completa el formulario de credencial:
+   - **Credential ID**: Identificador único para la credencial
+   - **Credential Data**: Datos JSON que contienen la información de la credencial
+   - **Owner**: Dirección de wallet Stellar (G...) que recibirá la credencial
+   - **Issuer DID** (opcional): Tu identificador DID
+3. Haz clic en **Issue Credential**
+4. Firma la transacción
+
+La credencial se:
+- Almacena automáticamente en la bóveda del propietario
+- Marca como válida on-chain
+- Hace disponible para verificación
+
+## Gestión de Bóveda
+
+Tu bóveda es tu almacenamiento personal de credenciales. Cada wallet tiene una bóveda aislada.
+
+### Ver Credenciales
+
+1. Ve a la sección **Vault** o **Credentials**
+2. Ve todas las credenciales almacenadas en tu bóveda
+3. Usa búsqueda y filtros para encontrar credenciales específicas
+4. Haz clic en una credencial para ver detalles
+
+### Acciones de Credenciales
+
+- **Ver Detalles** - Ver información completa de la credencial
+- **Compartir** - Crear un enlace compartible con divulgación selectiva de campos
+- **Revocar** - Revocar una credencial si es necesario
+- **Verificar** - Verificar el estado on-chain
+
+## Compartir Credenciales
+
+Comparte credenciales con pruebas de conocimiento cero que preservan la privacidad.
+
+### Flujo de Compartición
+
+1. Ve a tu **Vault** y selecciona una credencial
+2. Haz clic en el botón **Share**
+3. Elige qué campos revelar
+4. Selecciona un predicado ZK (opcional):
+   - Edad ≥ 18
+   - No expirado
+   - Estado es válido
+5. Haz clic en **Generate ZK Proof**
+6. Copia el enlace de compartir
+
+El enlace de compartir contiene:
+- Solo los campos seleccionados revelados
+- Prueba ZK para el predicado seleccionado
+- Señales públicas para verificación
+
+Los destinatarios pueden verificar la prueba sin ver tus datos privados.
+
+## Autorizar Emisores
+
+Controla quién puede emitir credenciales a tu bóveda.
+
+### Autorizar un Emisor
+
+1. Ve a la sección **Authorize**
+2. Ingresa la dirección de wallet del emisor
+3. Haz clic en **Authorize Issuer**
+4. Firma la transacción
+
+### Gestionar Emisores Autorizados
+
+- Ver todos los emisores autorizados
+- Revocar autorización si es necesario
+- Solo los emisores autorizados pueden crear credenciales en tu bóveda
+
+## Gestión de API Keys
+
+Crea y gestiona API keys para acceso programático a la API de ACTA.
+
+### Crear API Key
+
+1. Navega a la sección **API Keys**
+2. Elige la red (Testnet o Mainnet)
+3. Ingresa un nombre para tu API key (opcional)
+4. Haz clic en **Create API Key**
+5. **Guarda la key inmediatamente** - no se mostrará de nuevo
+
+Las API keys tienen:
+- **Rol estándar** - Acceso a endpoints públicos
+- **Expiración de 6 meses** - Las keys expiran después de 6 meses
+- **Específicas de red** - Keys separadas para testnet y mainnet
+
+### Usar API Keys
+
+Usa tu API key en solicitudes a la API:
+
+\`\`\`
+X-ACTA-Key: tu_api_key_aqui
+\`\`\`
+
+Consulta la [Referencia API](#api-overview) para todos los endpoints disponibles.
+
+## Pruebas de Conocimiento Cero
+
+El dApp soporta compartir credenciales con pruebas de conocimiento cero para verificación que preserva la privacidad. Consulta la sección [Pruebas de Conocimiento Cero](#zk-overview) para información detallada sobre circuitos ZK, predicados y verificación.
+    `,
+  },
+  // Sección de Pruebas de Conocimiento Cero
+  "zk-overview": {
+    slug: "zk-overview",
+    title: "Resumen",
+    section: "Pruebas de Conocimiento Cero",
+    tocItems: [
+      "¿Qué son las Pruebas de Conocimiento Cero?",
+      "Cómo Funcionan las Pruebas ZK en ACTA",
+      "Beneficios Clave",
+      "Arquitectura",
+    ],
+    content: `
+# Resumen de Pruebas de Conocimiento Cero
+
+ACTA soporta pruebas de conocimiento cero (ZK) que te permiten probar predicados de credenciales sin revelar datos privados. Esto permite compartir y verificar credenciales preservando la privacidad.
+
+## ¿Qué son las Pruebas de Conocimiento Cero?
+
+Las pruebas de conocimiento cero son protocolos criptográficos que permiten que una parte (el probador) pruebe a otra parte (el verificador) que una declaración es verdadera sin revelar ninguna información más allá de la validez de la declaración misma.
+
+En el contexto de ACTA:
+- **Probador**: El titular de la credencial que quiere probar algo sobre su credencial
+- **Verificador**: La parte que necesita verificar la prueba (ej: un servicio que requiere verificación de edad)
+- **Declaración**: Un predicado sobre la credencial (ej: "edad ≥ 18", "no expirado", "estado es válido")
+
+## Cómo Funcionan las Pruebas ZK en ACTA
+
+1. **Titular de la Credencial** selecciona qué campos revelar y elige un predicado a probar
+2. **Generación de Prueba** ocurre del lado del cliente usando circuitos Noir y bb.js
+3. **Enlace de Compartir** se crea conteniendo los campos revelados y la prueba ZK
+4. **Verificación** ocurre on-chain vía contratos inteligentes de Soroban (Protocolo 25)
+
+### Generación vs Verificación
+
+- **Generación**: Del lado del cliente en el navegador usando Noir y bb.js
+- **Verificación**: On-chain vía contrato verificador ZK de Soroban
+- **Protección contra Reutilización**: Usa nullifiers para prevenir reutilización de pruebas
+
+## Beneficios Clave
+
+### Privacidad
+
+- Solo los campos seleccionados se revelan a los verificadores
+- Los datos privados (como edad exacta o fecha de expiración) permanecen ocultos
+- La divulgación selectiva te da control sobre qué información compartir
+
+### Seguridad
+
+- Las pruebas criptográficas son matemáticamente verificables
+- No es necesario confiar en un tercero
+- La verificación on-chain asegura la integridad de la prueba
+- Los nullifiers previenen ataques de reutilización
+
+### Flexibilidad
+
+- Múltiples tipos de predicados disponibles
+- Se puede combinar con divulgación selectiva de campos
+- Funciona con cualquier estructura de credencial
+
+## Arquitectura
+
+### Componentes
+
+1. **Circuitos Noir** - Definen la lógica para cada predicado
+   - Escritos en lenguaje Noir
+   - Compilados a ACIR (Abstract Circuit Intermediate Representation)
+   - Servidos como archivos JSON desde el dApp
+
+2. **Generación de Prueba** - Del lado del cliente usando:
+   - \`@noir-lang/noir_js\` - Bindings de JavaScript para Noir
+   - \`@aztec/bb.js\` - Backend de Barretenberg para generación de pruebas
+
+3. **Verificación de Prueba** - On-chain vía:
+   - Contrato verificador ZK de Soroban
+   - Soporte del Protocolo 25 para verificación ZK
+   - Claves de verificación (vk) almacenadas en el contrato
+
+### Flujo
+
+\`\`\`
+Titular de Credencial → Seleccionar Campos → Elegir Predicado → Generar Prueba (Cliente) → Enlace de Compartir
+                                                                                                      ↓
+Verificador ← Verificar Prueba (On-chain) ← Recibir Enlace de Compartir ← Titular de Credencial
+\`\`\`
+
+Consulta la sección [Circuitos](#zk-circuits) para información detallada sobre los predicados disponibles y su implementación.
+    `,
+  },
+  "zk-circuits": {
+    slug: "zk-circuits",
+    title: "Circuitos",
+    section: "Pruebas de Conocimiento Cero",
+    tocItems: [
+      "Edad ≥ 18 (isAdult)",
+      "No Expirado (notExpired)",
+      "Estado es Válido (isValid)",
+      "Estructura del Circuito",
+      "Artefactos ACIR",
+    ],
+    content: `
+# Circuitos ZK
+
+ACTA usa circuitos Noir para definir predicados de pruebas ZK. Cada circuito se compila a ACIR (Abstract Circuit Intermediate Representation) y se usa para generación y verificación de pruebas.
+
+## Edad ≥ 18 (isAdult)
+
+Prueba que una persona tiene al menos 18 años sin revelar su edad exacta.
+
+### Código del Circuito
+
+\`\`\`rust
+fn main(age: u8) {
+    assert(age > 18);
+}
+\`\`\`
+
+### Entradas
+
+- **Entrada Privada**: \`age: u8\` - La edad de la persona (no revelada)
+
+### Salida
+
+- **Salida Pública**: \`bool\` → \`true\` si \`age >= 18\`, de lo contrario el circuito falla
+
+### Cómo Funciona
+
+1. Extraer fecha de nacimiento de la credencial
+2. Calcular edad desde fecha de nacimiento hasta fecha actual
+3. Pasar edad al circuito como entrada privada
+4. El circuito asevera \`age > 18\`
+5. Generar prueba sin revelar el valor real de la edad
+
+### Casos de Uso
+
+- Verificación de edad para servicios con restricción de edad
+- Cumplimiento con requisitos legales de edad
+- Verificaciones de edad que preservan la privacidad
+
+### Artefacto ACIR
+
+\`\`\`
+noir_workshop.json
+\`\`\`
+
+## No Expirado (notExpired)
+
+Prueba que una credencial no ha expirado sin revelar la fecha de expiración.
+
+### Código del Circuito
+
+\`\`\`rust
+fn main(expiry_ts: u64, now_ts: u64) {
+    assert(expiry_ts > now_ts);
+}
+\`\`\`
+
+### Entradas
+
+- **Entradas Privadas**: 
+  - \`expiry_ts: u64\` - Timestamp de expiración en milisegundos (no revelado)
+  - \`now_ts: u64\` - Timestamp actual en milisegundos (calculado off-chain)
+
+### Salida
+
+- **Salida Pública**: \`bool\` → \`true\` si \`expiry_ts > now_ts\`, de lo contrario el circuito falla
+
+### Cómo Funciona
+
+1. Extraer fecha de expiración de la credencial
+2. Obtener timestamp actual (calculado off-chain)
+3. Pasar ambos timestamps al circuito como entradas privadas
+4. El circuito asevera \`expiry_ts > now_ts\`
+5. Generar prueba sin revelar la fecha de expiración real
+
+### Casos de Uso
+
+- Verificar que la credencial sigue siendo válida
+- Verificar si la credencial no ha expirado
+- Control de acceso basado en tiempo
+
+### Artefacto ACIR
+
+\`\`\`
+noir_not_expired.json
+\`\`\`
+
+## Estado es Válido (isValid)
+
+Prueba que una credencial tiene un estado válido sin revelar otros detalles de estado.
+
+### Código del Circuito
+
+\`\`\`rust
+fn main(valid: Field) {
+    assert(valid == 1);
+}
+\`\`\`
+
+### Entradas
+
+- **Entrada Privada**: \`valid: Field\` - Bandera de estado (1 para válido, 0 para inválido)
+
+### Salida
+
+- **Salida Pública**: \`bool\` → \`true\` si \`valid == 1\`, de lo contrario el circuito falla
+
+### Cómo Funciona
+
+1. Extraer estado de la credencial
+2. Convertir estado a bandera: \`status === 'valid' ? 1 : 0\`
+3. Pasar bandera al circuito como entrada privada
+4. El circuito asevera \`valid == 1\`
+5. Generar prueba sin revelar otra información de estado
+
+### Casos de Uso
+
+- Verificar que la credencial no está revocada
+- Verificar estado de la credencial
+- Autorización basada en estado
+
+### Artefacto ACIR
+
+\`\`\`
+noir_valid_status.json
+\`\`\`
+
+## Estructura del Circuito
+
+Todos los circuitos siguen una estructura similar:
+
+1. **Definición de Entradas** - Entradas privadas que no se revelarán
+2. **Lógica de Aseveración** - La condición a probar
+3. **Compilación** - Compilado a formato JSON ACIR
+4. **Despliegue** - Archivos ACIR servidos desde directorio \`public/zk/\`
+
+### Compilación
+
+Los circuitos se compilan usando \`nargo\`:
+
+\`\`\`bash
+nargo compile
+\`\`\`
+
+Esto genera el archivo JSON ACIR en el directorio \`target/\`.
+
+## Artefactos ACIR
+
+Los archivos ACIR (Abstract Circuit Intermediate Representation) son los circuitos compilados:
+
+- \`noir_workshop.json\` - Circuito de edad ≥ 18
+- \`noir_not_expired.json\` - Circuito de no expirado
+- \`noir_valid_status.json\` - Circuito de estado válido
+
+Estos archivos son:
+- Cargados por el dApp desde el directorio \`public/zk/\`
+- Usados para generación de pruebas en el navegador
+- Referenciados por el contrato verificador on-chain
+
+### Publicar Circuitos
+
+Para publicar un circuito para uso en el dApp:
+
+1. Compilar el circuito: \`nargo compile\`
+2. Copiar JSON ACIR a \`dApp-ACTA/public/zk/\`
+3. El dApp lo cargará automáticamente
+
+Consulta el [repositorio zk-test](https://github.com/ACTA-Team/zk-test) para el código fuente de los circuitos e instrucciones de compilación.
+    `,
+  },
+  "zk-generation": {
+    slug: "zk-generation",
+    title: "Generación de Pruebas",
+    section: "Pruebas de Conocimiento Cero",
+    tocItems: [
+      "Resumen",
+      "Proceso de Generación",
+      "Preparación de Entradas",
+      "Ejecución del Circuito",
+      "Artefactos de Prueba",
+      "Integración en dApp",
+    ],
+    content: `
+# Generación de Pruebas ZK
+
+Las pruebas ZK en ACTA se generan del lado del cliente en el navegador usando circuitos Noir y backend bb.js.
+
+## Resumen
+
+La generación de pruebas ocurre completamente en el navegador del usuario:
+- No se envían datos a servidores durante la generación
+- Las entradas privadas permanecen privadas
+- Las pruebas se generan usando bibliotecas criptográficas
+
+### Tecnologías
+
+- **Noir** - Lenguaje de circuitos y bindings de JavaScript (\`@noir-lang/noir_js\`)
+- **bb.js** - Backend de Barretenberg (\`@aztec/bb.js\`) para generación de pruebas
+- **ACIR** - Representación de circuito compilado cargada desde archivos JSON
+
+## Proceso de Generación
+
+### Paso 1: Seleccionar Campos y Predicado
+
+Al compartir una credencial en el dApp:
+
+1. **Seleccionar Campos a Revelar**
+   - Elige qué campos de la credencial deben ser visibles
+   - Otros campos permanecen privados
+
+2. **Elegir Predicado ZK**
+   - Selecciona de los predicados disponibles:
+     - \`isAdult\` - Edad ≥ 18
+     - \`notExpired\` - Credencial no expirada
+     - \`isValid\` - Estado es válido
+
+### Paso 2: Preparación de Entradas
+
+El dApp extrae y prepara entradas basándose en el predicado seleccionado:
+
+#### Para \`isAdult\`:
+
+\`\`\`typescript
+// Extraer fecha de nacimiento de la credencial
+const dob = credential.birthDate;
+const ageYears = calculateAge(dob);
+
+// Entrada: { age: ageYears }
+\`\`\`
+
+#### Para \`notExpired\`:
+
+\`\`\`typescript
+// Extraer timestamp de expiración y actual
+const expiry_ts = Date.parse(credential.expirationDate);
+const now_ts = Date.now();
+
+// Entrada: { expiry_ts, now_ts }
+\`\`\`
+
+#### Para \`isValid\`:
+
+\`\`\`typescript
+// Convertir estado a bandera
+const valid = credential.status === 'valid' ? '1' : '0';
+
+// Entrada: { valid }
+\`\`\`
+
+### Paso 3: Ejecución del Circuito
+
+1. **Cargar ACIR** - Obtener el JSON del circuito desde \`public/zk/\`
+2. **Inicializar Noir** - Crear instancia de Noir con ACIR
+3. **Inicializar Backend** - Crear backend bb.js
+4. **Ejecutar Circuito** - Ejecutar circuito con entradas privadas
+5. **Generar Witness** - Crear witness desde resultado de ejecución
+
+\`\`\`typescript
+const { Noir } = await import('@noir-lang/noir_js');
+const { UltraHonkBackend } = await import('@aztec/bb.js');
+
+// Cargar ACIR
+const acir = await fetch('/zk/noir_workshop.json').then(r => r.json());
+
+// Inicializar
+const noir = new Noir(acir);
+const backend = new UltraHonkBackend(acir.bytecode);
+
+// Ejecutar
+const execRes = await noir.execute({ age: ageYears });
+
+// Generar prueba
+const proofData = await backend.generateProof(execRes.witness);
+\`\`\`
+
+### Paso 4: Artefactos de Prueba
+
+La generación produce:
+
+- **Prueba** - La prueba criptográfica (codificada en base64)
+- **Entradas Públicas** - Señales públicas que son parte de la prueba
+- **Declaración** - Metadatos sobre el predicado y campos revelados
+
+\`\`\`typescript
+{
+  proof: string,           // Prueba codificada en base64
+  publicInputs: string[],  // Señales públicas
+  statement: {
+    kind: 'isAdult' | 'notExpired' | 'isValid',
+    selectedKeys: string[],
+    // ... parámetros específicos del predicado
+  }
+}
+\`\`\`
+
+## Artefactos de Prueba
+
+### Estructura de la Prueba
+
+La prueba es un objeto JSON que contiene:
+
+\`\`\`json
+{
+  "publicInputs": ["..."],
+  "proof": "base64_encoded_proof_bytes"
+}
+\`\`\`
+
+### Entradas Públicas
+
+Las entradas públicas son valores que son parte de la prueba pero no revelan datos privados:
+- Para \`isAdult\`: Vacío (la edad es privada)
+- Para \`notExpired\`: Vacío (los timestamps son privados)
+- Para \`isValid\`: Vacío (la bandera de estado es privada)
+
+### Metadatos de la Declaración
+
+La declaración contiene:
+- \`kind\` - Tipo de predicado
+- \`selectedKeys\` - Campos que fueron revelados
+- Parámetros específicos del predicado (para referencia, no parte de la prueba)
+
+## Integración en dApp
+
+La generación de pruebas está integrada en el flujo de compartir del dApp:
+
+1. Usuario selecciona credencial a compartir
+2. Elige campos a revelar
+3. Selecciona predicado ZK
+4. Haz clic en **Generate ZK Proof**
+5. La prueba se genera del lado del cliente
+6. Se crea enlace de compartir con la prueba incluida
+
+### Ubicación del Código
+
+- Lógica de generación: \`dApp-ACTA/src/lib/zk/generate.ts\`
+- Integración: \`dApp-ACTA/src/components/modules/credentials/hooks/useShareCredential.ts\`
+
+### Notas de Seguridad
+
+- Toda la generación ocurre del lado del cliente
+- Las entradas privadas nunca salen del navegador
+- Las pruebas son criptográficamente seguras
+- No se requiere procesamiento del lado del servidor
+    `,
+  },
+  "zk-verification": {
+    slug: "zk-verification",
+    title: "Verificación de Pruebas",
+    section: "Pruebas de Conocimiento Cero",
+    tocItems: [
+      "Resumen",
+      "Verificación On-Chain",
+      "Proceso de Verificación",
+      "Nullifiers y Protección contra Reutilización",
+      "Resultado de Verificación",
+      "Endpoint API",
+    ],
+    content: `
+# Verificación de Pruebas ZK
+
+Las pruebas ZK en ACTA se verifican on-chain vía contratos inteligentes de Soroban usando soporte de verificación ZK del Protocolo 25.
+
+## Resumen
+
+A diferencia de la generación de pruebas (que es del lado del cliente), la verificación ocurre on-chain:
+- **Ubicación**: Contrato verificador ZK de Soroban
+- **Método**: Verificación ZK del Protocolo 25
+- **Seguridad**: Verificación criptográfica con protección contra reutilización
+- **Confianza**: No es necesario confiar en terceros
+
+### ¿Por Qué Verificación On-Chain?
+
+- **Inmutabilidad** - Los resultados de verificación se registran permanentemente
+- **Sin Confianza** - No es necesario confiar en servidores de verificación
+- **Transparencia** - La lógica de verificación está on-chain
+- **Protección contra Reutilización** - Los nullifiers previenen reutilización de pruebas
+
+## Verificación On-Chain
+
+La verificación es realizada por el contrato verificador ZK de Soroban:
+
+1. **El Contrato Recibe**:
+   - ID del Circuito (identifica qué circuito usar)
+   - Prueba (la prueba criptográfica)
+   - Entradas públicas (señales públicas)
+   - Nullifier (para protección contra reutilización)
+
+2. **El Contrato Verifica**:
+   - Carga clave de verificación (vk) para el circuito
+   - Verifica la prueba criptográficamente
+   - Verifica que el nullifier no se ha usado antes
+   - Registra resultado de verificación on-chain
+
+3. **Resultado**:
+   - Hash de transacción
+   - Número de ledger
+   - Estado de verificación (verificado/no verificado)
+
+## Proceso de Verificación
+
+### Paso 1: Preparar Payload de Verificación
+
+Desde el enlace de credencial compartida, extraer:
+
+\`\`\`typescript
+{
+  statement: {
+    kind: 'isAdult' | 'notExpired' | 'isValid',
+    // ... otros metadatos
+  },
+  proof: string,              // Prueba codificada en base64
+  publicSignals: string[],    // Entradas públicas
+  commitment: string,          // Compromiso de credencial
+  nonce: string,              // Nonce para nullifier
+  credentialId: string,       // Identificador de credencial
+  verifierContractId?: string // Sobrescritura opcional de contrato
+}
+\`\`\`
+
+### Paso 2: Generar Nullifier
+
+El nullifier previene ataques de reutilización haciendo cada prueba única:
+
+\`\`\`typescript
+// Nullifier = hash(commitment + nonce + proof_hash)
+const nullifier = await generateNullifier({
+  commitment,
+  nonce,
+  proof
+});
+\`\`\`
+
+### Paso 3: Llamar API de Verificación
+
+Enviar solicitud de verificación a la API de ACTA:
+
+\`\`\`bash
+POST /contracts/zk-verifier/verify
+\`\`\`
+
+**Cuerpo de Solicitud:**
+
+\`\`\`json
+{
+  "circuitId": "isAdult",
+  "proof": "base64_proof",
+  "publicInputs": ["..."],
+  "nullifier": "hex_nullifier",
+  "verifierContractId": "C..."
+}
+\`\`\`
+
+### Paso 4: Verificación On-Chain
+
+La API:
+1. Invoca el contrato verificador ZK de Soroban
+2. El contrato verifica la prueba usando la clave de verificación almacenada
+3. Verifica que el nullifier no se ha usado
+4. Registra verificación on-chain
+5. Devuelve hash de transacción y resultado
+
+### Paso 5: Resultado de Verificación
+
+**Respuesta:**
+
+\`\`\`json
+{
+  "verified": true,
+  "txHash": "abc123...",
+  "ledger": 12345,
+  "network": "testnet"
+}
+\`\`\`
+
+## Nullifiers y Protección contra Reutilización
+
+Los nullifiers aseguran que cada prueba solo se puede verificar una vez, previniendo ataques de reutilización.
+
+### Cómo Funcionan los Nullifiers
+
+1. **Generar Nullifier**:
+   \`\`\`
+   nullifier = SHA-256(commitment + nonce + proof_hash)
+   \`\`\`
+
+2. **Verificar On-Chain**:
+   - El contrato mantiene un conjunto de nullifiers usados
+   - Si el nullifier existe → la prueba ya fue usada → rechazar
+   - Si el nullifier no existe → agregar al conjunto → verificar prueba
+
+3. **Unicidad**:
+   - Cada instancia de prueba tiene commitment + nonce únicos
+   - Incluso misma credencial + predicado = nullifier diferente
+   - Previene reutilización de pruebas
+
+### Beneficios
+
+- **Protección contra Reutilización** - La misma prueba no se puede verificar dos veces
+- **Privacidad** - El nullifier no revela contenido de la credencial
+- **Eficiencia** - Verificación simple de hash on-chain
+
+## Resultado de Verificación
+
+### Respuesta de Éxito
+
+\`\`\`json
+{
+  "verified": true,
+  "txHash": "transaction_hash",
+  "ledger": 12345,
+  "network": "testnet",
+  "result": { ... }
+}
+\`\`\`
+
+### Respuesta de Falla
+
+\`\`\`json
+{
+  "verified": false,
+  "error": "error_message",
+  "network": "testnet"
+}
+\`\`\`
+
+### Errores Comunes
+
+- \`Invalid payload\` - Faltan campos requeridos
+- \`No proof to verify\` - El tipo de predicado es 'none'
+- \`Missing commitment\` - No se proporcionó commitment
+- \`Missing nonce\` - No se proporcionó nonce
+- \`Invalid proof format\` - La estructura de la prueba es inválida
+- \`Proof verification failed\` - La verificación criptográfica falló
+- \`Nullifier already used\` - La prueba ya fue verificada
+
+## Endpoint API
+
+### POST /contracts/zk-verifier/verify
+
+Verifica una prueba ZK on-chain vía contrato de Soroban.
+
+**Headers:**
+
+\`\`\`
+X-ACTA-Key: tu_api_key_aqui
+\`\`\`
+
+**Cuerpo de Solicitud:**
+
+\`\`\`json
+{
+  "circuitId": "isAdult",
+  "proof": "base64_encoded_proof",
+  "publicInputs": ["public_signal_1", "public_signal_2"],
+  "nullifier": "hex_nullifier_string",
+  "verifierContractId": "C..."
+}
+\`\`\`
+
+**Respuesta:**
+
+\`\`\`json
+{
+  "verified": true,
+  "txHash": "abc123...",
+  "ledger": 12345,
+  "result": {},
+  "network": "testnet"
+}
+\`\`\`
+
+**Ejemplo:**
+
+\`\`\`bash
+curl -X POST https://acta.build/api/testnet/contracts/zk-verifier/verify \\
+  -H "X-ACTA-Key: tu_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "circuitId": "isAdult",
+    "proof": "...",
+    "publicInputs": [],
+    "nullifier": "..."
+  }'
+\`\`\`
+
+### Parámetros
+
+- **circuitId** (requerido): Identificador del circuito (\`"isAdult"\`, \`"notExpired"\`, \`"isValid"\`)
+- **proof** (requerido): Prueba codificada en base64
+- **publicInputs** (requerido): Array de cadenas de entrada pública
+- **nullifier** (requerido): Nullifier codificado en hex para protección contra reutilización
+- **verifierContractId** (opcional): Sobrescribir ID del contrato verificador
+    `,
+  },
 };
 
 // Combined export for API route (uses English by default)
@@ -3439,5 +5432,16 @@ export const navigationItemsEs = {
     { slug: "api-vault-read", title: "Operaciones de Bóveda (Lectura)" },
     { slug: "api-vault-write", title: "Operaciones de Bóveda (Escritura)" },
     { slug: "api-credentials", title: "Operaciones de Credenciales" },
+  ],
+  dapp: [
+    { slug: "dapp-overview", title: "Resumen" },
+    { slug: "dapp-getting-started", title: "Primeros Pasos" },
+    { slug: "dapp-features", title: "Funcionalidades" },
+  ],
+  "zk-proofs": [
+    { slug: "zk-overview", title: "Resumen" },
+    { slug: "zk-circuits", title: "Circuitos" },
+    { slug: "zk-generation", title: "Generación de Pruebas" },
+    { slug: "zk-verification", title: "Verificación de Pruebas" },
   ],
 };

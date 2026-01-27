@@ -12,6 +12,7 @@ import {
   Globe,
   Link,
   ChevronRight,
+  ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navigationItemsEn, navigationItemsEs } from "@/lib/docs-data";
@@ -38,6 +39,13 @@ const iconMap: Record<string, React.ReactNode> = {
   "api-vault-read": <Database className="w-3.5 h-3.5" />,
   "api-vault-write": <Database className="w-3.5 h-3.5" />,
   "api-credentials": <Code className="w-3.5 h-3.5" />,
+  "dapp-overview": <BookOpen className="w-3.5 h-3.5" />,
+  "dapp-getting-started": <Zap className="w-3.5 h-3.5" />,
+  "dapp-features": <Layers className="w-3.5 h-3.5" />,
+  "zk-overview": <ShieldCheck className="w-3.5 h-3.5" />,
+  "zk-circuits": <Code className="w-3.5 h-3.5" />,
+  "zk-generation": <Zap className="w-3.5 h-3.5" />,
+  "zk-verification": <ShieldCheck className="w-3.5 h-3.5" />,
 };
 
 interface CollapsibleSectionProps {
@@ -62,7 +70,7 @@ function CollapsibleSection({
         <span className="truncate">{title}</span>
         <ChevronRight
           className={cn(
-            "w-3 h-3 transition-transform duration-150 flex-shrink-0 ml-2",
+            "w-3 h-3 transition-transform duration-150 shrink-0 ml-2",
             isExpanded && "rotate-90"
           )}
         />
@@ -99,13 +107,15 @@ function NavItem({ item, isActive, onClick }: NavItemProps) {
     >
       <span
         className={cn(
-          "transition-colors flex-shrink-0 mt-0.5",
+          "transition-colors shrink-0 mt-0.5",
           isActive ? "text-sidebar-primary" : "text-muted-foreground/50"
         )}
       >
         {iconMap[item.slug]}
       </span>
-      <span className="text-left break-words leading-relaxed">{item.title}</span>
+      <span className="text-left wrap-break-word leading-relaxed">
+        {item.title}
+      </span>
     </button>
   );
 }
@@ -119,6 +129,8 @@ export function Sidebar({ currentSlug, onNavigate }: SidebarProps) {
     welcome: true,
     sdk: true,
     "api-reference": true,
+    dapp: true,
+    "zk-proofs": true,
   });
 
   const toggleSection = (section: string) => {
@@ -129,7 +141,7 @@ export function Sidebar({ currentSlug, onNavigate }: SidebarProps) {
   };
 
   return (
-    <aside className="w-60 h-screen bg-sidebar flex flex-col flex-shrink-0">
+    <aside className="w-60 h-screen bg-sidebar flex flex-col shrink-0">
       {/* Logo */}
       <div className="px-4 py-5">
         <div className="flex items-center gap-2.5">
@@ -184,6 +196,36 @@ export function Sidebar({ currentSlug, onNavigate }: SidebarProps) {
           onToggle={() => toggleSection("api-reference")}
         >
           {nav["api-reference"].map(item => (
+            <NavItem
+              key={item.slug}
+              item={item}
+              isActive={currentSlug === item.slug}
+              onClick={() => onNavigate(item.slug)}
+            />
+          ))}
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          title={t.dApp}
+          isExpanded={expandedSections.dapp}
+          onToggle={() => toggleSection("dapp")}
+        >
+          {nav.dapp.map(item => (
+            <NavItem
+              key={item.slug}
+              item={item}
+              isActive={currentSlug === item.slug}
+              onClick={() => onNavigate(item.slug)}
+            />
+          ))}
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          title={t.zkProofs}
+          isExpanded={expandedSections["zk-proofs"]}
+          onToggle={() => toggleSection("zk-proofs")}
+        >
+          {nav["zk-proofs"].map(item => (
             <NavItem
               key={item.slug}
               item={item}

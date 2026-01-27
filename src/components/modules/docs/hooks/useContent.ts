@@ -18,6 +18,8 @@ export function useContent({ page }: UseContentProps) {
         return t.reactSdk;
       case "API Reference":
         return t.apiReference;
+      case "dApp":
+        return t.dApp;
       default:
         return page.section;
     }

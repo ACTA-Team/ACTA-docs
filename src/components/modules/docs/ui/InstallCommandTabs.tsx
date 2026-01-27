@@ -22,7 +22,7 @@ export function InstallCommandTabs({ packageName }: InstallCommandTabsProps) {
   const [copied, setCopied] = useState(false);
   const { t } = useI18n();
 
-  const activeManager = packageManagers.find((pm) => pm.name === activeTab);
+  const activeManager = packageManagers.find(pm => pm.name === activeTab);
   const command = activeManager?.command(packageName) || "";
 
   const handleCopy = async () => {
@@ -41,7 +41,7 @@ export function InstallCommandTabs({ packageName }: InstallCommandTabsProps) {
         {/* Tabs */}
         <div className="flex items-center justify-between bg-[#252526] border-b border-border">
           <div className="flex">
-            {packageManagers.map((pm) => (
+            {packageManagers.map(pm => (
               <button
                 key={pm.name}
                 onClick={() => {

@@ -17,6 +17,7 @@ export type NavigationItems = {
   welcome: NavigationItem[];
   sdk: NavigationItem[];
   "api-reference": NavigationItem[];
+  dapp: NavigationItem[];
 };
 
 export type FeedbackType = "up" | "neutral" | "down" | null;
