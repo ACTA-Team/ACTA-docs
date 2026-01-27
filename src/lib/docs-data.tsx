@@ -26,10 +26,13 @@ ACTA is **Verifiable Credentials Infrastructure** for **Stellar blockchain**. Bu
       | **Architecture** | System components, contracts, and data flow |
       | **Getting Started** | Quick integration guide for API and SDK |
       | **React SDK** | Hooks for credential and vault operations |
+      | **API Reference** | Complete documentation of public API endpoints |
+      | **Links** | Official links, resources, and community |
+      | **Credential Flow** | Understanding issuance, verification, and storage flows |
 
 ## What you can build
 
-- Issue and verify **W3C Verifiable Credentials 2.0** on-chain
+- Issue and verify **[W3C Verifiable Credentials 2.0](https://www.w3.org/TR/vc-data-model-2.0/)** on-chain
 - Store encrypted credentials in **user-controlled vaults**
 - Add **programmable verification logic** to your app
 - Support **revocation**, status checks, and credential transfers
@@ -193,7 +196,12 @@ See API Developer Quickstart for detailed steps.
 
 For React/Next.js applications:
 
-1. **Install SDK**: \`npm install @acta/react-sdk\`
+1. **Install SDK**:
+
+\`\`\`bash
+npm install @acta/react-sdk
+\`\`\`
+
 2. **Configure Provider**: Wrap app with \`ActaProvider\`
 3. **Use Hooks**: \`useCreateCredential\`, \`useVaultApi\`, etc.
 
@@ -1727,10 +1735,13 @@ ACTA es **infraestructura de credenciales verificables** para la **blockchain St
       | **Arquitectura** | Componentes del sistema, contratos y flujo de datos |
       | **Primeros Pasos** | Guía rápida de integración con API y SDK |
       | **React SDK** | Hooks para operaciones de credenciales y bóvedas |
+      | **Referencia API** | Documentación completa de endpoints públicos de la API |
+      | **Enlaces** | Enlaces oficiales, recursos y comunidad |
+      | **Flujo de Credenciales** | Entender los flujos de emisión, verificación y almacenamiento |
 
 ## Qué puedes construir
 
-- Emitir y verificar **Credenciales Verificables W3C 2.0** on-chain  
+- Emitir y verificar **[Credenciales Verificables W3C 2.0](https://www.w3.org/TR/vc-data-model-2.0/)** on-chain  
 - Almacenar credenciales cifradas en **bóvedas controladas por el usuario**  
 - Añadir **lógica de verificación programable** a tu app  
 - Soportar **revocación**, chequeo de estado y transferencia de credenciales  
@@ -1894,7 +1905,12 @@ Consulta el Developer Quickstart de API para pasos detallados.
 
 Para aplicaciones React/Next.js:
 
-1. **Instalar SDK**: \`npm install @acta/react-sdk\`  
+1. **Instalar SDK**:
+
+\`\`\`bash
+npm install @acta/react-sdk
+\`\`\`
+
 2. **Configurar provider**: Envuelve tu app con \`ActaConfig\`  
 3. **Usar hooks**: \`useCreateCredential\`, \`useVaultApi\`, etc.  
 

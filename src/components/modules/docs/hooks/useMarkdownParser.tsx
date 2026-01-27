@@ -1,6 +1,6 @@
 import React from "react";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { CodeBlock } from "../ui/CodeBlock";
+import { InstallCommandTabs } from "../ui/InstallCommandTabs";
 import { slugifyHeading } from "@/lib/utils";
 
 // Map topic names to slugs
@@ -8,9 +8,15 @@ const topicToSlug: Record<string, string> = {
   Architecture: "architecture",
   "Getting Started": "getting-started",
   "React SDK": "sdk-overview",
+  "API Reference": "api-overview",
+  Links: "links",
+  "Credential Flow": "architecture",
   Arquitectura: "architecture",
   "Primeros Pasos": "getting-started",
   "React SDK": "sdk-overview",
+  "Referencia API": "api-overview",
+  Enlaces: "links",
+  "Flujo de Credenciales": "architecture",
 };
 
 export function useMarkdownParser(
@@ -49,19 +55,26 @@ export function useMarkdownParser(
           continue;
         }
 
-        // Check for bold with **
-        const boldMatch = remaining.match(/^\*\*([^*]+)\*\*/);
-        if (boldMatch) {
+        // Check for bold link **[text](url)**
+        const boldLinkMatch = remaining.match(/^\*\*\[([^\]]+)\]\(([^)]+)\)\*\*/);
+        if (boldLinkMatch) {
           parts.push(
             <strong key={key++} className="font-semibold text-foreground">
-              {boldMatch[1]}
+              <a
+                href={boldLinkMatch[2]}
+                className="text-primary hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {boldLinkMatch[1]}
+              </a>
             </strong>
           );
-          remaining = remaining.slice(boldMatch[0].length);
+          remaining = remaining.slice(boldLinkMatch[0].length);
           continue;
         }
 
-        // Check for links [text](url)
+        // Check for links [text](url) - before bold to avoid conflicts
         const linkMatch = remaining.match(/^\[([^\]]+)\]\(([^)]+)\)/);
         if (linkMatch) {
           parts.push(
@@ -76,6 +89,18 @@ export function useMarkdownParser(
             </a>
           );
           remaining = remaining.slice(linkMatch[0].length);
+          continue;
+        }
+
+        // Check for bold with **
+        const boldMatch = remaining.match(/^\*\*([^*]+)\*\*/);
+        if (boldMatch) {
+          parts.push(
+            <strong key={key++} className="font-semibold text-foreground">
+              {boldMatch[1]}
+            </strong>
+          );
+          remaining = remaining.slice(boldMatch[0].length);
           continue;
         }
 
@@ -206,36 +231,19 @@ export function useMarkdownParser(
           const codeContent = codeBlock.join("\n");
           const language = codeLanguage || "text";
 
-          elements.push(
-            <div key={elements.length} className="mb-6">
-              <div className="bg-[#1e1e1e] border border-border rounded-lg overflow-hidden">
-                {codeLanguage && (
-                  <div className="px-4 py-2 bg-[#252526] border-b border-border text-xs text-muted-foreground font-mono">
-                    {codeLanguage}
-                  </div>
-                )}
-                <SyntaxHighlighter
-                  language={language}
-                  style={vscDarkPlus}
-                  customStyle={{
-                    margin: 0,
-                    padding: "1rem",
-                    background: "#1e1e1e",
-                    fontSize: "0.875rem",
-                    lineHeight: "1.5",
-                  }}
-                  codeTagProps={{
-                    style: {
-                      fontFamily:
-                        "ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace",
-                    },
-                  }}
-                >
-                  {codeContent}
-                </SyntaxHighlighter>
-              </div>
-            </div>
-          );
+          // Check if it's an install command with package name
+          // Match: npm install package, yarn add package, pnpm add package
+          const installMatch = codeContent.trim().match(/^(npm|yarn|pnpm)\s+(install|add)\s+(.+)$/m);
+          if (installMatch && installMatch[3]) {
+            const packageName = installMatch[3].trim().replace(/['"]/g, '');
+            elements.push(
+              <InstallCommandTabs key={elements.length} packageName={packageName} />
+            );
+          } else {
+            elements.push(
+              <CodeBlock key={elements.length} code={codeContent} language={language} />
+            );
+          }
           codeBlock = [];
           inCodeBlock = false;
           codeLanguage = "";
