@@ -796,8 +796,17 @@ RESTful API for ACTA credential management on Stellar blockchain. All endpoints 
 
 ## Base URLs
 
-- **Testnet**: \`https://acta.build/api/testnet\`
-- **Mainnet**: \`https://acta.build/api/mainnet\`
+**Testnet:**
+
+\`\`\`
+https://acta.build/api/testnet
+\`\`\`
+
+**Mainnet:**
+
+\`\`\`
+https://acta.build/api/mainnet
+\`\`\`
 
 ## Authentication
 
@@ -2496,8 +2505,17 @@ API RESTful para la gestión de credenciales ACTA en la blockchain Stellar. Todo
 
 ## URLs base
 
-- **Testnet**: \`https://acta.build/api/testnet\`
-- **Mainnet**: \`https://acta.build/api/mainnet\`
+**Testnet:**
+
+\`\`\`
+https://acta.build/api/testnet
+\`\`\`
+
+**Mainnet:**
+
+\`\`\`
+https://acta.build/api/mainnet
+\`\`\`
 
 ## Autenticación
 
