@@ -54,7 +54,7 @@ const translations: Record<Locale, Translations> = {
     discord: "Discord",
     website: "Sitio Web",
     english: "Ingles",
-    spanish: "Espanol",
+    spanish: "Español",
     onThisPage: "En esta pagina",
     wasThisHelpful: "Te fue util?",
     copy: "Copiar",
