@@ -1,10 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Sidebar } from "@/components/modules/docs/sidebar"
-import { Header } from "@/components/modules/docs/header"
-import { Content, TableOfContents } from "@/components/modules/docs/content"
-import { AISearch } from "@/components/modules/docs/ai-search"
+import { Sidebar } from "@/layouts/sidebar/Sidebar"
+import { Header } from "@/layouts/header/Header"
+import { Content } from "@/components/modules/docs/ui/Content"
+import { TableOfContents } from "@/components/modules/docs/ui/TableOfContents"
+import { AISearch } from "@/components/modules/docs/ui/AISearch"
 import { I18nProvider, useI18n } from "@/lib/i18n"
 import { docsDataEn, docsDataEs } from "@/lib/docs-data"
 

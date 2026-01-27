@@ -1,88 +1,15 @@
 "use client"
 
-import { useState } from "react"
-import { Copy, ChevronDown, ThumbsUp, ThumbsDown, Minus, Check } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { MarkdownContent } from "@/components/modules/docs/markdown-content"
+import { ThumbsUp, ThumbsDown, Minus } from "lucide-react"
 import { slugifyHeading, cn } from "@/lib/utils"
-import { useI18n } from "@/lib/i18n"
-import type { DocPage } from "@/@types/docs"
-
-interface ContentProps {
-  page: DocPage
-}
-
-export function Content({ page }: ContentProps) {
-  const { t } = useI18n()
-  const [copied, setCopied] = useState(false)
-
-  // Map section keys from docs data to localized labels
-  const sectionLabel = (() => {
-    switch (page.section) {
-      case "Welcome":
-        return t.welcome
-      case "React SDK":
-        return t.reactSdk
-      default:
-        return page.section
-    }
-  })()
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(page.content)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch (err) {
-      console.error("Failed to copy:", err)
-    }
-  }
-
-  return (
-    <main className="flex-1 overflow-y-auto">
-      <div className="max-w-4xl mx-auto px-8 py-8">
-        {/* Breadcrumb & Actions */}
-        <div className="flex items-center justify-between mb-6">
-          <span className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
-            {sectionLabel}
-          </span>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="bg-secondary border-border text-foreground hover:bg-muted"
-            onClick={handleCopy}
-          >
-            {copied ? (
-              <>
-                <Check className="w-4 h-4 mr-2 text-green-500" />
-                {t.copied}
-              </>
-            ) : (
-              <>
-                <Copy className="w-4 h-4 mr-2" />
-                {t.copy}
-                <ChevronDown className="w-4 h-4 ml-2" />
-              </>
-            )}
-          </Button>
-        </div>
-
-        {/* Content */}
-        <div className="prose prose-invert max-w-none">
-          <MarkdownContent content={page.content} />
-        </div>
-      </div>
-    </main>
-  )
-}
+import { useTableOfContents } from "../hooks/useTableOfContents"
 
 interface TableOfContentsProps {
   items: string[]
 }
 
 export function TableOfContents({ items }: TableOfContentsProps) {
-  const { t } = useI18n()
-  const [feedback, setFeedback] = useState<"up" | "neutral" | "down" | null>(null)
+  const { feedback, setFeedback, t } = useTableOfContents()
 
   const baseBtn =
     "p-2 rounded-lg transition-colors text-muted-foreground hover:text-foreground"

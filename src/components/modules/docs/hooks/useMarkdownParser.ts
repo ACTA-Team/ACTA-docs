@@ -1,13 +1,7 @@
-"use client"
-
 import React from "react"
 import { slugifyHeading } from "@/lib/utils"
 
-interface MarkdownContentProps {
-  content: string
-}
-
-export function MarkdownContent({ content }: MarkdownContentProps) {
+export function useMarkdownParser(content: string) {
   const renderContent = (text: string) => {
     const lines = text.split('\n')
     const elements: React.ReactNode[] = []
@@ -311,5 +305,5 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
     return elements
   }
 
-  return <div className="prose-custom">{renderContent(content)}</div>
+  return renderContent(content)
 }
