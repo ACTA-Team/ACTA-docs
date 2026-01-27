@@ -1,4 +1,6 @@
 import React from "react";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { slugifyHeading } from "@/lib/utils";
 
 // Map topic names to slugs
@@ -201,19 +203,35 @@ export function useMarkdownParser(
         flushTable();
         if (inCodeBlock) {
           // End code block
+          const codeContent = codeBlock.join("\n");
+          const language = codeLanguage || "text";
+          
           elements.push(
             <div key={elements.length} className="mb-6">
-              <div className="bg-[#0d1117] border border-border rounded-lg overflow-hidden">
+              <div className="bg-[#1e1e1e] border border-border rounded-lg overflow-hidden">
                 {codeLanguage && (
-                  <div className="px-4 py-2 bg-secondary/50 border-b border-border text-xs text-muted-foreground font-mono">
+                  <div className="px-4 py-2 bg-[#252526] border-b border-border text-xs text-muted-foreground font-mono">
                     {codeLanguage}
                   </div>
                 )}
-                <pre className="p-4 overflow-x-auto">
-                  <code className="text-sm font-mono text-foreground/90">
-                    {codeBlock.join("\n")}
-                  </code>
-                </pre>
+                <SyntaxHighlighter
+                  language={language}
+                  style={vscDarkPlus}
+                  customStyle={{
+                    margin: 0,
+                    padding: "1rem",
+                    background: "#1e1e1e",
+                    fontSize: "0.875rem",
+                    lineHeight: "1.5",
+                  }}
+                  codeTagProps={{
+                    style: {
+                      fontFamily: "ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace",
+                    },
+                  }}
+                >
+                  {codeContent}
+                </SyntaxHighlighter>
               </div>
             </div>
           );

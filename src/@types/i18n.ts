@@ -4,6 +4,7 @@ export interface Translations {
   // Navigation
   welcome: string;
   reactSdk: string;
+  apiReference: string;
   introduction: string;
   architecture: string;
   gettingStarted: string;

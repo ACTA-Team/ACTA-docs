@@ -31,6 +31,13 @@ const iconMap: Record<string, React.ReactNode> = {
   useCredential: <Code className="w-3.5 h-3.5" />,
   useVault: <Database className="w-3.5 h-3.5" />,
   useVaultRead: <Globe className="w-3.5 h-3.5" />,
+  "api-overview": <BookOpen className="w-3.5 h-3.5" />,
+  "api-health-status": <Zap className="w-3.5 h-3.5" />,
+  "api-keys": <Link className="w-3.5 h-3.5" />,
+  "api-contract-info": <FileText className="w-3.5 h-3.5" />,
+  "api-vault-read": <Database className="w-3.5 h-3.5" />,
+  "api-vault-write": <Database className="w-3.5 h-3.5" />,
+  "api-credentials": <Code className="w-3.5 h-3.5" />,
 };
 
 interface CollapsibleSectionProps {
@@ -111,6 +118,7 @@ export function Sidebar({ currentSlug, onNavigate }: SidebarProps) {
   >({
     welcome: true,
     sdk: true,
+    "api-reference": true,
   });
 
   const toggleSection = (section: string) => {
@@ -161,6 +169,21 @@ export function Sidebar({ currentSlug, onNavigate }: SidebarProps) {
           onToggle={() => toggleSection("sdk")}
         >
           {nav.sdk.map(item => (
+            <NavItem
+              key={item.slug}
+              item={item}
+              isActive={currentSlug === item.slug}
+              onClick={() => onNavigate(item.slug)}
+            />
+          ))}
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          title={t.apiReference}
+          isExpanded={expandedSections["api-reference"]}
+          onToggle={() => toggleSection("api-reference")}
+        >
+          {nav["api-reference"].map(item => (
             <NavItem
               key={item.slug}
               item={item}

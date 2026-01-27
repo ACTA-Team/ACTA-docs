@@ -766,6 +766,925 @@ if (verification.since) {
 - \`verifyVc\` always returns a result with the current status of the credential
     `,
   },
+
+  // API Reference Section
+  "api-overview": {
+    slug: "api-overview",
+    title: "Overview",
+    section: "API Reference",
+    tocItems: [
+      "Base URLs",
+      "Authentication",
+      "Request Format",
+      "Response Format",
+      "Prepare/Submit Flow",
+      "Error Handling",
+      "Rate Limiting",
+    ],
+    content: `
+# API Reference Overview
+
+RESTful API for ACTA credential management on Stellar blockchain. All endpoints support both mainnet and testnet networks.
+
+## Base URLs
+
+- **Testnet**: \`https://acta.build/api/testnet\`
+- **Mainnet**: \`https://acta.build/api/mainnet\`
+
+## Authentication
+
+Most endpoints require an API key in the request header:
+
+\`\`\`
+X-ACTA-Key: your_api_key_here
+\`\`\`
+
+### Getting an API Key
+
+You can create a public API key (standard role, expires in 6 months) via:
+
+- **POST** \`/testnet/public/api-keys\` - Create testnet API key
+- **POST** \`/mainnet/public/api-keys\` - Create mainnet API key
+
+No authentication required, but rate limited to 5 requests per minute per IP.
+
+## Request Format
+
+All requests use JSON format. Content-Type header should be \`application/json\`.
+
+### Write Operations (Prepare/Submit)
+
+Write operations support two modes:
+
+1. **Prepare**: Send request without \`signedXdr\` → returns unsigned XDR
+2. **Submit**: Send request with \`signedXdr\` → executes the transaction
+
+Example prepare request:
+
+\`\`\`json
+{
+  "owner": "G...",
+  "vcId": "credential-123",
+  "vcData": "...",
+  "issuer": "G...",
+  "sourcePublicKey": "G..."
+}
+\`\`\`
+
+Example submit request:
+
+\`\`\`json
+{
+  "signedXdr": "AAAA..."
+}
+\`\`\`
+
+## Response Format
+
+### Success Response
+
+\`\`\`json
+{
+  "unsignedXdr": "AAAA...",
+  "networkPassphrase": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+Or for submit:
+
+\`\`\`json
+{
+  "txId": "abc123..."
+}
+\`\`\`
+
+### Error Response
+
+\`\`\`json
+{
+  "error": "error_code",
+  "message": "Human readable error message"
+}
+\`\`\`
+
+## Prepare/Submit Flow
+
+1. **Prepare**: Call endpoint with operation parameters (no \`signedXdr\`)
+2. **Sign**: Sign the returned \`unsignedXdr\` with your Stellar wallet
+3. **Submit**: Call the same endpoint with \`signedXdr\` to execute
+
+## Error Handling
+
+All errors return JSON with:
+- \`error\`: Error code identifier
+- \`message\`: Human-readable error description
+
+Common HTTP status codes:
+- \`200\`: Success
+- \`400\`: Bad request (invalid parameters)
+- \`401\`: Unauthorized (missing or invalid API key)
+- \`403\`: Forbidden (insufficient permissions)
+- \`404\`: Not found
+- \`429\`: Rate limit exceeded
+- \`500\`: Internal server error
+
+## Rate Limiting
+
+- Public API key creation: 5 requests per minute per IP
+- Authenticated endpoints: Rate limits may apply based on API key tier
+- Rate limit headers included in responses:
+  - \`X-RateLimit-Limit\`: Maximum requests allowed
+  - \`X-RateLimit-Remaining\`: Remaining requests in window
+  - \`X-RateLimit-Reset\`: Unix timestamp when limit resets
+    `,
+  },
+  "api-health-status": {
+    slug: "api-health-status",
+    title: "Health & Status",
+    section: "API Reference",
+    tocItems: [
+      "Health Check",
+      "API Status",
+      "Network Configuration",
+    ],
+    content: `
+# Health & Status Endpoints
+
+Endpoints for checking API health and retrieving network configuration.
+
+## Health Check
+
+### GET /health
+
+Checks the API status. No authentication required.
+
+**Response:**
+
+\`\`\`json
+{
+  "status": "OK",
+  "timestamp": "2024-01-01T00:00:00.000Z"
+}
+\`\`\`
+
+**Example:**
+
+\`\`\`bash
+curl https://acta.build/api/testnet/health
+\`\`\`
+
+## API Status
+
+### GET /
+
+Gets the current API status and network. Requires API key.
+
+**Headers:**
+
+\`\`\`
+X-ACTA-Key: your_api_key_here
+\`\`\`
+
+**Response:**
+
+\`\`\`json
+{
+  "status": "OK",
+  "network": "testnet"
+}
+\`\`\`
+
+**Example:**
+
+\`\`\`bash
+curl -H "X-ACTA-Key: your_key" https://acta.build/api/testnet/
+\`\`\`
+
+## Network Configuration
+
+### GET /config
+
+Gets public network configuration (RPC URL, passphrase, contract ID). Requires API key.
+
+**Headers:**
+
+\`\`\`
+X-ACTA-Key: your_api_key_here
+\`\`\`
+
+**Response:**
+
+\`\`\`json
+{
+  "rpcUrl": "https://soroban-testnet.stellar.org:443",
+  "networkPassphrase": "Test SDF Network ; September 2015",
+  "actaContractId": "C..."
+}
+\`\`\`
+
+**Example:**
+
+\`\`\`bash
+curl -H "X-ACTA-Key: your_key" https://acta.build/api/testnet/config
+\`\`\`
+    `,
+  },
+  "api-keys": {
+    slug: "api-keys",
+    title: "API Keys",
+    section: "API Reference",
+    tocItems: [
+      "Create Testnet API Key",
+      "Create Mainnet API Key",
+      "Request Body",
+      "Response",
+      "Rate Limiting",
+    ],
+    content: `
+# API Keys Endpoints
+
+Public endpoints for creating API keys. No authentication required, but rate limited.
+
+> **Note:** You can also request API keys directly from the [ACTA dApp](https://dapp.acta.build/). The dApp provides a user-friendly interface to create and manage your API keys.
+
+## Create Testnet API Key
+
+### POST /testnet/public/api-keys
+
+Creates a testnet API key (standard role, expires in 6 months).
+
+**Rate Limit:** 5 requests per minute per IP
+
+**Request Body:**
+
+\`\`\`json
+{
+  "name": "My API Key",
+  "wallet_address": "G...",
+  "metadata": {
+    "network": "testnet"
+  }
+}
+\`\`\`
+
+**Response:**
+
+\`\`\`json
+{
+  "message": "API key created successfully. Save this key - it will not be shown again.",
+  "api_key": "acta_...",
+  "api_key_record": {
+    "id": "uuid",
+    "name": "My API Key",
+    "role": "standard",
+    "is_active": true,
+    "expires_at": "2024-07-01T00:00:00.000Z",
+    "created_at": "2024-01-01T00:00:00.000Z"
+  }
+}
+\`\`\`
+
+**Example:**
+
+\`\`\`bash
+curl -X POST https://acta.build/api/testnet/public/api-keys \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "name": "My Testnet Key",
+    "wallet_address": "G...",
+    "metadata": {
+      "network": "testnet"
+    }
+  }'
+\`\`\`
+
+## Create Mainnet API Key
+
+### POST /mainnet/public/api-keys
+
+Creates a mainnet API key (standard role, expires in 6 months).
+
+**Rate Limit:** 5 requests per minute per IP
+
+**Request Body:**
+
+\`\`\`json
+{
+  "name": "My API Key",
+  "wallet_address": "G...",
+  "metadata": {
+    "network": "mainnet"
+  }
+}
+\`\`\`
+
+**Response:**
+
+Same format as testnet endpoint.
+
+**Example:**
+
+\`\`\`bash
+curl -X POST https://acta.build/api/mainnet/public/api-keys \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "name": "My Mainnet Key",
+    "wallet_address": "G...",
+    "metadata": {
+      "network": "mainnet"
+    }
+  }'
+\`\`\`
+
+## Request Body
+
+- \`name\` (optional): Name for the API key (max 120 chars)
+- \`wallet_address\` (optional): Stellar wallet address (G...)
+- \`metadata\` (optional): Additional metadata object
+  - \`network\` (required): "testnet" or "mainnet"
+
+## Response
+
+- \`api_key\`: The API key string (save this - it won't be shown again)
+- \`api_key_record\`: Metadata about the created key
+
+## Rate Limiting
+
+- Maximum 5 requests per minute per IP address
+- Rate limit headers included in response:
+  - \`X-RateLimit-Limit\`: 5
+  - \`X-RateLimit-Remaining\`: Remaining requests
+  - \`X-RateLimit-Reset\`: Unix timestamp when limit resets
+
+**Note:** API key creation via these endpoints is only allowed from \`dapp.acta.build\` origin. For the easiest experience, we recommend using the [ACTA dApp](https://dapp.acta.build/) to create and manage your API keys.
+    `,
+  },
+  "api-contract-info": {
+    slug: "api-contract-info",
+    title: "Contract Info",
+    section: "API Reference",
+    tocItems: [
+      "Get Contract Version",
+      "Query Parameters",
+      "Response",
+    ],
+    content: `
+# Contract Info Endpoints
+
+Endpoints for retrieving contract information.
+
+## Get Contract Version
+
+### GET /contracts/version
+
+Returns the ACTA contract version string. Requires API key.
+
+**Headers:**
+
+\`\`\`
+X-ACTA-Key: your_api_key_here
+\`\`\`
+
+**Query Parameters:**
+
+- \`contractId\` (optional): Override contract ID (C...)
+- \`sourcePublicKey\` (required): An existing Stellar account (G...) used for Soroban simulation
+
+**Response:**
+
+\`\`\`json
+{
+  "version": "1.0.0"
+}
+\`\`\`
+
+**Example:**
+
+\`\`\`bash
+curl -H "X-ACTA-Key: your_key" \\
+  "https://acta.build/api/testnet/contracts/version?sourcePublicKey=G..."
+\`\`\`
+
+## Query Parameters
+
+- **contractId** (optional): Override the default ACTA contract ID
+- **sourcePublicKey** (required): Stellar public key (G...) used for contract simulation
+
+## Response
+
+- **version**: Contract version string
+    `,
+  },
+  "api-vault-read": {
+    slug: "api-vault-read",
+    title: "Vault Operations (Read)",
+    section: "API Reference",
+    tocItems: [
+      "List VC IDs",
+      "Get VC",
+      "Verify VC",
+      "Request Body",
+      "Responses",
+    ],
+    content: `
+# Vault Operations (Read)
+
+Read-only operations for vault data. Requires API key and ownership validation.
+
+## List VC IDs
+
+### POST /contracts/vault/list-vc-ids
+
+Lists verifiable credential (VC) IDs stored in an owner's vault.
+
+**Headers:**
+
+\`\`\`
+X-ACTA-Key: your_api_key_here
+\`\`\`
+
+**Request Body:**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+**Response:**
+
+\`\`\`json
+["credential-1", "credential-2", "credential-3"]
+\`\`\`
+
+**Example:**
+
+\`\`\`bash
+curl -X POST https://acta.build/api/testnet/contracts/vault/list-vc-ids \\
+  -H "X-ACTA-Key: your_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "owner": "G..."
+  }'
+\`\`\`
+
+## Get VC
+
+### POST /contracts/vault/get-vc
+
+Gets a specific verifiable credential from a vault.
+
+**Headers:**
+
+\`\`\`
+X-ACTA-Key: your_api_key_here
+\`\`\`
+
+**Request Body:**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "vcId": "credential-123",
+  "contractId": "C..."
+}
+\`\`\`
+
+**Response:**
+
+\`\`\`json
+{
+  "vcData": {
+    "@context": ["https://www.w3.org/2018/credentials/v1"],
+    "type": ["VerifiableCredential"],
+    "credentialSubject": {
+      "id": "did:stellar:G...",
+      "name": "John Doe"
+    }
+  }
+}
+\`\`\`
+
+**Example:**
+
+\`\`\`bash
+curl -X POST https://acta.build/api/testnet/contracts/vault/get-vc \\
+  -H "X-ACTA-Key: your_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "owner": "G...",
+    "vcId": "credential-123"
+  }'
+\`\`\`
+
+## Verify VC
+
+### POST /contracts/vault/verify-vc
+
+Verifies a VC by checking it exists in the owner's vault and returning its issuance status.
+
+**Headers:**
+
+\`\`\`
+X-ACTA-Key: your_api_key_here
+\`\`\`
+
+**Request Body:**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "vcId": "credential-123",
+  "contractId": "C..."
+}
+\`\`\`
+
+**Response:**
+
+\`\`\`json
+{
+  "status": "valid",
+  "since": "2024-01-01T00:00:00.000Z"
+}
+\`\`\`
+
+Or if revoked:
+
+\`\`\`json
+{
+  "status": "revoked",
+  "since": "2024-01-15T00:00:00.000Z"
+}
+\`\`\`
+
+**Example:**
+
+\`\`\`bash
+curl -X POST https://acta.build/api/testnet/contracts/vault/verify-vc \\
+  -H "X-ACTA-Key: your_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "owner": "G...",
+    "vcId": "credential-123"
+  }'
+\`\`\`
+
+## Request Body
+
+All endpoints require:
+- **owner** (required): Vault owner address (G...)
+- **vcId** (required for get-vc and verify-vc): Credential identifier
+- **contractId** (optional): Override ACTA contract ID (C...)
+
+## Responses
+
+- **List VC IDs**: Array of credential ID strings
+- **Get VC**: Credential data object or null if not found
+- **Verify VC**: Status object with \`status\` ("valid" | "revoked") and optional \`since\` timestamp
+    `,
+  },
+  "api-vault-write": {
+    slug: "api-vault-write",
+    title: "Vault Operations (Write)",
+    section: "API Reference",
+    tocItems: [
+      "Create Vault",
+      "Authorize Issuer",
+      "Authorize Issuers (Multiple)",
+      "Revoke Issuer",
+      "Revoke Vault",
+      "Set Admin",
+      "Push",
+      "Prepare/Submit Flow",
+    ],
+    content: `
+# Vault Operations (Write)
+
+Write operations for vault management. All endpoints support prepare/submit flow. Requires API key.
+
+## Create Vault
+
+### POST /contracts/vault/create
+
+Creates (initializes) a vault for an owner.
+
+**Headers:**
+
+\`\`\`
+X-ACTA-Key: your_api_key_here
+\`\`\`
+
+**Request Body (Prepare):**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "didUri": "did:pkh:stellar:testnet:G...",
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+**Request Body (Submit):**
+
+\`\`\`json
+{
+  "signedXdr": "AAAA..."
+}
+\`\`\`
+
+**Response (Prepare):**
+
+\`\`\`json
+{
+  "unsignedXdr": "AAAA...",
+  "networkPassphrase": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Response (Submit):**
+
+\`\`\`json
+{
+  "txId": "abc123..."
+}
+\`\`\`
+
+## Authorize Issuer
+
+### POST /contracts/vault/authorize-issuer
+
+Adds a single authorized issuer to an owner's vault.
+
+**Request Body (Prepare):**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "issuer": "G...",
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+## Authorize Issuers (Multiple)
+
+### POST /contracts/vault/authorize-issuers
+
+Authorizes multiple issuers in a vault.
+
+**Request Body (Prepare):**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "issuers": ["G...", "G...", "G..."],
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+## Revoke Issuer
+
+### POST /contracts/vault/revoke-issuer
+
+Revokes an issuer's authorization from a vault.
+
+**Request Body (Prepare):**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "issuer": "G...",
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+## Revoke Vault
+
+### POST /contracts/vault/revoke-vault
+
+Completely revokes a vault.
+
+**Request Body (Prepare):**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+## Set Admin
+
+### POST /contracts/vault/set-admin
+
+Sets the vault administrator.
+
+**Request Body (Prepare):**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "admin": "G...",
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+## Push
+
+### POST /contracts/vault/push
+
+Pushes data to a vault.
+
+**Request Body (Prepare):**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+## Prepare/Submit Flow
+
+All write endpoints follow the same pattern:
+
+1. **Prepare**: Send request with operation parameters (no \`signedXdr\`)
+2. **Sign**: Sign the returned \`unsignedXdr\` with your Stellar wallet
+3. **Submit**: Send request with \`signedXdr\` to execute
+
+**Common Parameters:**
+- **owner** (required): Vault owner address (G...)
+- **sourcePublicKey** (required): Transaction source that will sign (must be authorized signer)
+- **contractId** (optional): Override ACTA contract ID (C...)
+    `,
+  },
+  "api-credentials": {
+    slug: "api-credentials",
+    title: "Credential Operations",
+    section: "API Reference",
+    tocItems: [
+      "Issue Credential",
+      "Revoke Credential",
+      "Request Body",
+      "Prepare/Submit Flow",
+    ],
+    content: `
+# Credential Operations
+
+Endpoints for issuing and revoking verifiable credentials. All endpoints support prepare/submit flow. Requires API key.
+
+## Issue Credential
+
+### POST /contracts/vc/issue
+
+Issues a VC: stores payload in the owner's vault and writes issuance status = valid.
+
+**Headers:**
+
+\`\`\`
+X-ACTA-Key: your_api_key_here
+\`\`\`
+
+**Request Body (Prepare):**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "vcId": "credential-123",
+  "vcData": "{\\"@context\\":[\\"https://www.w3.org/2018/credentials/v1\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:stellar:G...\\",\\"name\\":\\"John Doe\\"}}",
+  "issuer": "G...",
+  "issuerDid": "did:pkh:stellar:testnet:G...",
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+**Request Body (Submit):**
+
+\`\`\`json
+{
+  "signedXdr": "AAAA..."
+}
+\`\`\`
+
+**Response (Prepare):**
+
+\`\`\`json
+{
+  "unsignedXdr": "AAAA...",
+  "networkPassphrase": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Response (Submit):**
+
+\`\`\`json
+{
+  "txId": "abc123..."
+}
+\`\`\`
+
+**Example:**
+
+\`\`\`bash
+# Prepare
+curl -X POST https://acta.build/api/testnet/contracts/vc/issue \\
+  -H "X-ACTA-Key: your_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "owner": "G...",
+    "vcId": "credential-123",
+    "vcData": "{\\"@context\\":[\\"https://www.w3.org/2018/credentials/v1\\"],\\"type\\":[\\"VerifiableCredential\\"]}",
+    "issuer": "G...",
+    "sourcePublicKey": "G..."
+  }'
+
+# Submit (after signing)
+curl -X POST https://acta.build/api/testnet/contracts/vc/issue \\
+  -H "X-ACTA-Key: your_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "signedXdr": "AAAA..."
+  }'
+\`\`\`
+
+## Revoke Credential
+
+### POST /contracts/vc/revoke
+
+Revokes a VC by ID.
+
+**Request Body (Prepare):**
+
+\`\`\`json
+{
+  "vcId": "credential-123",
+  "date": "2024-01-15T00:00:00.000Z",
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+**Request Body (Submit):**
+
+\`\`\`json
+{
+  "signedXdr": "AAAA..."
+}
+\`\`\`
+
+**Response (Prepare):**
+
+\`\`\`json
+{
+  "unsignedXdr": "AAAA...",
+  "networkPassphrase": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Response (Submit):**
+
+\`\`\`json
+{
+  "txId": "abc123..."
+}
+\`\`\`
+
+## Request Body
+
+### Issue Credential
+
+- **owner** (required): Vault owner address (G...)
+- **vcId** (required): Credential identifier
+- **vcData** (required): Credential data payload (string, will be automatically encrypted with AES-256 before storage)
+- **issuer** (required): Issuer address (G...)
+- **issuerDid** (optional): Issuer DID metadata
+- **sourcePublicKey** (required): Transaction source that will sign (must be issuer)
+- **contractId** (optional): Override ACTA contract ID (C...)
+
+### Revoke Credential
+
+- **vcId** (required): Credential identifier
+- **date** (optional): ISO-8601 timestamp (default: now)
+- **sourcePublicKey** (required): Transaction source that will sign (must be VC owner or contract admin)
+- **contractId** (optional): Override ACTA contract ID (C...)
+
+## Prepare/Submit Flow
+
+1. **Prepare**: Send request with operation parameters (no \`signedXdr\`)
+2. **Sign**: Sign the returned \`unsignedXdr\` with your Stellar wallet
+3. **Submit**: Send request with \`signedXdr\` to execute
+
+**Note:** The \`issue\` method automatically stores the credential in the vault and marks it as valid in a single transaction.
+    `,
+  },
 };
 
 export const navigationItemsEn = {
@@ -780,6 +1699,15 @@ export const navigationItemsEn = {
     { slug: "useCredential", title: "useCredential" },
     { slug: "useVault", title: "useVault" },
     { slug: "useVaultRead", title: "useVaultRead" },
+  ],
+  "api-reference": [
+    { slug: "api-overview", title: "Overview" },
+    { slug: "api-health-status", title: "Health & Status" },
+    { slug: "api-keys", title: "API Keys" },
+    { slug: "api-contract-info", title: "Contract Info" },
+    { slug: "api-vault-read", title: "Vault Operations (Read)" },
+    { slug: "api-vault-write", title: "Vault Operations (Write)" },
+    { slug: "api-credentials", title: "Credential Operations" },
   ],
 };
 
@@ -1538,6 +2466,925 @@ if (verification.since) {
 - \`verifyVc\` siempre devuelve el estado actual de la credencial  
     `,
   },
+
+  // API Reference Section
+  "api-overview": {
+    slug: "api-overview",
+    title: "Resumen",
+    section: "Referencia API",
+    tocItems: [
+      "URLs base",
+      "Autenticación",
+      "Formato de solicitud",
+      "Formato de respuesta",
+      "Flujo Prepare/Submit",
+      "Manejo de errores",
+      "Límites de tasa",
+    ],
+    content: `
+# Resumen de Referencia API
+
+API RESTful para la gestión de credenciales ACTA en la blockchain Stellar. Todos los endpoints soportan redes mainnet y testnet.
+
+## URLs base
+
+- **Testnet**: \`https://acta.build/api/testnet\`
+- **Mainnet**: \`https://acta.build/api/mainnet\`
+
+## Autenticación
+
+La mayoría de los endpoints requieren una API key en el header de la solicitud:
+
+\`\`\`
+X-ACTA-Key: tu_api_key_aqui
+\`\`\`
+
+### Obtener una API Key
+
+Puedes crear una API key pública (rol estándar, expira en 6 meses) vía:
+
+- **POST** \`/testnet/public/api-keys\` - Crear API key de testnet
+- **POST** \`/mainnet/public/api-keys\` - Crear API key de mainnet
+
+No requiere autenticación, pero tiene límite de 5 solicitudes por minuto por IP.
+
+## Formato de solicitud
+
+Todas las solicitudes usan formato JSON. El header Content-Type debe ser \`application/json\`.
+
+### Operaciones de escritura (Prepare/Submit)
+
+Las operaciones de escritura soportan dos modos:
+
+1. **Prepare**: Envía solicitud sin \`signedXdr\` → devuelve XDR sin firmar
+2. **Submit**: Envía solicitud con \`signedXdr\` → ejecuta la transacción
+
+Ejemplo de solicitud prepare:
+
+\`\`\`json
+{
+  "owner": "G...",
+  "vcId": "credential-123",
+  "vcData": "...",
+  "issuer": "G...",
+  "sourcePublicKey": "G..."
+}
+\`\`\`
+
+Ejemplo de solicitud submit:
+
+\`\`\`json
+{
+  "signedXdr": "AAAA..."
+}
+\`\`\`
+
+## Formato de respuesta
+
+### Respuesta exitosa
+
+\`\`\`json
+{
+  "unsignedXdr": "AAAA...",
+  "networkPassphrase": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+O para submit:
+
+\`\`\`json
+{
+  "txId": "abc123..."
+}
+\`\`\`
+
+### Respuesta de error
+
+\`\`\`json
+{
+  "error": "error_code",
+  "message": "Mensaje de error legible"
+}
+\`\`\`
+
+## Flujo Prepare/Submit
+
+1. **Prepare**: Llama al endpoint con parámetros de operación (sin \`signedXdr\`)
+2. **Firmar**: Firma el \`unsignedXdr\` devuelto con tu wallet Stellar
+3. **Submit**: Llama al mismo endpoint con \`signedXdr\` para ejecutar
+
+## Manejo de errores
+
+Todos los errores devuelven JSON con:
+- \`error\`: Identificador del código de error
+- \`message\`: Descripción del error legible
+
+Códigos HTTP comunes:
+- \`200\`: Éxito
+- \`400\`: Solicitud incorrecta (parámetros inválidos)
+- \`401\`: No autorizado (API key faltante o inválida)
+- \`403\`: Prohibido (permisos insuficientes)
+- \`404\`: No encontrado
+- \`429\`: Límite de tasa excedido
+- \`500\`: Error interno del servidor
+
+## Límites de tasa
+
+- Creación de API key pública: 5 solicitudes por minuto por IP
+- Endpoints autenticados: Pueden aplicar límites según el nivel de la API key
+- Headers de límite de tasa incluidos en respuestas:
+  - \`X-RateLimit-Limit\`: Máximo de solicitudes permitidas
+  - \`X-RateLimit-Remaining\`: Solicitudes restantes en la ventana
+  - \`X-RateLimit-Reset\`: Timestamp Unix cuando se reinicia el límite
+    `,
+  },
+  "api-health-status": {
+    slug: "api-health-status",
+    title: "Salud y Estado",
+    section: "Referencia API",
+    tocItems: [
+      "Verificación de salud",
+      "Estado de la API",
+      "Configuración de red",
+    ],
+    content: `
+# Endpoints de Salud y Estado
+
+Endpoints para verificar la salud de la API y recuperar la configuración de red.
+
+## Verificación de salud
+
+### GET /health
+
+Verifica el estado de la API. No requiere autenticación.
+
+**Respuesta:**
+
+\`\`\`json
+{
+  "status": "OK",
+  "timestamp": "2024-01-01T00:00:00.000Z"
+}
+\`\`\`
+
+**Ejemplo:**
+
+\`\`\`bash
+curl https://acta.build/api/testnet/health
+\`\`\`
+
+## Estado de la API
+
+### GET /
+
+Obtiene el estado actual de la API y la red. Requiere API key.
+
+**Headers:**
+
+\`\`\`
+X-ACTA-Key: tu_api_key_aqui
+\`\`\`
+
+**Respuesta:**
+
+\`\`\`json
+{
+  "status": "OK",
+  "network": "testnet"
+}
+\`\`\`
+
+**Ejemplo:**
+
+\`\`\`bash
+curl -H "X-ACTA-Key: tu_key" https://acta.build/api/testnet/
+\`\`\`
+
+## Configuración de red
+
+### GET /config
+
+Obtiene la configuración pública de red (URL RPC, passphrase, ID de contrato). Requiere API key.
+
+**Headers:**
+
+\`\`\`
+X-ACTA-Key: tu_api_key_aqui
+\`\`\`
+
+**Respuesta:**
+
+\`\`\`json
+{
+  "rpcUrl": "https://soroban-testnet.stellar.org:443",
+  "networkPassphrase": "Test SDF Network ; September 2015",
+  "actaContractId": "C..."
+}
+\`\`\`
+
+**Ejemplo:**
+
+\`\`\`bash
+curl -H "X-ACTA-Key: tu_key" https://acta.build/api/testnet/config
+\`\`\`
+    `,
+  },
+  "api-keys": {
+    slug: "api-keys",
+    title: "API Keys",
+    section: "Referencia API",
+    tocItems: [
+      "Crear API Key de Testnet",
+      "Crear API Key de Mainnet",
+      "Cuerpo de solicitud",
+      "Respuesta",
+      "Límites de tasa",
+    ],
+    content: `
+# Endpoints de API Keys
+
+Endpoints públicos para crear API keys. No requiere autenticación, pero tiene límite de tasa.
+
+> **Nota:** También puedes solicitar API keys directamente desde la [dApp de ACTA](https://dapp.acta.build/). La dApp proporciona una interfaz amigable para crear y gestionar tus API keys.
+
+## Crear API Key de Testnet
+
+### POST /testnet/public/api-keys
+
+Crea una API key de testnet (rol estándar, expira en 6 meses).
+
+**Límite de tasa:** 5 solicitudes por minuto por IP
+
+**Cuerpo de solicitud:**
+
+\`\`\`json
+{
+  "name": "Mi API Key",
+  "wallet_address": "G...",
+  "metadata": {
+    "network": "testnet"
+  }
+}
+\`\`\`
+
+**Respuesta:**
+
+\`\`\`json
+{
+  "message": "API key creada exitosamente. Guarda esta key - no se mostrará de nuevo.",
+  "api_key": "acta_...",
+  "api_key_record": {
+    "id": "uuid",
+    "name": "Mi API Key",
+    "role": "standard",
+    "is_active": true,
+    "expires_at": "2024-07-01T00:00:00.000Z",
+    "created_at": "2024-01-01T00:00:00.000Z"
+  }
+}
+\`\`\`
+
+**Ejemplo:**
+
+\`\`\`bash
+curl -X POST https://acta.build/api/testnet/public/api-keys \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "name": "Mi Key de Testnet",
+    "wallet_address": "G...",
+    "metadata": {
+      "network": "testnet"
+    }
+  }'
+\`\`\`
+
+## Crear API Key de Mainnet
+
+### POST /mainnet/public/api-keys
+
+Crea una API key de mainnet (rol estándar, expira en 6 meses).
+
+**Límite de tasa:** 5 solicitudes por minuto por IP
+
+**Cuerpo de solicitud:**
+
+\`\`\`json
+{
+  "name": "Mi API Key",
+  "wallet_address": "G...",
+  "metadata": {
+    "network": "mainnet"
+  }
+}
+\`\`\`
+
+**Respuesta:**
+
+Mismo formato que el endpoint de testnet.
+
+**Ejemplo:**
+
+\`\`\`bash
+curl -X POST https://acta.build/api/mainnet/public/api-keys \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "name": "Mi Key de Mainnet",
+    "wallet_address": "G...",
+    "metadata": {
+      "network": "mainnet"
+    }
+  }'
+\`\`\`
+
+## Cuerpo de solicitud
+
+- \`name\` (opcional): Nombre para la API key (máx 120 caracteres)
+- \`wallet_address\` (opcional): Dirección de wallet Stellar (G...)
+- \`metadata\` (opcional): Objeto de metadatos adicionales
+  - \`network\` (requerido): "testnet" o "mainnet"
+
+## Respuesta
+
+- \`api_key\`: La cadena de la API key (guarda esto - no se mostrará de nuevo)
+- \`api_key_record\`: Metadatos sobre la key creada
+
+## Límites de tasa
+
+- Máximo 5 solicitudes por minuto por dirección IP
+- Headers de límite de tasa incluidos en la respuesta:
+  - \`X-RateLimit-Limit\`: 5
+  - \`X-RateLimit-Remaining\`: Solicitudes restantes
+  - \`X-RateLimit-Reset\`: Timestamp Unix cuando se reinicia el límite
+
+**Nota:** La creación de API keys mediante estos endpoints solo está permitida desde el origen \`dapp.acta.build\`. Para la mejor experiencia, recomendamos usar la [dApp de ACTA](https://dapp.acta.build/) para crear y gestionar tus API keys.
+    `,
+  },
+  "api-contract-info": {
+    slug: "api-contract-info",
+    title: "Información del Contrato",
+    section: "Referencia API",
+    tocItems: [
+      "Obtener Versión del Contrato",
+      "Parámetros de consulta",
+      "Respuesta",
+    ],
+    content: `
+# Endpoints de Información del Contrato
+
+Endpoints para recuperar información del contrato.
+
+## Obtener Versión del Contrato
+
+### GET /contracts/version
+
+Devuelve la cadena de versión del contrato ACTA. Requiere API key.
+
+**Headers:**
+
+\`\`\`
+X-ACTA-Key: tu_api_key_aqui
+\`\`\`
+
+**Parámetros de consulta:**
+
+- \`contractId\` (opcional): Sobrescribir ID de contrato (C...)
+- \`sourcePublicKey\` (requerido): Una cuenta Stellar existente (G...) usada para simulación Soroban
+
+**Respuesta:**
+
+\`\`\`json
+{
+  "version": "1.0.0"
+}
+\`\`\`
+
+**Ejemplo:**
+
+\`\`\`bash
+curl -H "X-ACTA-Key: tu_key" \\
+  "https://acta.build/api/testnet/contracts/version?sourcePublicKey=G..."
+\`\`\`
+
+## Parámetros de consulta
+
+- **contractId** (opcional): Sobrescribir el ID de contrato ACTA por defecto
+- **sourcePublicKey** (requerido): Clave pública Stellar (G...) usada para simulación del contrato
+
+## Respuesta
+
+- **version**: Cadena de versión del contrato
+    `,
+  },
+  "api-vault-read": {
+    slug: "api-vault-read",
+    title: "Operaciones de Bóveda (Lectura)",
+    section: "Referencia API",
+    tocItems: [
+      "Listar IDs de VC",
+      "Obtener VC",
+      "Verificar VC",
+      "Cuerpo de solicitud",
+      "Respuestas",
+    ],
+    content: `
+# Operaciones de Bóveda (Lectura)
+
+Operaciones de solo lectura para datos de bóveda. Requiere API key y validación de propiedad.
+
+## Listar IDs de VC
+
+### POST /contracts/vault/list-vc-ids
+
+Lista los IDs de credenciales verificables (VC) almacenados en la bóveda de un propietario.
+
+**Headers:**
+
+\`\`\`
+X-ACTA-Key: tu_api_key_aqui
+\`\`\`
+
+**Cuerpo de solicitud:**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+**Respuesta:**
+
+\`\`\`json
+["credential-1", "credential-2", "credential-3"]
+\`\`\`
+
+**Ejemplo:**
+
+\`\`\`bash
+curl -X POST https://acta.build/api/testnet/contracts/vault/list-vc-ids \\
+  -H "X-ACTA-Key: tu_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "owner": "G..."
+  }'
+\`\`\`
+
+## Obtener VC
+
+### POST /contracts/vault/get-vc
+
+Obtiene una credencial verificable específica de una bóveda.
+
+**Headers:**
+
+\`\`\`
+X-ACTA-Key: tu_api_key_aqui
+\`\`\`
+
+**Cuerpo de solicitud:**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "vcId": "credential-123",
+  "contractId": "C..."
+}
+\`\`\`
+
+**Respuesta:**
+
+\`\`\`json
+{
+  "vcData": {
+    "@context": ["https://www.w3.org/2018/credentials/v1"],
+    "type": ["VerifiableCredential"],
+    "credentialSubject": {
+      "id": "did:stellar:G...",
+      "name": "John Doe"
+    }
+  }
+}
+\`\`\`
+
+**Ejemplo:**
+
+\`\`\`bash
+curl -X POST https://acta.build/api/testnet/contracts/vault/get-vc \\
+  -H "X-ACTA-Key: tu_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "owner": "G...",
+    "vcId": "credential-123"
+  }'
+\`\`\`
+
+## Verificar VC
+
+### POST /contracts/vault/verify-vc
+
+Verifica una VC comprobando que existe en la bóveda del propietario y devolviendo su estado de emisión.
+
+**Headers:**
+
+\`\`\`
+X-ACTA-Key: tu_api_key_aqui
+\`\`\`
+
+**Cuerpo de solicitud:**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "vcId": "credential-123",
+  "contractId": "C..."
+}
+\`\`\`
+
+**Respuesta:**
+
+\`\`\`json
+{
+  "status": "valid",
+  "since": "2024-01-01T00:00:00.000Z"
+}
+\`\`\`
+
+O si está revocada:
+
+\`\`\`json
+{
+  "status": "revoked",
+  "since": "2024-01-15T00:00:00.000Z"
+}
+\`\`\`
+
+**Ejemplo:**
+
+\`\`\`bash
+curl -X POST https://acta.build/api/testnet/contracts/vault/verify-vc \\
+  -H "X-ACTA-Key: tu_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "owner": "G...",
+    "vcId": "credential-123"
+  }'
+\`\`\`
+
+## Cuerpo de solicitud
+
+Todos los endpoints requieren:
+- **owner** (requerido): Dirección del propietario de la bóveda (G...)
+- **vcId** (requerido para get-vc y verify-vc): Identificador de credencial
+- **contractId** (opcional): Sobrescribir ID de contrato ACTA (C...)
+
+## Respuestas
+
+- **Listar IDs de VC**: Array de cadenas de ID de credenciales
+- **Obtener VC**: Objeto de datos de credencial o null si no se encuentra
+- **Verificar VC**: Objeto de estado con \`status\` ("valid" | "revoked") y timestamp opcional \`since\`
+    `,
+  },
+  "api-vault-write": {
+    slug: "api-vault-write",
+    title: "Operaciones de Bóveda (Escritura)",
+    section: "Referencia API",
+    tocItems: [
+      "Crear Bóveda",
+      "Autorizar Emisor",
+      "Autorizar Emisores (Múltiples)",
+      "Revocar Emisor",
+      "Revocar Bóveda",
+      "Establecer Admin",
+      "Push",
+      "Flujo Prepare/Submit",
+    ],
+    content: `
+# Operaciones de Bóveda (Escritura)
+
+Operaciones de escritura para gestión de bóvedas. Todos los endpoints soportan flujo prepare/submit. Requiere API key.
+
+## Crear Bóveda
+
+### POST /contracts/vault/create
+
+Crea (inicializa) una bóveda para un propietario.
+
+**Headers:**
+
+\`\`\`
+X-ACTA-Key: tu_api_key_aqui
+\`\`\`
+
+**Cuerpo de solicitud (Prepare):**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "didUri": "did:pkh:stellar:testnet:G...",
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+**Cuerpo de solicitud (Submit):**
+
+\`\`\`json
+{
+  "signedXdr": "AAAA..."
+}
+\`\`\`
+
+**Respuesta (Prepare):**
+
+\`\`\`json
+{
+  "unsignedXdr": "AAAA...",
+  "networkPassphrase": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Respuesta (Submit):**
+
+\`\`\`json
+{
+  "txId": "abc123..."
+}
+\`\`\`
+
+## Autorizar Emisor
+
+### POST /contracts/vault/authorize-issuer
+
+Añade un emisor autorizado a la bóveda de un propietario.
+
+**Cuerpo de solicitud (Prepare):**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "issuer": "G...",
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+## Autorizar Emisores (Múltiples)
+
+### POST /contracts/vault/authorize-issuers
+
+Autoriza múltiples emisores en una bóveda.
+
+**Cuerpo de solicitud (Prepare):**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "issuers": ["G...", "G...", "G..."],
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+## Revocar Emisor
+
+### POST /contracts/vault/revoke-issuer
+
+Revoca la autorización de un emisor de una bóveda.
+
+**Cuerpo de solicitud (Prepare):**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "issuer": "G...",
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+## Revocar Bóveda
+
+### POST /contracts/vault/revoke-vault
+
+Revoca completamente una bóveda.
+
+**Cuerpo de solicitud (Prepare):**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+## Establecer Admin
+
+### POST /contracts/vault/set-admin
+
+Establece el administrador de la bóveda.
+
+**Cuerpo de solicitud (Prepare):**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "admin": "G...",
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+## Push
+
+### POST /contracts/vault/push
+
+Envía datos a una bóveda.
+
+**Cuerpo de solicitud (Prepare):**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+## Flujo Prepare/Submit
+
+Todos los endpoints de escritura siguen el mismo patrón:
+
+1. **Prepare**: Envía solicitud con parámetros de operación (sin \`signedXdr\`)
+2. **Firmar**: Firma el \`unsignedXdr\` devuelto con tu wallet Stellar
+3. **Submit**: Envía solicitud con \`signedXdr\` para ejecutar
+
+**Parámetros comunes:**
+- **owner** (requerido): Dirección del propietario de la bóveda (G...)
+- **sourcePublicKey** (requerido): Fuente de transacción que firmará (debe ser firmante autorizado)
+- **contractId** (opcional): Sobrescribir ID de contrato ACTA (C...)
+    `,
+  },
+  "api-credentials": {
+    slug: "api-credentials",
+    title: "Operaciones de Credenciales",
+    section: "Referencia API",
+    tocItems: [
+      "Emitir Credencial",
+      "Revocar Credencial",
+      "Cuerpo de solicitud",
+      "Flujo Prepare/Submit",
+    ],
+    content: `
+# Operaciones de Credenciales
+
+Endpoints para emitir y revocar credenciales verificables. Todos los endpoints soportan flujo prepare/submit. Requiere API key.
+
+## Emitir Credencial
+
+### POST /contracts/vc/issue
+
+Emite una VC: almacena el payload en la bóveda del propietario y escribe el estado de emisión = válido.
+
+**Headers:**
+
+\`\`\`
+X-ACTA-Key: tu_api_key_aqui
+\`\`\`
+
+**Cuerpo de solicitud (Prepare):**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "vcId": "credential-123",
+  "vcData": "{\\"@context\\":[\\"https://www.w3.org/2018/credentials/v1\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:stellar:G...\\",\\"name\\":\\"John Doe\\"}}",
+  "issuer": "G...",
+  "issuerDid": "did:pkh:stellar:testnet:G...",
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+**Cuerpo de solicitud (Submit):**
+
+\`\`\`json
+{
+  "signedXdr": "AAAA..."
+}
+\`\`\`
+
+**Respuesta (Prepare):**
+
+\`\`\`json
+{
+  "unsignedXdr": "AAAA...",
+  "networkPassphrase": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Respuesta (Submit):**
+
+\`\`\`json
+{
+  "txId": "abc123..."
+}
+\`\`\`
+
+**Ejemplo:**
+
+\`\`\`bash
+# Prepare
+curl -X POST https://acta.build/api/testnet/contracts/vc/issue \\
+  -H "X-ACTA-Key: tu_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "owner": "G...",
+    "vcId": "credential-123",
+    "vcData": "{\\"@context\\":[\\"https://www.w3.org/2018/credentials/v1\\"],\\"type\\":[\\"VerifiableCredential\\"]}",
+    "issuer": "G...",
+    "sourcePublicKey": "G..."
+  }'
+
+# Submit (después de firmar)
+curl -X POST https://acta.build/api/testnet/contracts/vc/issue \\
+  -H "X-ACTA-Key: tu_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "signedXdr": "AAAA..."
+  }'
+\`\`\`
+
+## Revocar Credencial
+
+### POST /contracts/vc/revoke
+
+Revoca una VC por ID.
+
+**Cuerpo de solicitud (Prepare):**
+
+\`\`\`json
+{
+  "vcId": "credential-123",
+  "date": "2024-01-15T00:00:00.000Z",
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+**Cuerpo de solicitud (Submit):**
+
+\`\`\`json
+{
+  "signedXdr": "AAAA..."
+}
+\`\`\`
+
+**Respuesta (Prepare):**
+
+\`\`\`json
+{
+  "unsignedXdr": "AAAA...",
+  "networkPassphrase": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Respuesta (Submit):**
+
+\`\`\`json
+{
+  "txId": "abc123..."
+}
+\`\`\`
+
+## Cuerpo de solicitud
+
+### Emitir Credencial
+
+- **owner** (requerido): Dirección del propietario de la bóveda (G...)
+- **vcId** (requerido): Identificador de credencial
+- **vcData** (requerido): Payload de datos de credencial (cadena, se cifrará automáticamente con AES-256 antes del almacenamiento)
+- **issuer** (requerido): Dirección del emisor (G...)
+- **issuerDid** (opcional): Metadatos DID del emisor
+- **sourcePublicKey** (requerido): Fuente de transacción que firmará (debe ser el emisor)
+- **contractId** (opcional): Sobrescribir ID de contrato ACTA (C...)
+
+### Revocar Credencial
+
+- **vcId** (requerido): Identificador de credencial
+- **date** (opcional): Timestamp ISO-8601 (por defecto: ahora)
+- **sourcePublicKey** (requerido): Fuente de transacción que firmará (debe ser propietario de VC o admin del contrato)
+- **contractId** (opcional): Sobrescribir ID de contrato ACTA (C...)
+
+## Flujo Prepare/Submit
+
+1. **Prepare**: Envía solicitud con parámetros de operación (sin \`signedXdr\`)
+2. **Firmar**: Firma el \`unsignedXdr\` devuelto con tu wallet Stellar
+3. **Submit**: Envía solicitud con \`signedXdr\` para ejecutar
+
+**Nota:** El método \`issue\` almacena automáticamente la credencial en la bóveda y la marca como válida en una sola transacción.
+    `,
+  },
 };
 
 // Combined export for API route (uses English by default)
@@ -1557,5 +3404,14 @@ export const navigationItemsEs = {
     { slug: "useCredential", title: "useCredential" },
     { slug: "useVault", title: "useVault" },
     { slug: "useVaultRead", title: "useVaultRead" },
+  ],
+  "api-reference": [
+    { slug: "api-overview", title: "Resumen" },
+    { slug: "api-health-status", title: "Salud y Estado" },
+    { slug: "api-keys", title: "API Keys" },
+    { slug: "api-contract-info", title: "Información del Contrato" },
+    { slug: "api-vault-read", title: "Operaciones de Bóveda (Lectura)" },
+    { slug: "api-vault-write", title: "Operaciones de Bóveda (Escritura)" },
+    { slug: "api-credentials", title: "Operaciones de Credenciales" },
   ],
 };

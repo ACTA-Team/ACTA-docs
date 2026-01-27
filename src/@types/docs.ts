@@ -16,6 +16,7 @@ export type NavigationItem = {
 export type NavigationItems = {
   welcome: NavigationItem[];
   sdk: NavigationItem[];
+  "api-reference": NavigationItem[];
 };
 
 export type FeedbackType = "up" | "neutral" | "down" | null;
