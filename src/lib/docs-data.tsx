@@ -1,10 +1,6 @@
-export type DocPage = {
-  slug: string
-  title: string
-  section: string
-  content: string
-  tocItems: string[]
-}
+import type { DocPage, NavigationItems } from "@/@types/docs"
+
+export type { DocPage, NavigationItems }
 
 export const docsDataEn: Record<string, DocPage> = {
   // Welcome Section
@@ -1432,6 +1428,7 @@ if (verification.since) {
   }
 }
 
+// Combined export for API route (uses English by default)
 export const docsData = docsDataEn
 
 export const navigationItems = navigationItemsEn

@@ -8,9 +8,9 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Documentation',
-  description: 'GitBook-style documentation template',
-  generator: 'v0.app',
+  title: 'ACTA Documentation',
+  description: 'Documentation for the ACTA project',
+  generator: 'ACTA',
   icons: {
     icon: [
       {

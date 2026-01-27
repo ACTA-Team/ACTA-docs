@@ -1,48 +1,9 @@
 "use client"
 
 import React, { createContext, useContext, useState, type ReactNode } from "react"
+import type { Locale, Translations } from "@/@types/i18n"
 
-type Locale = "en" | "es"
-
-interface Translations {
-  // Navigation
-  welcome: string
-  reactSdk: string
-  introduction: string
-  architecture: string
-  gettingStarted: string
-  links: string
-  overview: string
-  
-  // Header
-  askOrSearch: string
-  dApp: string
-  discord: string
-  website: string
-  english: string
-  spanish: string
-  
-  // Content
-  onThisPage: string
-  wasThisHelpful: string
-  copy: string
-  copied: string
-  
-  // Footer
-  poweredBy: string
-  
-  // Search
-  searchPlaceholder: string
-  searchResults: string
-  noResults: string
-  searching: string
-  aiPowered: string
-  relatedPages: string
-  askAnything: string
-  poweredByGemini: string
-  toSearch: string
-  toClose: string
-}
+export type { Locale, Translations }
 
 const translations: Record<Locale, Translations> = {
   en: {
@@ -132,5 +93,3 @@ export function useI18n() {
   }
   return context
 }
-
-export type { Locale }

@@ -3,10 +3,10 @@
 import { useState } from "react"
 import { Copy, ChevronDown, ThumbsUp, ThumbsDown, Minus, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { MarkdownContent } from "@/components/docs/markdown-content"
+import { MarkdownContent } from "@/components/modules/docs/markdown-content"
 import { slugifyHeading, cn } from "@/lib/utils"
 import { useI18n } from "@/lib/i18n"
-import type { DocPage } from "@/lib/docs-data"
+import type { DocPage } from "@/@types/docs"
 
 interface ContentProps {
   page: DocPage

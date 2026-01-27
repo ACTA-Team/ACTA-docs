@@ -8,7 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useI18n, type Locale } from "@/lib/i18n"
+import { useI18n } from "@/lib/i18n"
+import type { Locale } from "@/@types/i18n"
 
 interface HeaderProps {
   onSearchOpen: () => void

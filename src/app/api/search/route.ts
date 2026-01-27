@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { docsData } from "@/lib/docs-data"
+import { docsDataEn, docsDataEs } from "@/lib/docs-data"
 
 export async function POST(request: Request) {
   try {
@@ -18,8 +18,8 @@ export async function POST(request: Request) {
       )
     }
 
-    // Prepare documentation context for Gemini
-    const docsContext = Object.values(docsData)
+    // Prepare documentation context for Gemini (using English version)
+    const docsContext = Object.values(docsDataEn)
       .map((page) => `## ${page.title}\n${page.content}`)
       .join("\n\n---\n\n")
 

@@ -14,7 +14,7 @@ import {
   ChevronRight,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { navigationItems, navigationItemsEs } from "@/lib/docs-data"
+import { navigationItemsEn, navigationItemsEs } from "@/lib/docs-data"
 import { useI18n } from "@/lib/i18n"
 
 interface SidebarProps {
@@ -100,7 +100,7 @@ function NavItem({ item, isActive, onClick }: NavItemProps) {
 
 export function Sidebar({ currentSlug, onNavigate }: SidebarProps) {
   const { t, locale } = useI18n()
-  const nav = locale === "es" ? navigationItemsEs : navigationItems
+  const nav = locale === "es" ? navigationItemsEs : navigationItemsEn
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     welcome: true,
     sdk: true,

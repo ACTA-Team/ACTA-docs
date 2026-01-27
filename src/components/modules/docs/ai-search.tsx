@@ -5,7 +5,7 @@ import React from "react"
 import { useState, useEffect, useRef } from "react"
 import { Search, X, Sparkles, Loader2 } from "lucide-react"
 import { useI18n } from "@/lib/i18n"
-import { docsData } from "@/lib/docs-data"
+import { docsDataEn, docsDataEs } from "@/lib/docs-data"
 
 interface AISearchProps {
   onNavigate: (slug: string) => void
@@ -13,12 +13,13 @@ interface AISearchProps {
 }
 
 export function AISearch({ onNavigate, onClose }: AISearchProps) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [query, setQuery] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [response, setResponse] = useState<string | null>(null)
   const [suggestedPages, setSuggestedPages] = useState<string[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
+  const docsData = locale === "es" ? docsDataEs : docsDataEn
 
   useEffect(() => {
     inputRef.current?.focus()

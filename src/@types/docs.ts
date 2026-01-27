@@ -1,0 +1,21 @@
+export type DocPage = {
+  slug: string
+  title: string
+  section: string
+  content: string
+  tocItems: string[]
+}
+
+export type Locale = "en" | "es"
+
+export type NavigationItem = {
+  slug: string
+  title: string
+}
+
+export type NavigationItems = {
+  welcome: NavigationItem[]
+  sdk: NavigationItem[]
+}
+
+export type FeedbackType = "up" | "neutral" | "down" | null
