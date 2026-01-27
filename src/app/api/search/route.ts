@@ -1,27 +1,27 @@
-import { NextResponse } from "next/server"
-import { docsDataEn, docsDataEs } from "@/lib/docs-data"
+import { NextResponse } from "next/server";
+import { docsDataEn, docsDataEs } from "@/lib/docs-data";
 
 export async function POST(request: Request) {
   try {
-    const { query } = await request.json()
+    const { query } = await request.json();
 
     if (!query || typeof query !== "string") {
-      return NextResponse.json({ error: "Query is required" }, { status: 400 })
+      return NextResponse.json({ error: "Query is required" }, { status: 400 });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY
+    const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
       return NextResponse.json(
         { error: "GEMINI_API_KEY is not configured" },
         { status: 500 }
-      )
+      );
     }
 
     // Prepare documentation context for Gemini (using English version)
     const docsContext = Object.values(docsDataEn)
-      .map((page) => `## ${page.title}\n${page.content}`)
-      .join("\n\n---\n\n")
+      .map(page => `## ${page.title}\n${page.content}`)
+      .join("\n\n---\n\n");
 
     const prompt = `You are an AI assistant for ACTA documentation. ACTA is a verifiable credentials infrastructure on Stellar blockchain.
 
@@ -43,7 +43,7 @@ Format your response as JSON:
 {
   "answer": "Your helpful answer here",
   "suggestedPages": ["slug1", "slug2"]
-}`
+}`;
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
@@ -58,43 +58,43 @@ Format your response as JSON:
           },
         }),
       }
-    )
+    );
 
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error("Gemini API error:", errorText)
+      const errorText = await response.text();
+      console.error("Gemini API error:", errorText);
       return NextResponse.json(
         { error: "Failed to get AI response" },
         { status: 500 }
-      )
+      );
     }
 
-    const data = await response.json()
-    const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || ""
+    const data = await response.json();
+    const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
     // Try to parse JSON response
-    let answer = textResponse
-    let suggestedPages: string[] = []
+    let answer = textResponse;
+    let suggestedPages: string[] = [];
 
     try {
       // Extract JSON from response
-      const jsonMatch = textResponse.match(/\{[\s\S]*\}/)
+      const jsonMatch = textResponse.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0])
-        answer = parsed.answer || textResponse
-        suggestedPages = parsed.suggestedPages || []
+        const parsed = JSON.parse(jsonMatch[0]);
+        answer = parsed.answer || textResponse;
+        suggestedPages = parsed.suggestedPages || [];
       }
     } catch {
       // If JSON parsing fails, use the raw text
-      answer = textResponse
+      answer = textResponse;
     }
 
-    return NextResponse.json({ answer, suggestedPages })
+    return NextResponse.json({ answer, suggestedPages });
   } catch (error) {
-    console.error("Search error:", error)
+    console.error("Search error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
-    )
+    );
   }
 }

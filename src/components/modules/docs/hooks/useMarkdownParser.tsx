@@ -1,123 +1,142 @@
-import React from "react"
-import { slugifyHeading } from "@/lib/utils"
+import React from "react";
+import { slugifyHeading } from "@/lib/utils";
 
 // Map topic names to slugs
 const topicToSlug: Record<string, string> = {
-  "Architecture": "architecture",
+  Architecture: "architecture",
   "Getting Started": "getting-started",
   "React SDK": "sdk-overview",
-  "Arquitectura": "architecture",
+  Arquitectura: "architecture",
   "Primeros Pasos": "getting-started",
   "React SDK": "sdk-overview",
-}
+};
 
-export function useMarkdownParser(content: string, onNavigate?: (slug: string) => void) {
+export function useMarkdownParser(
+  content: string,
+  onNavigate?: (slug: string) => void
+) {
   const renderContent = (text: string) => {
-    const lines = text.split('\n')
-    const elements: React.ReactNode[] = []
-    let codeBlock: string[] = []
-    let inCodeBlock = false
-    let codeLanguage = ''
-    let listItems: string[] = []
-    let inList = false
-    let listType: 'ul' | 'ol' = 'ul'
+    const lines = text.split("\n");
+    const elements: React.ReactNode[] = [];
+    let codeBlock: string[] = [];
+    let inCodeBlock = false;
+    let codeLanguage = "";
+    let listItems: string[] = [];
+    let inList = false;
+    let listType: "ul" | "ol" = "ul";
 
     const processInlineFormatting = (line: string): React.ReactNode => {
       // Process inline code, bold, links
-      const parts: React.ReactNode[] = []
-      let remaining = line
-      let key = 0
+      const parts: React.ReactNode[] = [];
+      let remaining = line;
+      let key = 0;
 
       while (remaining.length > 0) {
         // Check for inline code
-        const codeMatch = remaining.match(/^`([^`]+)`/)
+        const codeMatch = remaining.match(/^`([^`]+)`/);
         if (codeMatch) {
           parts.push(
-            <code key={key++} className="px-1.5 py-0.5 bg-secondary rounded text-sm font-mono text-primary">
+            <code
+              key={key++}
+              className="px-1.5 py-0.5 bg-secondary rounded text-sm font-mono text-primary"
+            >
               {codeMatch[1]}
             </code>
-          )
-          remaining = remaining.slice(codeMatch[0].length)
-          continue
+          );
+          remaining = remaining.slice(codeMatch[0].length);
+          continue;
         }
 
         // Check for bold with **
-        const boldMatch = remaining.match(/^\*\*([^*]+)\*\*/)
+        const boldMatch = remaining.match(/^\*\*([^*]+)\*\*/);
         if (boldMatch) {
-          parts.push(<strong key={key++} className="font-semibold text-foreground">{boldMatch[1]}</strong>)
-          remaining = remaining.slice(boldMatch[0].length)
-          continue
+          parts.push(
+            <strong key={key++} className="font-semibold text-foreground">
+              {boldMatch[1]}
+            </strong>
+          );
+          remaining = remaining.slice(boldMatch[0].length);
+          continue;
         }
 
         // Check for links [text](url)
-        const linkMatch = remaining.match(/^\[([^\]]+)\]\(([^)]+)\)/)
+        const linkMatch = remaining.match(/^\[([^\]]+)\]\(([^)]+)\)/);
         if (linkMatch) {
           parts.push(
-            <a key={key++} href={linkMatch[2]} className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
+            <a
+              key={key++}
+              href={linkMatch[2]}
+              className="text-primary hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {linkMatch[1]}
             </a>
-          )
-          remaining = remaining.slice(linkMatch[0].length)
-          continue
+          );
+          remaining = remaining.slice(linkMatch[0].length);
+          continue;
         }
 
         // Regular character
-        const nextSpecial = remaining.search(/[`*\[]/)
+        const nextSpecial = remaining.search(/[`*\[]/);
         if (nextSpecial === -1) {
-          parts.push(remaining)
-          break
+          parts.push(remaining);
+          break;
         } else if (nextSpecial === 0) {
-          parts.push(remaining[0])
-          remaining = remaining.slice(1)
+          parts.push(remaining[0]);
+          remaining = remaining.slice(1);
         } else {
-          parts.push(remaining.slice(0, nextSpecial))
-          remaining = remaining.slice(nextSpecial)
+          parts.push(remaining.slice(0, nextSpecial));
+          remaining = remaining.slice(nextSpecial);
         }
       }
 
-      return parts.length === 1 ? parts[0] : <>{parts}</>
-    }
+      return parts.length === 1 ? parts[0] : <>{parts}</>;
+    };
 
     const flushList = () => {
       if (listItems.length > 0) {
-        const ListTag = listType
+        const ListTag = listType;
         elements.push(
-          <ListTag key={elements.length} className={`${listType === 'ul' ? 'list-disc' : 'list-decimal'} list-inside text-foreground/80 space-y-2 mb-6 ml-4`}>
+          <ListTag
+            key={elements.length}
+            className={`${listType === "ul" ? "list-disc" : "list-decimal"} list-inside text-foreground/80 space-y-2 mb-6 ml-4`}
+          >
             {listItems.map((item, idx) => (
               <li key={idx}>{processInlineFormatting(item)}</li>
             ))}
           </ListTag>
-        )
-        listItems = []
-        inList = false
+        );
+        listItems = [];
+        inList = false;
       }
-    }
+    };
 
     // Simple pipe-table support (used for the "Start here" grid)
-    let tableRows: string[] = []
-    let inTable = false
+    let tableRows: string[] = [];
+    let inTable = false;
 
     const flushTable = () => {
-      if (!inTable || tableRows.length === 0) return
+      if (!inTable || tableRows.length === 0) return;
 
       // Expect a header + separator + data rows
-      const [headerLine, separatorLine, ...dataLines] = tableRows
+      const [headerLine, separatorLine, ...dataLines] = tableRows;
       const headerCells = headerLine
         .split("|")
-        .map((c) => c.trim())
-        .filter(Boolean)
+        .map(c => c.trim())
+        .filter(Boolean);
 
       // Only handle the simple 2-column table we use in docs
       if (headerCells.length === 2 && dataLines.length > 0) {
         const cards = dataLines
-          .map((line) =>
+          .map(line =>
             line
               .split("|")
-              .map((c) => c.trim())
-              .filter(Boolean),
+              .map(c => c.trim())
+              .filter(Boolean)
           )
-          .filter((cells) => cells.length === 2)
-          .map(([topic, description]) => ({ topic, description }))
+          .filter(cells => cells.length === 2)
+          .map(([topic, description]) => ({ topic, description }));
 
         if (cards.length > 0) {
           elements.push(
@@ -125,9 +144,9 @@ export function useMarkdownParser(content: string, onNavigate?: (slug: string) =
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {cards.map((card, idx) => {
                   // Extract plain text from topic (remove markdown formatting)
-                  const topicText = card.topic.replace(/\*\*/g, "").trim()
-                  const slug = topicToSlug[topicText]
-                  const isClickable = slug && onNavigate
+                  const topicText = card.topic.replace(/\*\*/g, "").trim();
+                  const slug = topicToSlug[topicText];
+                  const isClickable = slug && onNavigate;
 
                   const cardContent = (
                     <>
@@ -141,7 +160,7 @@ export function useMarkdownParser(content: string, onNavigate?: (slug: string) =
                         {processInlineFormatting(card.description)}
                       </p>
                     </>
-                  )
+                  );
 
                   if (isClickable) {
                     return (
@@ -152,7 +171,7 @@ export function useMarkdownParser(content: string, onNavigate?: (slug: string) =
                       >
                         {cardContent}
                       </button>
-                    )
+                    );
                   }
 
                   return (
@@ -162,24 +181,24 @@ export function useMarkdownParser(content: string, onNavigate?: (slug: string) =
                     >
                       {cardContent}
                     </div>
-                  )
+                  );
                 })}
               </div>
-            </section>,
-          )
+            </section>
+          );
         }
       }
 
-      tableRows = []
-      inTable = false
-    }
+      tableRows = [];
+      inTable = false;
+    };
 
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i]
+      const line = lines[i];
 
       // Code block start/end
-      if (line.startsWith('```')) {
-        flushTable()
+      if (line.startsWith("```")) {
+        flushTable();
         if (inCodeBlock) {
           // End code block
           elements.push(
@@ -192,55 +211,55 @@ export function useMarkdownParser(content: string, onNavigate?: (slug: string) =
                 )}
                 <pre className="p-4 overflow-x-auto">
                   <code className="text-sm font-mono text-foreground/90">
-                    {codeBlock.join('\n')}
+                    {codeBlock.join("\n")}
                   </code>
                 </pre>
               </div>
             </div>
-          )
-          codeBlock = []
-          inCodeBlock = false
-          codeLanguage = ''
+          );
+          codeBlock = [];
+          inCodeBlock = false;
+          codeLanguage = "";
         } else {
           // Start code block
-          flushList()
-          inCodeBlock = true
-          codeLanguage = line.slice(3).trim()
+          flushList();
+          inCodeBlock = true;
+          codeLanguage = line.slice(3).trim();
         }
-        continue
+        continue;
       }
 
       if (inCodeBlock) {
-        codeBlock.push(line)
-        continue
+        codeBlock.push(line);
+        continue;
       }
 
       // Empty line
-      if (line.trim() === '') {
-        flushTable()
-        flushList()
-        continue
+      if (line.trim() === "") {
+        flushTable();
+        flushList();
+        continue;
       }
 
       // Pipe table rows (e.g. "| Topic | Description |")
-      if (line.trim().startsWith('|') && line.includes('|')) {
+      if (line.trim().startsWith("|") && line.includes("|")) {
         if (!inTable) {
-          flushList()
-          inTable = true
-          tableRows = []
+          flushList();
+          inTable = true;
+          tableRows = [];
         }
-        tableRows.push(line)
-        continue
+        tableRows.push(line);
+        continue;
       } else if (inTable) {
         // End of table block
-        flushTable()
+        flushTable();
       }
 
       // Headers
-      if (line.startsWith('# ')) {
-        flushTable()
-        flushList()
-        const text = line.slice(2)
+      if (line.startsWith("# ")) {
+        flushTable();
+        flushList();
+        const text = line.slice(2);
         elements.push(
           <h1
             key={elements.length}
@@ -249,14 +268,14 @@ export function useMarkdownParser(content: string, onNavigate?: (slug: string) =
           >
             {text}
           </h1>
-        )
-        continue
+        );
+        continue;
       }
 
-      if (line.startsWith('## ')) {
-        flushTable()
-        flushList()
-        const text = line.slice(3)
+      if (line.startsWith("## ")) {
+        flushTable();
+        flushList();
+        const text = line.slice(3);
         elements.push(
           <h2
             key={elements.length}
@@ -265,14 +284,14 @@ export function useMarkdownParser(content: string, onNavigate?: (slug: string) =
           >
             {text}
           </h2>
-        )
-        continue
+        );
+        continue;
       }
 
-      if (line.startsWith('### ')) {
-        flushTable()
-        flushList()
-        const text = line.slice(4)
+      if (line.startsWith("### ")) {
+        flushTable();
+        flushList();
+        const text = line.slice(4);
         elements.push(
           <h3
             key={elements.length}
@@ -281,14 +300,14 @@ export function useMarkdownParser(content: string, onNavigate?: (slug: string) =
           >
             {text}
           </h3>
-        )
-        continue
+        );
+        continue;
       }
 
-      if (line.startsWith('#### ')) {
-        flushTable()
-        flushList()
-        const text = line.slice(5)
+      if (line.startsWith("#### ")) {
+        flushTable();
+        flushList();
+        const text = line.slice(5);
         elements.push(
           <h4
             key={elements.length}
@@ -297,48 +316,51 @@ export function useMarkdownParser(content: string, onNavigate?: (slug: string) =
           >
             {text}
           </h4>
-        )
-        continue
+        );
+        continue;
       }
 
       // Unordered list
       if (line.match(/^[-*]\s/)) {
-        flushTable()
-        if (!inList || listType !== 'ul') {
-          flushList()
-          inList = true
-          listType = 'ul'
+        flushTable();
+        if (!inList || listType !== "ul") {
+          flushList();
+          inList = true;
+          listType = "ul";
         }
-        listItems.push(line.slice(2))
-        continue
+        listItems.push(line.slice(2));
+        continue;
       }
 
       // Ordered list
       if (line.match(/^\d+\.\s/)) {
-        flushTable()
-        if (!inList || listType !== 'ol') {
-          flushList()
-          inList = true
-          listType = 'ol'
+        flushTable();
+        if (!inList || listType !== "ol") {
+          flushList();
+          inList = true;
+          listType = "ol";
         }
-        listItems.push(line.replace(/^\d+\.\s/, ''))
-        continue
+        listItems.push(line.replace(/^\d+\.\s/, ""));
+        continue;
       }
 
       // Regular paragraph
-      flushTable()
-      flushList()
+      flushTable();
+      flushList();
       elements.push(
-        <p key={elements.length} className="text-foreground/80 leading-relaxed mb-4">
+        <p
+          key={elements.length}
+          className="text-foreground/80 leading-relaxed mb-4"
+        >
           {processInlineFormatting(line)}
         </p>
-      )
+      );
     }
 
-    flushTable()
-    flushList()
-    return elements
-  }
+    flushTable();
+    flushList();
+    return elements;
+  };
 
-  return renderContent(content)
+  return renderContent(content);
 }

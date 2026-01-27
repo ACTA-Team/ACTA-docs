@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import { Copy, ChevronDown, Check } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { MarkdownContent } from "./MarkdownContent"
-import { useContent } from "../hooks/useContent"
-import type { DocPage } from "@/@types/docs"
+import { Copy, ChevronDown, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { MarkdownContent } from "./MarkdownContent";
+import { useContent } from "../hooks/useContent";
+import type { DocPage } from "@/@types/docs";
 
 interface ContentProps {
-  page: DocPage
-  onNavigate?: (slug: string) => void
+  page: DocPage;
+  onNavigate?: (slug: string) => void;
 }
 
 export function Content({ page, onNavigate }: ContentProps) {
-  const { sectionLabel, copied, handleCopy, t } = useContent({ page })
+  const { sectionLabel, copied, handleCopy, t } = useContent({ page });
 
   return (
     <main className="flex-1 overflow-y-auto">
@@ -22,9 +22,9 @@ export function Content({ page, onNavigate }: ContentProps) {
           <span className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
             {sectionLabel}
           </span>
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             className="bg-secondary border-border text-foreground hover:bg-muted"
             onClick={handleCopy}
           >
@@ -49,5 +49,5 @@ export function Content({ page, onNavigate }: ContentProps) {
         </div>
       </div>
     </main>
-  )
+  );
 }

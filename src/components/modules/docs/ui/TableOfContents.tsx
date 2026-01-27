@@ -1,21 +1,20 @@
-"use client"
+"use client";
 
-import { ThumbsUp, ThumbsDown, Minus } from "lucide-react"
-import { slugifyHeading, cn } from "@/lib/utils"
-import { useTableOfContents } from "../hooks/useTableOfContents"
+import { ThumbsUp, ThumbsDown, Minus } from "lucide-react";
+import { slugifyHeading, cn } from "@/lib/utils";
+import { useTableOfContents } from "../hooks/useTableOfContents";
 
 interface TableOfContentsProps {
-  items: string[]
+  items: string[];
 }
 
 export function TableOfContents({ items }: TableOfContentsProps) {
-  const { feedback, setFeedback, t } = useTableOfContents()
+  const { feedback, setFeedback, t } = useTableOfContents();
 
   const baseBtn =
-    "p-2 rounded-lg transition-colors text-muted-foreground hover:text-foreground"
-  const selected =
-    "bg-secondary text-foreground"
-  const unselected = "hover:bg-secondary"
+    "p-2 rounded-lg transition-colors text-muted-foreground hover:text-foreground";
+  const selected = "bg-secondary text-foreground";
+  const unselected = "hover:bg-secondary";
 
   return (
     <aside className="w-64 border-l border-border p-6 hidden xl:block">
@@ -42,14 +41,13 @@ export function TableOfContents({ items }: TableOfContentsProps) {
 
         {/* Feedback */}
         <div className="mt-12 pt-6 border-t border-border">
-          <p className="text-sm text-muted-foreground mb-3">{t.wasThisHelpful}</p>
+          <p className="text-sm text-muted-foreground mb-3">
+            {t.wasThisHelpful}
+          </p>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setFeedback("up")}
-              className={cn(
-                baseBtn,
-                feedback === "up" ? selected : unselected
-              )}
+              className={cn(baseBtn, feedback === "up" ? selected : unselected)}
               aria-label="Helpful"
             >
               <ThumbsUp className="w-4 h-4" />
@@ -85,5 +83,5 @@ export function TableOfContents({ items }: TableOfContentsProps) {
         </div>
       </nav>
     </aside>
-  )
+  );
 }

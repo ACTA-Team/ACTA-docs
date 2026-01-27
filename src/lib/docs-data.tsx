@@ -1,14 +1,19 @@
-import type { DocPage, NavigationItems } from "@/@types/docs"
+import type { DocPage, NavigationItems } from "@/@types/docs";
 
-export type { DocPage, NavigationItems }
+export type { DocPage, NavigationItems };
 
 export const docsDataEn: Record<string, DocPage> = {
   // Welcome Section
-  "introduction": {
+  introduction: {
     slug: "introduction",
     title: "Introduction",
     section: "Welcome",
-    tocItems: ["Start here", "What you can build", "Common use cases", "Try it now"],
+    tocItems: [
+      "Start here",
+      "What you can build",
+      "Common use cases",
+      "Try it now",
+    ],
     content: `
 # Welcome
 
@@ -45,13 +50,22 @@ ACTA is **Verifiable Credentials Infrastructure** for **Stellar blockchain**. Bu
 - [Open dApp](https://dapp.acta.build/) - Explore the ACTA dApp
 - [View GitHub](https://github.com/ACTA-Team) - Check the source code
 - [Join Discord](https://discord.gg/DsUSE3aMDZ) - Connect with the community
-    `
+    `,
   },
-  "architecture": {
+  architecture: {
     slug: "architecture",
     title: "Architecture",
     section: "Welcome",
-    tocItems: ["System Components", "Issuance Contract", "Vault Contract", "API Layer", "Storage", "Identity Model", "Credential Flow", "Network Support"],
+    tocItems: [
+      "System Components",
+      "Issuance Contract",
+      "Vault Contract",
+      "API Layer",
+      "Storage",
+      "Identity Model",
+      "Credential Flow",
+      "Network Support",
+    ],
     content: `
 # Architecture
 
@@ -144,13 +158,19 @@ ACTA automatically handles network configuration:
 - **Mainnet**: \`https://acta.build/api/mainnet\` or \`NETWORK_TYPE=mainnet\`
 
 Contract IDs, RPC URLs, and network passphrases are configured automatically based on network type.
-    `
+    `,
   },
   "getting-started": {
     slug: "getting-started",
     title: "Getting Started",
     section: "Welcome",
-    tocItems: ["API Integration", "React SDK Integration", "Wallet Integration", "Testnet Setup", "Next Steps"],
+    tocItems: [
+      "API Integration",
+      "React SDK Integration",
+      "Wallet Integration",
+      "Testnet Setup",
+      "Next Steps",
+    ],
     content: `
 # Getting Started
 
@@ -203,9 +223,9 @@ See Testnet Tokens for faucet links.
 - Check Schema Documentation for data structures
 - Explore React SDK Hooks for React integration
 - Read Troubleshooting Guide for common issues
-    `
+    `,
   },
-  "links": {
+  links: {
     slug: "links",
     title: "Links",
     section: "Welcome",
@@ -228,7 +248,7 @@ See Testnet Tokens for faucet links.
 - **X/Twitter**: [https://x.com/ActaXyz](https://x.com/ActaXyz)
 - **LinkedIn**: [https://www.linkedin.com/company/acta-org](https://www.linkedin.com/company/acta-org)
 - **Instagram**: [https://www.instagram.com/acta.xyz](https://www.instagram.com/acta.xyz)
-    `
+    `,
   },
 
   // React SDK Section
@@ -236,7 +256,12 @@ See Testnet Tokens for faucet links.
     slug: "sdk-overview",
     title: "Overview",
     section: "React SDK",
-    tocItems: ["Exports", "Provider Setup", "Accessing the Client", "Hooks Summary"],
+    tocItems: [
+      "Exports",
+      "Provider Setup",
+      "Accessing the Client",
+      "Hooks Summary",
+    ],
     content: `
 # React SDK Overview
 
@@ -292,13 +317,23 @@ const config = await client.getConfig();
   - \`listVcIds\`: List credential IDs owned by an owner
   - \`getVc\`: Get a credential from the vault
   - \`verifyVc\`: Verify the status of a credential in the vault
-    `
+    `,
   },
-  "useCredential": {
+  useCredential: {
     slug: "useCredential",
     title: "useCredential",
     section: "React SDK",
-    tocItems: ["Function", "issue", "Arguments", "Signer Type", "Return Value", "Example", "revoke", "Transaction Flow", "Notes"],
+    tocItems: [
+      "Function",
+      "issue",
+      "Arguments",
+      "Signer Type",
+      "Return Value",
+      "Example",
+      "revoke",
+      "Transaction Flow",
+      "Notes",
+    ],
     content: `
 # useCredential
 
@@ -424,13 +459,23 @@ The hook automatically handles the distinction between prepare and submit respon
 - The \`issue\` method automatically stores the credential in the vault and marks it as valid in a single transaction
 - The \`revoke\` method requires the \`owner\` to sign the transaction
 - The revocation date is automatically set to the current date if not provided
-    `
+    `,
   },
-  "useVault": {
+  useVault: {
     slug: "useVault",
     title: "useVault",
     section: "React SDK",
-    tocItems: ["Function", "createVault", "Arguments", "Signer Type", "Return Value", "Example", "authorizeIssuer", "revokeIssuer", "Transaction Flow"],
+    tocItems: [
+      "Function",
+      "createVault",
+      "Arguments",
+      "Signer Type",
+      "Return Value",
+      "Example",
+      "authorizeIssuer",
+      "revokeIssuer",
+      "Transaction Flow",
+    ],
     content: `
 # useVault
 
@@ -572,13 +617,22 @@ All methods follow the same flow:
 3. **Submit**: Sends the signed XDR to the API to be processed on the network
 
 The hook automatically handles the distinction between prepare and submit responses using internal type guards.
-    `
+    `,
   },
-  "useVaultRead": {
+  useVaultRead: {
     slug: "useVaultRead",
     title: "useVaultRead",
     section: "React SDK",
-    tocItems: ["Function", "listVcIds", "Arguments", "Return Value", "Example", "getVc", "verifyVc", "Notes"],
+    tocItems: [
+      "Function",
+      "listVcIds",
+      "Arguments",
+      "Return Value",
+      "Example",
+      "getVc",
+      "verifyVc",
+      "Notes",
+    ],
     content: `
 # useVaultRead
 
@@ -708,9 +762,9 @@ if (verification.since) {
 - Methods automatically handle different API response formats
 - \`getVc\` returns \`null\` if the credential does not exist in the vault
 - \`verifyVc\` always returns a result with the current status of the credential
-    `
-  }
-}
+    `,
+  },
+};
 
 export const navigationItemsEn = {
   welcome: [
@@ -724,16 +778,21 @@ export const navigationItemsEn = {
     { slug: "useCredential", title: "useCredential" },
     { slug: "useVault", title: "useVault" },
     { slug: "useVaultRead", title: "useVaultRead" },
-  ]
-}
+  ],
+};
 
 export const docsDataEs: Record<string, DocPage> = {
   // Welcome Section
-  "introduction": {
+  introduction: {
     slug: "introduction",
     title: "Introducción",
     section: "Bienvenida",
-    tocItems: ["Empieza aquí", "Qué puedes construir", "Casos de uso comunes", "Pruébalo ahora"],
+    tocItems: [
+      "Empieza aquí",
+      "Qué puedes construir",
+      "Casos de uso comunes",
+      "Pruébalo ahora",
+    ],
     content: `
 # Bienvenida
 
@@ -770,13 +829,22 @@ ACTA es **infraestructura de credenciales verificables** para la **blockchain St
 - [Abrir dApp](https://dapp.acta.build/) - Explora la dApp de ACTA  
 - [Ver GitHub](https://github.com/ACTA-Team) - Revisa el código fuente  
 - [Unirte a Discord](https://discord.gg/DsUSE3aMDZ) - Conéctate con la comunidad  
-    `
+    `,
   },
-  "architecture": {
+  architecture: {
     slug: "architecture",
     title: "Arquitectura",
     section: "Bienvenida",
-    tocItems: ["Componentes del sistema", "Contrato de emisión", "Contrato de bóveda", "Capa de API", "Almacenamiento", "Modelo de identidad", "Flujo de credenciales", "Soporte de red"],
+    tocItems: [
+      "Componentes del sistema",
+      "Contrato de emisión",
+      "Contrato de bóveda",
+      "Capa de API",
+      "Almacenamiento",
+      "Modelo de identidad",
+      "Flujo de credenciales",
+      "Soporte de red",
+    ],
     content: `
 # Arquitectura
 
@@ -869,13 +937,19 @@ ACTA maneja automáticamente la configuración de red:
 - **Mainnet**: \`https://acta.build/api/mainnet\` o \`NETWORK_TYPE=mainnet\`  
 
 Los IDs de contratos, URLs RPC y passphrases de red se configuran automáticamente según el tipo de red.
-    `
+    `,
   },
   "getting-started": {
     slug: "getting-started",
     title: "Primeros Pasos",
     section: "Bienvenida",
-    tocItems: ["Integración API", "Integración React SDK", "Integración de wallet", "Configuración Testnet", "Siguientes pasos"],
+    tocItems: [
+      "Integración API",
+      "Integración React SDK",
+      "Integración de wallet",
+      "Configuración Testnet",
+      "Siguientes pasos",
+    ],
     content: `
 # Primeros Pasos
 
@@ -928,9 +1002,9 @@ Revisa la sección de Testnet Tokens para enlaces a faucets.
 - Consulta la documentación de esquemas para estructuras de datos  
 - Explora los hooks del React SDK para integración con React  
 - Lee la guía de troubleshooting para problemas comunes  
-    `
+    `,
   },
-  "links": {
+  links: {
     slug: "links",
     title: "Enlaces",
     section: "Bienvenida",
@@ -953,7 +1027,7 @@ Revisa la sección de Testnet Tokens para enlaces a faucets.
 - **X/Twitter**: [https://x.com/ActaXyz](https://x.com/ActaXyz)  
 - **LinkedIn**: [https://www.linkedin.com/company/acta-org](https://www.linkedin.com/company/acta-org)  
 - **Instagram**: [https://www.instagram.com/acta.xyz](https://www.instagram.com/acta.xyz)  
-    `
+    `,
   },
 
   // React SDK Section
@@ -961,7 +1035,12 @@ Revisa la sección de Testnet Tokens para enlaces a faucets.
     slug: "sdk-overview",
     title: "Resumen",
     section: "React SDK",
-    tocItems: ["Exports", "Configuración del provider", "Acceder al cliente", "Resumen de hooks"],
+    tocItems: [
+      "Exports",
+      "Configuración del provider",
+      "Acceder al cliente",
+      "Resumen de hooks",
+    ],
     content: `
 # Resumen del React SDK
 
@@ -1008,13 +1087,23 @@ const config = await client.getConfig();
 - **\`useVault\`**: operaciones de bóveda — crear bóveda, autorizar emisor, revocar emisor  
 - **\`useCredential\`**: operaciones de credenciales — emitir y revocar  
 - **\`useVaultRead\`**: lectura de bóveda — listar IDs, obtener VC, verificar VC  
-    `
+    `,
   },
-  "useCredential": {
+  useCredential: {
     slug: "useCredential",
     title: "useCredential",
     section: "React SDK",
-    tocItems: ["Función", "issue", "Argumentos", "Tipo de firmante", "Valor de retorno", "Ejemplo", "revoke", "Flujo de transacción", "Notas"],
+    tocItems: [
+      "Función",
+      "issue",
+      "Argumentos",
+      "Tipo de firmante",
+      "Valor de retorno",
+      "Ejemplo",
+      "revoke",
+      "Flujo de transacción",
+      "Notas",
+    ],
     content: `
 # useCredential
 
@@ -1140,13 +1229,23 @@ El hook maneja automáticamente la diferencia entre las respuestas de “prepare
 - El método \`issue\` almacena automáticamente la credencial en la bóveda y la marca como válida en una sola transacción  
 - El método \`revoke\` requiere que el \`owner\` firme la transacción  
 - La fecha de revocación se establece automáticamente a la fecha actual si no se provee  
-    `
+    `,
   },
-  "useVault": {
+  useVault: {
     slug: "useVault",
     title: "useVault",
     section: "React SDK",
-    tocItems: ["Función", "createVault", "Argumentos", "Tipo de firmante", "Valor de retorno", "Ejemplo", "authorizeIssuer", "revokeIssuer", "Flujo de transacción"],
+    tocItems: [
+      "Función",
+      "createVault",
+      "Argumentos",
+      "Tipo de firmante",
+      "Valor de retorno",
+      "Ejemplo",
+      "authorizeIssuer",
+      "revokeIssuer",
+      "Flujo de transacción",
+    ],
     content: `
 # useVault
 
@@ -1288,13 +1387,22 @@ Todos los métodos siguen el mismo flujo:
 3. **Enviar**: envía el XDR firmado a la API para procesarlo en la red  
 
 El hook maneja automáticamente la diferencia entre las respuestas de “prepare” y “submit” usando type guards internos.
-    `
+    `,
   },
-  "useVaultRead": {
+  useVaultRead: {
     slug: "useVaultRead",
     title: "useVaultRead",
     section: "React SDK",
-    tocItems: ["Función", "listVcIds", "Argumentos", "Valor de retorno", "Ejemplo", "getVc", "verifyVc", "Notas"],
+    tocItems: [
+      "Función",
+      "listVcIds",
+      "Argumentos",
+      "Valor de retorno",
+      "Ejemplo",
+      "getVc",
+      "verifyVc",
+      "Notas",
+    ],
     content: `
 # useVaultRead
 
@@ -1424,14 +1532,14 @@ if (verification.since) {
 - Los métodos manejan automáticamente distintos formatos de respuesta de la API  
 - \`getVc\` devuelve \`null\` si la credencial no existe en la bóveda  
 - \`verifyVc\` siempre devuelve el estado actual de la credencial  
-    `
-  }
-}
+    `,
+  },
+};
 
 // Combined export for API route (uses English by default)
-export const docsData = docsDataEn
+export const docsData = docsDataEn;
 
-export const navigationItems = navigationItemsEn
+export const navigationItems = navigationItemsEn;
 
 export const navigationItemsEs = {
   welcome: [
@@ -1446,4 +1554,4 @@ export const navigationItemsEs = {
     { slug: "useVault", title: "useVault" },
     { slug: "useVaultRead", title: "useVaultRead" },
   ],
-}
+};

@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import React from "react"
-import { Search, X, Sparkles, Loader2 } from "lucide-react"
-import { useAISearch } from "../hooks/useAISearch"
+import React from "react";
+import { Search, X, Sparkles, Loader2 } from "lucide-react";
+import { useAISearch } from "../hooks/useAISearch";
 
 interface AISearchProps {
-  onNavigate: (slug: string) => void
-  onClose: () => void
+  onNavigate: (slug: string) => void;
+  onClose: () => void;
 }
 
 export function AISearch({ onNavigate, onClose }: AISearchProps) {
@@ -22,13 +22,16 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
     handleSearch,
     handleKeyDown,
     handlePageClick,
-  } = useAISearch({ onNavigate, onClose })
+  } = useAISearch({ onNavigate, onClose });
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm" onClick={onClose}>
-      <div 
+    <div
+      className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
         className="fixed left-1/2 top-[10%] -translate-x-1/2 w-full max-w-2xl bg-card border border-border rounded-xl shadow-2xl overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
       >
         {/* Search Input */}
         <div className="flex items-center gap-3 px-4 py-4 border-b border-border">
@@ -37,12 +40,15 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
             ref={inputRef}
             type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={e => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={t.searchPlaceholder}
             className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-lg"
           />
-          <button onClick={onClose} className="p-1 hover:bg-secondary rounded-md transition-colors">
+          <button
+            onClick={onClose}
+            className="p-1 hover:bg-secondary rounded-md transition-colors"
+          >
             <X className="w-5 h-5 text-muted-foreground" />
           </button>
         </div>
@@ -60,9 +66,13 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
               <div className="prose prose-invert prose-sm max-w-none">
                 <div className="flex items-center gap-2 mb-3">
                   <Sparkles className="w-4 h-4 text-primary" />
-                  <span className="text-xs text-primary font-medium">{t.aiPowered}</span>
+                  <span className="text-xs text-primary font-medium">
+                    {t.aiPowered}
+                  </span>
                 </div>
-                <p className="text-foreground/90 leading-relaxed whitespace-pre-wrap">{response}</p>
+                <p className="text-foreground/90 leading-relaxed whitespace-pre-wrap">
+                  {response}
+                </p>
               </div>
 
               {/* Suggested Pages */}
@@ -72,9 +82,9 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
                     {t.relatedPages}
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {suggestedPages.map((slug) => {
-                      const page = docsData[slug]
-                      if (!page) return null
+                    {suggestedPages.map(slug => {
+                      const page = docsData[slug];
+                      if (!page) return null;
                       return (
                         <button
                           key={slug}
@@ -83,7 +93,7 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
                         >
                           {page.title}
                         </button>
-                      )
+                      );
                     })}
                   </div>
                 </div>
@@ -92,9 +102,7 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
           ) : (
             <div className="py-12 text-center">
               <Search className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-              <p className="text-muted-foreground text-sm">
-                {t.askAnything}
-              </p>
+              <p className="text-muted-foreground text-sm">{t.askAnything}</p>
             </div>
           )}
         </div>
@@ -114,5 +122,5 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
