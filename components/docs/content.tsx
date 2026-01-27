@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Copy, ChevronDown, ThumbsUp, ThumbsDown, Minus, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { MarkdownContent } from "@/components/docs/markdown-content"
-import { slugifyHeading } from "@/lib/utils"
+import { slugifyHeading, cn } from "@/lib/utils"
 import { useI18n } from "@/lib/i18n"
 import type { DocPage } from "@/lib/docs-data"
 
