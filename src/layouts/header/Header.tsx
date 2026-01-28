@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Globe, ChevronDown, Code } from "lucide-react";
+import { Search, Globe, ChevronDown, Code, Menu } from "lucide-react";
 import { DiscordIcon } from "@/components/ui/discord-icon";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,13 +14,27 @@ import type { Locale } from "@/@types/i18n";
 
 interface HeaderProps {
   onSearchOpen: () => void;
+  onMenuClick?: () => void;
 }
 
-export function Header({ onSearchOpen }: HeaderProps) {
+export function Header({ onSearchOpen, onMenuClick }: HeaderProps) {
   const { locale, setLocale, t } = useI18n();
 
   return (
-    <header className="h-16 border-b border-border bg-background flex items-center justify-between px-6">
+    <header className="h-16 border-b border-border bg-background flex items-center justify-between px-4 md:px-6">
+      {/* Mobile Menu Button */}
+      {onMenuClick && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden h-9 w-9 mr-2 shrink-0"
+          onClick={onMenuClick}
+          aria-label="Toggle menu"
+        >
+          <Menu className="w-5 h-5" />
+        </Button>
+      )}
+
       {/* Search */}
       <div className="flex-1 max-w-xl">
         <button

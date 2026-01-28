@@ -12,6 +12,7 @@ import { docsDataEn, docsDataEs } from "@/lib/docs-data";
 function DocsPageContent() {
   const [currentSlug, setCurrentSlug] = useState("introduction");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { locale } = useI18n();
   const docsData = locale === "es" ? docsDataEs : docsDataEn;
   const currentPage = docsData[currentSlug];
@@ -31,12 +32,20 @@ function DocsPageContent() {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <Sidebar currentSlug={currentSlug} onNavigate={setCurrentSlug} />
+      <Sidebar 
+        currentSlug={currentSlug} 
+        onNavigate={setCurrentSlug}
+        isOpen={isSidebarOpen}
+        onOpenChange={setIsSidebarOpen}
+      />
 
       {/* Main Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <Header onSearchOpen={() => setIsSearchOpen(true)} />
+        <Header 
+          onSearchOpen={() => setIsSearchOpen(true)}
+          onMenuClick={() => setIsSidebarOpen(true)}
+        />
 
         {/* Content Area */}
         <div className="flex-1 flex overflow-hidden">

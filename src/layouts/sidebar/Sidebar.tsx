@@ -17,10 +17,13 @@ import {
 import { cn } from "@/lib/utils";
 import { navigationItemsEn, navigationItemsEs } from "@/lib/docs-data";
 import { useI18n } from "@/lib/i18n";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 interface SidebarProps {
   currentSlug: string;
   onNavigate: (slug: string) => void;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -120,7 +123,7 @@ function NavItem({ item, isActive, onClick }: NavItemProps) {
   );
 }
 
-export function Sidebar({ currentSlug, onNavigate }: SidebarProps) {
+export function Sidebar({ currentSlug, onNavigate, isOpen, onOpenChange }: SidebarProps) {
   const { t, locale } = useI18n();
   const nav = locale === "es" ? navigationItemsEs : navigationItemsEn;
   const [expandedSections, setExpandedSections] = useState<
@@ -140,8 +143,136 @@ export function Sidebar({ currentSlug, onNavigate }: SidebarProps) {
     }));
   };
 
+  const handleNavigate = (slug: string) => {
+    onNavigate(slug);
+    // Cerrar el sidebar en móvil después de navegar
+    if (onOpenChange) {
+      onOpenChange(false);
+    }
+  };
+
+  const sidebarContent = (
+    <>
+      {/* Logo */}
+      <div className="px-4 py-5">
+        <div className="flex items-center gap-2.5">
+          <Image
+            src="/acta-logo.png"
+            alt="ACTA Logo"
+            width={28}
+            height={28}
+            className="w-7 h-7"
+          />
+          <span className="font-semibold text-sidebar-foreground text-sm">
+            ACTA Docs
+          </span>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <div className="flex-1 overflow-y-auto px-2 pt-2">
+        <CollapsibleSection
+          title={t.welcome}
+          isExpanded={expandedSections.welcome}
+          onToggle={() => toggleSection("welcome")}
+        >
+          {nav.welcome.map(item => (
+            <NavItem
+              key={item.slug}
+              item={item}
+              isActive={currentSlug === item.slug}
+              onClick={() => handleNavigate(item.slug)}
+            />
+          ))}
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          title={t.reactSdk}
+          isExpanded={expandedSections.sdk}
+          onToggle={() => toggleSection("sdk")}
+        >
+          {nav.sdk.map(item => (
+            <NavItem
+              key={item.slug}
+              item={item}
+              isActive={currentSlug === item.slug}
+              onClick={() => handleNavigate(item.slug)}
+            />
+          ))}
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          title={t.apiReference}
+          isExpanded={expandedSections["api-reference"]}
+          onToggle={() => toggleSection("api-reference")}
+        >
+          {nav["api-reference"].map(item => (
+            <NavItem
+              key={item.slug}
+              item={item}
+              isActive={currentSlug === item.slug}
+              onClick={() => handleNavigate(item.slug)}
+            />
+          ))}
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          title={t.dApp}
+          isExpanded={expandedSections.dapp}
+          onToggle={() => toggleSection("dapp")}
+        >
+          {nav.dapp.map(item => (
+            <NavItem
+              key={item.slug}
+              item={item}
+              isActive={currentSlug === item.slug}
+              onClick={() => handleNavigate(item.slug)}
+            />
+          ))}
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          title={t.zkProofs}
+          isExpanded={expandedSections["zk-proofs"]}
+          onToggle={() => toggleSection("zk-proofs")}
+        >
+          {nav["zk-proofs"].map(item => (
+            <NavItem
+              key={item.slug}
+              item={item}
+              isActive={currentSlug === item.slug}
+              onClick={() => handleNavigate(item.slug)}
+            />
+          ))}
+        </CollapsibleSection>
+      </div>
+
+      {/* Footer */}
+      <div className="px-4 py-3 border-t border-sidebar-border/50">
+        <span className="text-[10px] text-muted-foreground/50 uppercase tracking-wider">
+          {t.poweredBy}
+        </span>
+      </div>
+    </>
+  );
+
   return (
-    <aside className="w-60 h-screen bg-sidebar flex flex-col shrink-0">
+    <>
+      {/* Sidebar Desktop - siempre visible en md y superior */}
+      <aside className="hidden md:flex w-60 h-screen bg-sidebar flex-col shrink-0">
+        {sidebarContent}
+      </aside>
+
+      {/* Sidebar Mobile - Sheet/Drawer */}
+      <Sheet open={isOpen} onOpenChange={onOpenChange}>
+        <SheetContent side="left" className="w-60 p-0 bg-sidebar border-sidebar-border">
+          <div className="w-full h-full flex flex-col">
+            {sidebarContent}
+          </div>
+        </SheetContent>
+      </Sheet>
+    </>
+  );
       {/* Logo */}
       <div className="px-4 py-5">
         <div className="flex items-center gap-2.5">
