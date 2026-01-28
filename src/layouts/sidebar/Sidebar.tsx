@@ -13,6 +13,8 @@ import {
   Link,
   ChevronRight,
   ShieldCheck,
+  HelpCircle,
+  Headphones,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navigationItemsEn, navigationItemsEs } from "@/lib/docs-data";
@@ -49,6 +51,8 @@ const iconMap: Record<string, React.ReactNode> = {
   "zk-circuits": <Code className="w-3.5 h-3.5" />,
   "zk-generation": <Zap className="w-3.5 h-3.5" />,
   "zk-verification": <ShieldCheck className="w-3.5 h-3.5" />,
+  faq: <HelpCircle className="w-3.5 h-3.5" />,
+  support: <Headphones className="w-3.5 h-3.5" />,
 };
 
 interface CollapsibleSectionProps {
@@ -123,7 +127,12 @@ function NavItem({ item, isActive, onClick }: NavItemProps) {
   );
 }
 
-export function Sidebar({ currentSlug, onNavigate, isOpen, onOpenChange }: SidebarProps) {
+export function Sidebar({
+  currentSlug,
+  onNavigate,
+  isOpen,
+  onOpenChange,
+}: SidebarProps) {
   const { t, locale } = useI18n();
   const nav = locale === "es" ? navigationItemsEs : navigationItemsEn;
   const [expandedSections, setExpandedSections] = useState<
@@ -134,6 +143,7 @@ export function Sidebar({ currentSlug, onNavigate, isOpen, onOpenChange }: Sideb
     "api-reference": true,
     dapp: true,
     "zk-proofs": true,
+    help: true,
   });
 
   const toggleSection = (section: string) => {
@@ -245,6 +255,21 @@ export function Sidebar({ currentSlug, onNavigate, isOpen, onOpenChange }: Sideb
             />
           ))}
         </CollapsibleSection>
+
+        <CollapsibleSection
+          title={t.support}
+          isExpanded={expandedSections.help}
+          onToggle={() => toggleSection("help")}
+        >
+          {nav.help?.map(item => (
+            <NavItem
+              key={item.slug}
+              item={item}
+              isActive={currentSlug === item.slug}
+              onClick={() => handleNavigate(item.slug)}
+            />
+          ))}
+        </CollapsibleSection>
       </div>
 
       {/* Footer */}
@@ -265,10 +290,11 @@ export function Sidebar({ currentSlug, onNavigate, isOpen, onOpenChange }: Sideb
 
       {/* Sidebar Mobile - Sheet/Drawer */}
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
-        <SheetContent side="left" className="w-60 p-0 bg-sidebar border-sidebar-border">
-          <div className="w-full h-full flex flex-col">
-            {sidebarContent}
-          </div>
+        <SheetContent
+          side="left"
+          className="w-60 p-0 bg-sidebar border-sidebar-border"
+        >
+          <div className="w-full h-full flex flex-col">{sidebarContent}</div>
         </SheetContent>
       </Sheet>
     </>

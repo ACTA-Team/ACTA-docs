@@ -2720,6 +2720,10 @@ export const navigationItemsEn = {
     { slug: "zk-generation", title: "Proof Generation" },
     { slug: "zk-verification", title: "Proof Verification" },
   ],
+  help: [
+    { slug: "faq", title: "FAQ" },
+    { slug: "support", title: "Support" },
+  ],
 };
 
 export const docsDataEs: Record<string, DocPage> = {
@@ -5443,5 +5447,9 @@ export const navigationItemsEs = {
     { slug: "zk-circuits", title: "Circuitos" },
     { slug: "zk-generation", title: "Generación de Pruebas" },
     { slug: "zk-verification", title: "Verificación de Pruebas" },
+  ],
+  help: [
+    { slug: "faq", title: "Preguntas Frecuentes" },
+    { slug: "support", title: "Soporte" },
   ],
 };

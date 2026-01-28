@@ -6,6 +6,8 @@ import { Header } from "@/layouts/header/Header";
 import { Content } from "@/components/modules/docs/ui/Content";
 import { TableOfContents } from "@/components/modules/docs/ui/TableOfContents";
 import { AISearch } from "@/components/modules/docs/ui/AISearch";
+import { FAQ } from "@/components/modules/docs/ui/FAQ";
+import { Support } from "@/components/modules/docs/ui/Support";
 import { I18nProvider, useI18n } from "@/lib/i18n";
 import { docsDataEn, docsDataEs } from "@/lib/docs-data";
 
@@ -32,8 +34,8 @@ function DocsPageContent() {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <Sidebar 
-        currentSlug={currentSlug} 
+      <Sidebar
+        currentSlug={currentSlug}
         onNavigate={setCurrentSlug}
         isOpen={isSidebarOpen}
         onOpenChange={setIsSidebarOpen}
@@ -42,7 +44,7 @@ function DocsPageContent() {
       {/* Main Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <Header 
+        <Header
           onSearchOpen={() => setIsSearchOpen(true)}
           onMenuClick={() => setIsSidebarOpen(true)}
         />
@@ -50,10 +52,21 @@ function DocsPageContent() {
         {/* Content Area */}
         <div className="flex-1 flex overflow-hidden">
           {/* Main Content */}
-          <Content page={currentPage} onNavigate={setCurrentSlug} />
-
-          {/* Table of Contents */}
-          <TableOfContents items={currentPage.tocItems} />
+          {currentSlug === "faq" ? (
+            <main className="flex-1 overflow-y-auto">
+              <FAQ onNavigate={setCurrentSlug} />
+            </main>
+          ) : currentSlug === "support" ? (
+            <main className="flex-1 overflow-y-auto">
+              <Support />
+            </main>
+          ) : (
+            <>
+              <Content page={currentPage} onNavigate={setCurrentSlug} />
+              {/* Table of Contents */}
+              <TableOfContents items={currentPage?.tocItems || []} />
+            </>
+          )}
         </div>
       </div>
 

@@ -41,4 +41,32 @@ export interface Translations {
   poweredByGemini: string;
   toSearch: string;
   toClose: string;
+
+  // FAQ
+  faq: string;
+  faqDescription: string;
+  faqQuestion1: string;
+  faqQuestion2: string;
+  faqQuestion3: string;
+  faqQuestion4: string;
+  faqQuestion5: string;
+  faqQuestion6: string;
+  clickToAnswer: string;
+  loadingAnswer: string;
+
+  // Support
+  support: string;
+  supportDescription: string;
+  supportTitle: string;
+  contactUs: string;
+  sendMessage: string;
+  yourName: string;
+  yourEmail: string;
+  yourMessage: string;
+  messageSent: string;
+  quickLinks: string;
+  documentation: string;
+  community: string;
+  reportIssue: string;
+  featureRequest: string;
 }

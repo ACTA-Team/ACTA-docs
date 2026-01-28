@@ -18,6 +18,8 @@ export type NavigationItems = {
   sdk: NavigationItem[];
   "api-reference": NavigationItem[];
   dapp: NavigationItem[];
+  "zk-proofs"?: NavigationItem[];
+  help?: NavigationItem[];
 };
 
 export type FeedbackType = "up" | "neutral" | "down" | null;
