@@ -2423,8 +2423,8 @@ The proof generation is integrated in the dApp's share flow:
 
 ### Code Location
 
-- Generation logic: \`dApp-ACTA/src/lib/zk/generate.ts\`
-- Integration: \`dApp-ACTA/src/components/modules/credentials/hooks/useShareCredential.ts\`
+- **Generation logic (\`zk.ts\`)**: [View on GitHub](https://github.com/ACTA-Team/dApp-ACTA/blob/develop/src/lib/zk.ts)
+- **Integration (\`useShareCredential.ts\`)**: [View on GitHub](https://github.com/ACTA-Team/dApp-ACTA/blob/develop/src/components/modules/credentials/hooks/useShareCredential.ts)
 
 ### Security Notes
 

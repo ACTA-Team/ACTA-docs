@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import { CodeBlock } from "../ui/CodeBlock";
 import { InstallCommandTabs } from "../ui/InstallCommandTabs";
 import { slugifyHeading } from "@/lib/utils";
@@ -390,9 +391,11 @@ export function useMarkdownParser(
         const [, alt, src] = imageMatch;
         elements.push(
           <div key={elements.length} className="my-6 flex justify-center">
-            <img
+            <Image
               src={src}
               alt={alt || ""}
+              width={1024}
+              height={576}
               className="max-w-2xl w-full h-auto rounded-lg border border-border"
             />
           </div>
