@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
-    "lint": "eslint .",
+    "dev": "next dev -p 8080 -H 127.0.0.1",
+    "lint": "next lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "start": "next start"

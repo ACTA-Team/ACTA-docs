@@ -382,6 +382,24 @@ export function useMarkdownParser(
         continue;
       }
 
+      // Images: ![alt text](url)
+      const imageMatch = line.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+      if (imageMatch) {
+        flushTable();
+        flushList();
+        const [, alt, src] = imageMatch;
+        elements.push(
+          <div key={elements.length} className="my-6 flex justify-center">
+            <img
+              src={src}
+              alt={alt || ""}
+              className="max-w-2xl w-full h-auto rounded-lg border border-border"
+            />
+          </div>
+        );
+        continue;
+      }
+
       // Regular paragraph
       flushTable();
       flushList();

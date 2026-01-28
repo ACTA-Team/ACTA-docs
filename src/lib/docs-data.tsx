@@ -2070,11 +2070,9 @@ In the context of ACTA:
 
 ### Flow
 
-\`\`\`
-Credential Holder → Select Fields → Choose Predicate → Generate Proof (Client) → Share Link
-                                                                                      ↓
-Verifier ← Verify Proof (On-chain) ← Receive Share Link ← Credential Holder
-\`\`\`
+![Client Flow](/client-flow.png)
+
+![Verifier Flow](/verifier-flow.png)
 
 See the [Circuits](#zk-circuits) section for detailed information about available predicates and their implementation.
     `,
