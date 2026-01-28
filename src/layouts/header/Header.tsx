@@ -3,6 +3,7 @@
 import { Search, Globe, ChevronDown, Code, Menu } from "lucide-react";
 import { DiscordIcon } from "@/components/ui/discord-icon";
 import { Button } from "@/components/ui/button";
+import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,6 +60,9 @@ export function Header({ onSearchOpen, onMenuClick }: HeaderProps) {
 
       {/* Right Actions */}
       <div className="flex items-center gap-1 md:gap-2 shrink-0">
+        {/* Theme Toggler */}
+        <AnimatedThemeToggler className="hidden md:flex" />
+
         {/* Desktop buttons - ocultos en móvil */}
         <Button
           variant="outline"

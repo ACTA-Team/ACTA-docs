@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { PostHogProvider } from "@/providers/PostHogProvider";
+import { ThemeProvider } from "@/providers/theme.provider";
 import "./globals.css";
 
 const geist = Geist({
@@ -30,12 +31,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geist.variable} ${geistMono.variable}`}>
+    <html
+      lang="en"
+      className={`${geist.variable} ${geistMono.variable}`}
+      suppressHydrationWarning
+    >
       <body className="font-sans antialiased">
-        <PostHogProvider>
-          {children}
-          <Analytics />
-        </PostHogProvider>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          <PostHogProvider>
+            {children}
+            <Analytics />
+          </PostHogProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
