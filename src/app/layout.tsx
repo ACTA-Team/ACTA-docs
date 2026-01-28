@@ -1,8 +1,19 @@
 import React from "react";
 import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { PostHogProvider } from "@/providers/PostHogProvider";
 import "./globals.css";
+
+const geist = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "ACTA Documentation",
@@ -19,8 +30,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`font-sans antialiased`}>
+    <html lang="en" className={`${geist.variable} ${geistMono.variable}`}>
+      <body className="font-sans antialiased">
         <PostHogProvider>
           {children}
           <Analytics />
