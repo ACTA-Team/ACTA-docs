@@ -17,9 +17,11 @@ import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 
 export function Support() {
   const { t } = useI18n();
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -30,17 +32,87 @@ export function Support() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Client-side validation mirroring API (Zod) rules
+    const errors: string[] = [];
+    const name = formData.name.trim();
+    const email = formData.email.trim();
+    const message = formData.message.trim();
+
+    if (!name) {
+      errors.push(t.validationNameRequired);
+    } else if (name.length > 200) {
+      errors.push(t.validationNameTooLong);
+    }
+
+    if (!email) {
+      errors.push(t.validationEmailRequired);
+    } else if (email.length > 320) {
+      errors.push(t.validationEmailInvalid);
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.push(t.validationEmailInvalid);
+    }
+
+    if (!message) {
+      errors.push(t.validationMessageRequired);
+    } else if (message.length > 4000) {
+      errors.push(t.validationMessageTooLong);
+    }
+
+    if (errors.length > 0) {
+      errors.forEach(errorMessage => {
+        toast({
+          title: t.validationErrorTitle,
+          description: errorMessage,
+          variant: "destructive",
+        });
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    setFormData({ name: "", email: "", message: "" });
+      const data = await response.json().catch(() => null);
 
-    // Reset success message after 5 seconds
-    setTimeout(() => setIsSubmitted(false), 5000);
+      if (!response.ok) {
+        const message =
+          (data && (data.error || data.details)) ||
+          "Failed to submit contact form";
+        throw new Error(message);
+      }
+
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+      setFormData({ name: "", email: "", message: "" });
+
+      toast({
+        title: t.messageSent,
+      });
+
+      // Reset success message after 5 seconds
+      setTimeout(() => setIsSubmitted(false), 5000);
+    } catch (error) {
+      console.error("Contact form submit error:", error);
+      setIsSubmitting(false);
+
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "We couldn't send your message. Please try again later.",
+        variant: "destructive",
+      });
+    }
   };
 
   const quickLinks = [

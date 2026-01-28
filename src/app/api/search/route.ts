@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { docsDataEn, docsDataEs } from "@/lib/docs-data";
+import { docsDataEn } from "@/lib/docs-data";
 
 export async function POST(request: Request) {
   try {

@@ -149,7 +149,7 @@ export function useMarkdownParser(
       if (!inTable || tableRows.length === 0) return;
 
       // Expect a header + separator + data rows
-      const [headerLine, separatorLine, ...dataLines] = tableRows;
+      const [headerLine, , ...dataLines] = tableRows;
       const headerCells = headerLine
         .split("|")
         .map(c => c.trim())

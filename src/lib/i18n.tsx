@@ -70,6 +70,14 @@ const translations: Record<Locale, Translations> = {
     community: "Community",
     reportIssue: "Report an Issue",
     featureRequest: "Feature Request",
+    // Support validation
+    validationErrorTitle: "Form error",
+    validationNameRequired: "Name is required.",
+    validationNameTooLong: "Name must be at most 200 characters.",
+    validationEmailRequired: "Email is required.",
+    validationEmailInvalid: "Please enter a valid email address.",
+    validationMessageRequired: "Message is required.",
+    validationMessageTooLong: "Message must be at most 4000 characters.",
   },
   es: {
     welcome: "Bienvenida",
@@ -132,6 +140,14 @@ const translations: Record<Locale, Translations> = {
     community: "Comunidad",
     reportIssue: "Reportar un Problema",
     featureRequest: "Solicitar Función",
+    // Support validation
+    validationErrorTitle: "Error en el formulario",
+    validationNameRequired: "El nombre es obligatorio.",
+    validationNameTooLong: "El nombre debe tener máximo 200 caracteres.",
+    validationEmailRequired: "El correo es obligatorio.",
+    validationEmailInvalid: "Introduce un correo electrónico válido.",
+    validationMessageRequired: "El mensaje es obligatorio.",
+    validationMessageTooLong: "El mensaje debe tener máximo 4000 caracteres.",
   },
 };
 

@@ -69,4 +69,12 @@ export interface Translations {
   community: string;
   reportIssue: string;
   featureRequest: string;
+  // Support validation
+  validationErrorTitle: string;
+  validationNameRequired: string;
+  validationNameTooLong: string;
+  validationEmailRequired: string;
+  validationEmailInvalid: string;
+  validationMessageRequired: string;
+  validationMessageTooLong: string;
 }

@@ -19,7 +19,6 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
     inputRef,
     docsData,
     t,
-    handleSearch,
     handleKeyDown,
     handlePageClick,
   } = useAISearch({ onNavigate, onClose });
