@@ -136,8 +136,6 @@ No additional identity infrastructure required - Stellar wallet keys serve as id
 
 ![Issuance Flow](/issuance-flow.png)
 
-### Verification Flow
-
 ![Verification Flow](/credential-verifier.png)
 
 ## Network Support
@@ -2842,8 +2840,6 @@ No se requiere infraestructura de identidad adicional: las claves de la wallet S
 ### Flujo de emisión
 
 ![Issuance Flow](/issuance-flow.png)  
-
-### Flujo de verificación
 
 ![Verification Flow](/credential-verifier.png)  
 
