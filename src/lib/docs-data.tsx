@@ -314,16 +314,16 @@ const config = await client.getConfig();
 
 ## Hooks Summary
 
-- **\`useVault\`**: Vault operations - create vault, authorize issuer, revoke issuer
+- \`useVault\`: Vault operations - create vault, authorize issuer, revoke issuer
   - \`createVault\`: Initialize a vault for an owner
   - \`authorizeIssuer\`: Authorize an issuer in the vault
   - \`revokeIssuer\`: Revoke an authorized issuer from the vault
 
-- **\`useCredential\`**: Credential operations - issue and revoke
+- \`useCredential\`: Credential operations - issue and revoke
   - \`issue\`: Issue a credential (stores in vault and marks as valid)
   - \`revoke\`: Revoke a credential
 
-- **\`useVaultRead\`**: Vault read operations - list IDs, get VC, verify VC
+- \`useVaultRead\`: Vault read operations - list IDs, get VC, verify VC
   - \`listVcIds\`: List credential IDs owned by an owner
   - \`getVc\`: Get a credential from the vault
   - \`verifyVc\`: Verify the status of a credential in the vault
@@ -3037,9 +3037,19 @@ const config = await client.getConfig();
 
 ## Resumen de hooks
 
-- **\`useVault\`**: operaciones de bóveda — crear bóveda, autorizar emisor, revocar emisor  
-- **\`useCredential\`**: operaciones de credenciales — emitir y revocar  
-- **\`useVaultRead\`**: lectura de bóveda — listar IDs, obtener VC, verificar VC  
+- \`useVault\`: Operaciones de bóveda - crear bóveda, autorizar emisor, revocar emisor
+  - \`createVault\`: Inicializar una bóveda para un propietario
+  - \`authorizeIssuer\`: Autorizar un emisor en la bóveda
+  - \`revokeIssuer\`: Revocar un emisor autorizado de la bóveda
+
+- \`useCredential\`: Operaciones de credenciales - emitir y revocar
+  - \`issue\`: Emitir una credencial (almacena en la bóveda y marca como válida)
+  - \`revoke\`: Revocar una credencial
+
+- \`useVaultRead\`: Operaciones de lectura de bóveda - listar IDs, obtener VC, verificar VC
+  - \`listVcIds\`: Listar los IDs de credenciales propiedad de un propietario
+  - \`getVc\`: Obtener una credencial de la bóveda
+  - \`verifyVc\`: Verificar el estado de una credencial en la bóveda  
     `,
   },
   useCredential: {

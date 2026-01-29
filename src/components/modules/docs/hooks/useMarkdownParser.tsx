@@ -30,7 +30,7 @@ export function useMarkdownParser(
     let codeBlock: string[] = [];
     let inCodeBlock = false;
     let codeLanguage = "";
-    let listItems: string[] = [];
+    let listItems: Array<{ content: string; indent: number }> = [];
     let inList = false;
     let listType: "ul" | "ol" = "ul";
 
@@ -127,14 +127,99 @@ export function useMarkdownParser(
     const flushList = () => {
       if (listItems.length > 0) {
         const ListTag = listType;
+        const renderNestedList = (
+          items: Array<{ content: string; indent: number }>
+        ): React.ReactNode[] => {
+          const result: React.ReactNode[] = [];
+          let i = 0;
+
+          while (i < items.length) {
+            const currentIndent = items[i].indent;
+            const currentLevelItems: Array<{
+              content: string;
+              indent: number;
+            }> = [];
+
+            // Collect all items at current indent level
+            while (i < items.length && items[i].indent === currentIndent) {
+              currentLevelItems.push(items[i]);
+              i++;
+            }
+
+            // Check if there are nested items following
+            if (i < items.length && items[i].indent > currentIndent) {
+              const nestedIndent = items[i].indent;
+              const nestedItems: Array<{ content: string; indent: number }> =
+                [];
+
+              // Collect all nested items at the same nested indent level
+              while (i < items.length && items[i].indent === nestedIndent) {
+                nestedItems.push(items[i]);
+                i++;
+              }
+
+              // Render parent items with nested list attached to the last one
+              currentLevelItems.forEach((item, idx) => {
+                const isLastParent = idx === currentLevelItems.length - 1;
+                result.push(
+                  <li
+                    key={`${i}-${idx}`}
+                    className={
+                      listType === "ul"
+                        ? "before:content-['-'] before:mr-2"
+                        : ""
+                    }
+                  >
+                    {processInlineFormatting(item.content)}
+                    {isLastParent && nestedItems.length > 0 && (
+                      <ListTag
+                        className={`${listType === "ul" ? "list-none" : "list-decimal"} mt-2 ml-4`}
+                      >
+                        {nestedItems.map((nestedItem, nestedIdx) => (
+                          <li
+                            key={`${i}-${idx}-nested-${nestedIdx}`}
+                            className={
+                              listType === "ul"
+                                ? "before:content-['-'] before:mr-2"
+                                : ""
+                            }
+                          >
+                            {processInlineFormatting(nestedItem.content)}
+                          </li>
+                        ))}
+                      </ListTag>
+                    )}
+                  </li>
+                );
+              });
+            } else {
+              // Render items without nesting
+              currentLevelItems.forEach((item, idx) => {
+                result.push(
+                  <li
+                    key={`${i}-${idx}`}
+                    className={
+                      listType === "ul"
+                        ? "before:content-['-'] before:mr-2"
+                        : ""
+                    }
+                  >
+                    {processInlineFormatting(item.content)}
+                  </li>
+                );
+              });
+            }
+          }
+
+          return result;
+        };
+
         elements.push(
           <ListTag
             key={elements.length}
-            className={`${listType === "ul" ? "list-disc" : "list-decimal"} list-inside text-foreground/80 space-y-2 mb-6 ml-4`}
+            className={`${listType === "ul" ? "list-none" : "list-decimal"} text-foreground/80 space-y-2 mb-6 ml-4`}
           >
-            {listItems.map((item, idx) => (
-              <li key={idx}>{processInlineFormatting(item)}</li>
-            ))}
+            {renderNestedList(listItems)}
           </ListTag>
         );
         listItems = [];
@@ -359,27 +444,33 @@ export function useMarkdownParser(
         continue;
       }
 
-      // Unordered list
-      if (line.match(/^[-*]\s/)) {
+      // Unordered list - handle indentation
+      const ulMatch = line.match(/^(\s*)[-*]\s(.+)$/);
+      if (ulMatch) {
         flushTable();
         if (!inList || listType !== "ul") {
           flushList();
           inList = true;
           listType = "ul";
         }
-        listItems.push(line.slice(2));
+        const indent = ulMatch[1].length;
+        const content = ulMatch[2];
+        listItems.push({ content, indent });
         continue;
       }
 
-      // Ordered list
-      if (line.match(/^\d+\.\s/)) {
+      // Ordered list - handle indentation
+      const olMatch = line.match(/^(\s*)\d+\.\s(.+)$/);
+      if (olMatch) {
         flushTable();
         if (!inList || listType !== "ol") {
           flushList();
           inList = true;
           listType = "ol";
         }
-        listItems.push(line.replace(/^\d+\.\s/, ""));
+        const indent = olMatch[1].length;
+        const content = olMatch[2];
+        listItems.push({ content, indent });
         continue;
       }
 

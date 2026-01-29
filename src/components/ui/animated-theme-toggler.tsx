@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { flushSync } from "react-dom";
 import { useTheme } from "next-themes";
@@ -16,17 +16,14 @@ export const AnimatedThemeToggler = ({
   ...props
 }: AnimatedThemeTogglerProps) => {
   const { theme, setTheme } = useTheme();
-  const [isDark, setIsDark] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [mounted] = useState(() => typeof window !== "undefined");
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    setMounted(true);
-    const isDarkMode =
-      theme === "dark" ||
-      (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    setIsDark(isDarkMode);
-  }, [theme]);
+  const isDark =
+    theme === "dark" ||
+    (!theme &&
+      mounted &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   const toggleTheme = useCallback(async () => {
     if (!buttonRef.current || !mounted) return;
@@ -35,17 +32,14 @@ export const AnimatedThemeToggler = ({
       theme === "dark" ||
       (!theme && document.documentElement.classList.contains("dark"));
     const newTheme = currentIsDark ? "light" : "dark";
-    const newIsDark = newTheme === "dark";
 
     if (typeof document.startViewTransition === "function") {
       await document.startViewTransition(() => {
         flushSync(() => {
-          setIsDark(newIsDark);
           setTheme(newTheme);
         });
       }).ready;
     } else {
-      setIsDark(newIsDark);
       setTheme(newTheme);
     }
 
