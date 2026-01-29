@@ -132,8 +132,6 @@ No additional identity infrastructure required - Stellar wallet keys serve as id
 
 ## Credential Flow
 
-### Issuance Flow
-
 ![Issuance Flow](/issuance-flow.png)
 
 ![Verification Flow](/credential-verifier.png)
@@ -2836,8 +2834,6 @@ No se requiere infraestructura de identidad adicional: las claves de la wallet S
 > **Nota**: La versión 1.0 es la primera versión en ACTA. Se está trabajando en la versión 2.0 donde se usará el DID oficial de Stellar.
 
 ## Flujo de credenciales
-
-### Flujo de emisión
 
 ![Issuance Flow](/issuance-flow.png)  
 
