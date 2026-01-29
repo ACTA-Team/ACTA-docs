@@ -134,26 +134,11 @@ No additional identity infrastructure required - Stellar wallet keys serve as id
 
 ### Issuance Flow
 
-1. Issuer calls API with credential data
-2. API canonicalizes and creates W3C VC
-3. VC hash anchored on Issuance contract
-4. Encrypted VC data stored in holder's Vault
-5. Credential ID returned to issuer
+![Issuance Flow](/issuance-flow.png)
 
 ### Verification Flow
 
-1. Verifier queries credential status via API / dApp
-2. API checks Issuance contract on-chain status
-3. Status returned (valid, revoked, invalid)
-4. Optional: Retrieve full credential data from Vault
-
-### Storage Flow
-
-1. Credentials stored in holder's Vault contract
-2. Each vault is isolated per owner address
-3. Vault admin controls issuer authorization
-4. Only authorized issuers can store in vault
-5. Credentials encrypted and accessible only to owner
+![Verification Flow](/credential-verifier.png)
 
 ## Network Support
 
@@ -2856,26 +2841,11 @@ No se requiere infraestructura de identidad adicional: las claves de la wallet S
 
 ### Flujo de emisión
 
-1. El emisor llama a la API con los datos de la credencial  
-2. La API canonicaliza y crea la VC W3C  
-3. El hash de la VC se ancla en el contrato de Emisión  
-4. Los datos cifrados de la VC se almacenan en la bóveda del titular  
-5. Se devuelve el ID de la credencial al emisor  
+![Issuance Flow](/issuance-flow.png)  
 
 ### Flujo de verificación
 
-1. El verificador consulta el estado de la credencial vía API / dApp  
-2. La API revisa el estado on-chain en el contrato de Emisión  
-3. Se devuelve el estado (válida, revocada, inválida)  
-4. Opcional: se recupera la credencial completa desde la bóveda  
-
-### Flujo de almacenamiento
-
-1. Las credenciales se almacenan en el contrato de Bóveda del titular  
-2. Cada bóveda está aislada por dirección de propietario  
-3. El admin de la bóveda controla la autorización de emisores  
-4. Solo emisores autorizados pueden escribir en la bóveda  
-5. Las credenciales están cifradas y solo el dueño puede acceder  
+![Verification Flow](/credential-verifier.png)  
 
 ## Soporte de red
 
