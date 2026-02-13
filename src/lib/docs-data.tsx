@@ -901,7 +901,7 @@ Common HTTP status codes:
 
 Want to test the ACTA API right away? We have a public Postman collection with all the endpoints pre-configured and ready to use.
 
-1. Open the [ACTA Postman Collection](https://www.postman.com/acta-xyz-1193247/workspace/acta-team/environment/52380013-785bdf1a-3108-4c33-808c-76e31ee3b67f?action=share&creator=52380013&active-environment=52380013-785bdf1a-3108-4c33-808c-76e31ee3b67f)
+1. Open the [ACTA Postman Collection](https://www.postman.com/acta-xyz-1193247/workspace/acta-team/collection/52380013-1a09da17-4bee-4267-b469-610c46969235?action=share&creator=52380013&active-environment=52380013-785bdf1a-3108-4c33-808c-76e31ee3b67f)
 2. **Fork the collection** into your own Postman workspace
 3. Select the environment (**testnet** or **mainnet**)
 4. Start making requests!
@@ -3537,7 +3537,7 @@ Códigos HTTP comunes:
 
 ¿Quieres probar la API de ACTA de inmediato? Tenemos una colección pública en Postman con todos los endpoints preconfigurados y listos para usar.
 
-1. Abre la [Colección ACTA en Postman](https://www.postman.com/acta-xyz-1193247/workspace/acta-team/environment/52380013-785bdf1a-3108-4c33-808c-76e31ee3b67f?action=share&creator=52380013&active-environment=52380013-785bdf1a-3108-4c33-808c-76e31ee3b67f)
+1. Abre la [Colección ACTA en Postman](https://www.postman.com/acta-xyz-1193247/workspace/acta-team/collection/52380013-1a09da17-4bee-4267-b469-610c46969235?action=share&creator=52380013&active-environment=52380013-785bdf1a-3108-4c33-808c-76e31ee3b67f)
 2. **Forkea la colección** en tu propio workspace de Postman
 3. Selecciona el environment (**testnet** o **mainnet**)
 4. ¡Empieza a hacer requests!
