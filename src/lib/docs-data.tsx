@@ -803,8 +803,7 @@ X-ACTA-Key: your_api_key_here
 
 You can create a public API key (standard role, expires in 6 months) via:
 
-- **POST** \`/testnet/public/api-keys\` - Create testnet API key
-- **POST** \`/mainnet/public/api-keys\` - Create mainnet API key
+- **POST** \`/public/api-keys\` on the network base URL (e.g. \`https://acta.build/api/testnet/public/api-keys\` or \`https://acta.build/api/mainnet/public/api-keys\`)
 
 No authentication required, but rate limited to 5 requests per minute per IP.
 
@@ -999,15 +998,18 @@ curl -H "X-ACTA-Key: your_key" https://acta.build/api/testnet/config
     content: `
 # API Keys Endpoints
 
-Public endpoints for creating API keys. No authentication required, but rate limited.
+Public endpoint for creating API keys. No authentication required, but rate limited.
 
 > **Note:** You can also request API keys directly from the [ACTA dApp](https://dapp.acta.build/). The dApp provides a user-friendly interface to create and manage your API keys.
 
-## Create Testnet API Key
+## Create API Key
 
-### POST /testnet/public/api-keys
+### POST /public/api-keys
 
-Creates a testnet API key (standard role, expires in 6 months).
+Creates an API key (standard role, expires in 6 months). Use the **testnet** or **mainnet** base URL depending on the network you need.
+
+- Testnet: \`https://acta.build/api/testnet/public/api-keys\`
+- Mainnet: \`https://acta.build/api/mainnet/public/api-keys\`
 
 **Rate Limit:** 5 requests per minute per IP
 
@@ -1022,6 +1024,8 @@ Creates a testnet API key (standard role, expires in 6 months).
   }
 }
 \`\`\`
+
+Include \`metadata.network\`: \`"testnet"\` or \`"mainnet"\` to match the API base URL you are calling.
 
 **Response:**
 
@@ -1040,7 +1044,7 @@ Creates a testnet API key (standard role, expires in 6 months).
 }
 \`\`\`
 
-**Example:**
+**Example (testnet):**
 
 \`\`\`bash
 curl -X POST https://acta.build/api/testnet/public/api-keys \\
@@ -1054,31 +1058,7 @@ curl -X POST https://acta.build/api/testnet/public/api-keys \\
   }'
 \`\`\`
 
-## Create Mainnet API Key
-
-### POST /mainnet/public/api-keys
-
-Creates a mainnet API key (standard role, expires in 6 months).
-
-**Rate Limit:** 5 requests per minute per IP
-
-**Request Body:**
-
-\`\`\`json
-{
-  "name": "My API Key",
-  "wallet_address": "G...",
-  "metadata": {
-    "network": "mainnet"
-  }
-}
-\`\`\`
-
-**Response:**
-
-Same format as testnet endpoint.
-
-**Example:**
+**Example (mainnet):**
 
 \`\`\`bash
 curl -X POST https://acta.build/api/mainnet/public/api-keys \\
@@ -3475,8 +3455,7 @@ X-ACTA-Key: tu_api_key_aqui
 
 Puedes crear una API key pública (rol estándar, expira en 6 meses) vía:
 
-- **POST** \`/testnet/public/api-keys\` - Crear API key de testnet
-- **POST** \`/mainnet/public/api-keys\` - Crear API key de mainnet
+- **POST** \`/public/api-keys\` en la URL base de la red (ej. \`https://acta.build/api/testnet/public/api-keys\` o \`https://acta.build/api/mainnet/public/api-keys\`)
 
 No requiere autenticación, pero tiene límite de 5 solicitudes por minuto por IP.
 
@@ -3675,15 +3654,18 @@ curl -H "X-ACTA-Key: tu_key" https://acta.build/api/testnet/config
     content: `
 # Endpoints de API Keys
 
-Endpoints públicos para crear API keys. No requiere autenticación, pero tiene límite de tasa.
+Endpoint público para crear API keys. No requiere autenticación, pero tiene límite de tasa.
 
 > **Nota:** También puedes solicitar API keys directamente desde la [dApp de ACTA](https://dapp.acta.build/). La dApp proporciona una interfaz amigable para crear y gestionar tus API keys.
 
-## Crear API Key de Testnet
+## Crear API Key
 
-### POST /testnet/public/api-keys
+### POST /public/api-keys
 
-Crea una API key de testnet (rol estándar, expira en 6 meses).
+Crea una API key (rol estándar, expira en 6 meses). Usa la URL base de **testnet** o **mainnet** según la red que necesites.
+
+- Testnet: \`https://acta.build/api/testnet/public/api-keys\`
+- Mainnet: \`https://acta.build/api/mainnet/public/api-keys\`
 
 **Límite de tasa:** 5 solicitudes por minuto por IP
 
@@ -3698,6 +3680,8 @@ Crea una API key de testnet (rol estándar, expira en 6 meses).
   }
 }
 \`\`\`
+
+Incluye \`metadata.network\`: \`"testnet"\` o \`"mainnet"\` según la URL base que uses.
 
 **Respuesta:**
 
@@ -3716,7 +3700,7 @@ Crea una API key de testnet (rol estándar, expira en 6 meses).
 }
 \`\`\`
 
-**Ejemplo:**
+**Ejemplo (testnet):**
 
 \`\`\`bash
 curl -X POST https://acta.build/api/testnet/public/api-keys \\
@@ -3730,31 +3714,7 @@ curl -X POST https://acta.build/api/testnet/public/api-keys \\
   }'
 \`\`\`
 
-## Crear API Key de Mainnet
-
-### POST /mainnet/public/api-keys
-
-Crea una API key de mainnet (rol estándar, expira en 6 meses).
-
-**Límite de tasa:** 5 solicitudes por minuto por IP
-
-**Cuerpo de solicitud:**
-
-\`\`\`json
-{
-  "name": "Mi API Key",
-  "wallet_address": "G...",
-  "metadata": {
-    "network": "mainnet"
-  }
-}
-\`\`\`
-
-**Respuesta:**
-
-Mismo formato que el endpoint de testnet.
-
-**Ejemplo:**
+**Ejemplo (mainnet):**
 
 \`\`\`bash
 curl -X POST https://acta.build/api/mainnet/public/api-keys \\
