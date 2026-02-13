@@ -769,6 +769,7 @@ if (verification.since) {
       "Prepare/Submit Flow",
       "Error Handling",
       "Rate Limiting",
+      "Try it in Postman",
     ],
     content: `
 # API Reference Overview
@@ -895,6 +896,17 @@ Common HTTP status codes:
   - \`X-RateLimit-Limit\`: Maximum requests allowed
   - \`X-RateLimit-Remaining\`: Remaining requests in window
   - \`X-RateLimit-Reset\`: Unix timestamp when limit resets
+
+## Try it in Postman
+
+Want to test the ACTA API right away? We have a public Postman collection with all the endpoints pre-configured and ready to use.
+
+1. Open the [ACTA Postman Collection](https://www.postman.com/acta-xyz-1193247/workspace/acta-team/collection/52380013-1a09da17-4bee-4267-b469-610c46969235?action=share&creator=52380013&active-environment=52380013-785bdf1a-3108-4c33-808c-76e31ee3b67f)
+2. **Fork the collection** into your own Postman workspace
+3. Select the environment (**testnet** or **mainnet**)
+4. Start making requests!
+
+> Forking lets you keep a personal copy you can customize, and still pull updates when we add new endpoints.
     `,
   },
   "api-health-status": {
@@ -3421,6 +3433,7 @@ if (verification.since) {
       "Flujo Prepare/Submit",
       "Manejo de errores",
       "Límites de tasa",
+      "Pruébalo en Postman",
     ],
     content: `
 # Resumen de Referencia API
@@ -3547,6 +3560,17 @@ Códigos HTTP comunes:
   - \`X-RateLimit-Limit\`: Máximo de solicitudes permitidas
   - \`X-RateLimit-Remaining\`: Solicitudes restantes en la ventana
   - \`X-RateLimit-Reset\`: Timestamp Unix cuando se reinicia el límite
+
+## Pruébalo en Postman
+
+¿Quieres probar la API de ACTA de inmediato? Tenemos una colección pública en Postman con todos los endpoints preconfigurados y listos para usar.
+
+1. Abre la [Colección ACTA en Postman](https://www.postman.com/acta-xyz-1193247/workspace/acta-team/collection/52380013-1a09da17-4bee-4267-b469-610c46969235?action=share&creator=52380013&active-environment=52380013-785bdf1a-3108-4c33-808c-76e31ee3b67f)
+2. **Forkea la colección** en tu propio workspace de Postman
+3. Selecciona el environment (**testnet** o **mainnet**)
+4. ¡Empieza a hacer requests!
+
+> Al forkear obtienes una copia personal que puedes personalizar, y puedes seguir recibiendo actualizaciones cuando agreguemos nuevos endpoints.
     `,
   },
   "api-health-status": {
