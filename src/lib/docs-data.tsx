@@ -913,7 +913,7 @@ Want to test the ACTA API right away? We have a public Postman collection with a
     slug: "api-health-status",
     title: "Health & Status",
     section: "API Reference",
-    tocItems: ["Health Check", "API Status", "Network Configuration"],
+    tocItems: ["Health Check", "Network Configuration"],
     content: `
 # Health & Status Endpoints
 
@@ -938,33 +938,6 @@ Checks the API status. No authentication required.
 
 \`\`\`bash
 curl https://acta.build/api/testnet/health
-\`\`\`
-
-## API Status
-
-### GET /
-
-Gets the current API status and network. Requires API key.
-
-**Headers:**
-
-\`\`\`
-X-ACTA-Key: your_api_key_here
-\`\`\`
-
-**Response:**
-
-\`\`\`json
-{
-  "status": "OK",
-  "network": "testnet"
-}
-\`\`\`
-
-**Example:**
-
-\`\`\`bash
-curl -H "X-ACTA-Key: your_key" https://acta.build/api/testnet/
 \`\`\`
 
 ## Network Configuration
@@ -2641,7 +2614,6 @@ export const navigationItemsEn = {
   ],
   "api-reference": [
     { slug: "api-overview", title: "Overview" },
-    { slug: "api-health-status", title: "Health & Status" },
     { slug: "api-keys", title: "API Keys" },
     { slug: "api-contract-info", title: "Contract Info" },
     { slug: "api-vault-read", title: "Vault Operations (Read)" },
@@ -3579,7 +3551,6 @@ Códigos HTTP comunes:
     section: "Referencia API",
     tocItems: [
       "Verificación de salud",
-      "Estado de la API",
       "Configuración de red",
     ],
     content: `
@@ -3606,33 +3577,6 @@ Verifica el estado de la API. No requiere autenticación.
 
 \`\`\`bash
 curl https://acta.build/api/testnet/health
-\`\`\`
-
-## Estado de la API
-
-### GET /
-
-Obtiene el estado actual de la API y la red. Requiere API key.
-
-**Headers:**
-
-\`\`\`
-X-ACTA-Key: tu_api_key_aqui
-\`\`\`
-
-**Respuesta:**
-
-\`\`\`json
-{
-  "status": "OK",
-  "network": "testnet"
-}
-\`\`\`
-
-**Ejemplo:**
-
-\`\`\`bash
-curl -H "X-ACTA-Key: tu_key" https://acta.build/api/testnet/
 \`\`\`
 
 ## Configuración de red
@@ -5320,7 +5264,6 @@ export const navigationItemsEs = {
   ],
   "api-reference": [
     { slug: "api-overview", title: "Resumen" },
-    { slug: "api-health-status", title: "Salud y Estado" },
     { slug: "api-keys", title: "API Keys" },
     { slug: "api-contract-info", title: "Información del Contrato" },
     { slug: "api-vault-read", title: "Operaciones de Bóveda (Lectura)" },
