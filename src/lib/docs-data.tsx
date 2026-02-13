@@ -791,7 +791,7 @@ https://acta.build/api/mainnet
 
 ## Authentication
 
-Only **credential issuance** (\`POST /contracts/vc/issue\`) and **admin endpoints** require an API key. Vault operations (create, read, authorize, revoke, push, set-admin), contract version (\`GET /contracts/version\`), and credential revocation (\`POST /contracts/vc/revoke\`) do not require authentication.
+Only **credential issuance** (\`POST /contracts/vc/issue\`) and **admin endpoints** require an API key. Vault operations (create, read, authorize, revoke, push, set-new-owner), contract version (\`GET /contracts/version\`), and credential revocation (\`POST /contracts/vc/revoke\`) do not require authentication.
 
 When required, send the API key in the request header:
 
@@ -1298,7 +1298,7 @@ All endpoints require:
       "Authorize Issuers (Multiple)",
       "Revoke Issuer",
       "Revoke Vault",
-      "Set Admin",
+      "Set New Owner",
       "Push",
       "Prepare/Submit Flow",
     ],
@@ -1416,18 +1416,18 @@ Completely revokes a vault.
 }
 \`\`\`
 
-## Set Admin
+## Set New Owner
 
-### POST /contracts/vault/set-admin
+### POST /contracts/vault/set-new-owner
 
-Sets the vault administrator.
+Sets the new vault owner (vault admin).
 
 **Request Body (Prepare):**
 
 \`\`\`json
 {
   "owner": "G...",
-  "admin": "G...",
+  "new_owner": "G...",
   "sourcePublicKey": "G...",
   "contractId": "C..."
 }
@@ -3443,7 +3443,7 @@ https://acta.build/api/mainnet
 
 ## Autenticación
 
-Solo la **emisión de credenciales** (\`POST /contracts/vc/issue\`) y los **endpoints de administración** requieren API key. Las operaciones de bóveda (crear, leer, autorizar, revocar, push, set-admin), la versión del contrato (\`GET /contracts/version\`) y la revocación de credenciales (\`POST /contracts/vc/revoke\`) no requieren autenticación.
+Solo la **emisión de credenciales** (\`POST /contracts/vc/issue\`) y los **endpoints de administración** requieren API key. Las operaciones de bóveda (crear, leer, autorizar, revocar, push, set-new-owner), la versión del contrato (\`GET /contracts/version\`) y la revocación de credenciales (\`POST /contracts/vc/revoke\`) no requieren autenticación.
 
 Cuando sea necesario, envía la API key en el header de la solicitud:
 
@@ -3958,7 +3958,7 @@ Todos los endpoints requieren:
       "Autorizar Emisores (Múltiples)",
       "Revocar Emisor",
       "Revocar Bóveda",
-      "Establecer Admin",
+      "Establecer nuevo propietario",
       "Push",
       "Flujo Prepare/Submit",
     ],
@@ -4076,18 +4076,18 @@ Revoca completamente una bóveda.
 }
 \`\`\`
 
-## Establecer Admin
+## Establecer nuevo propietario
 
-### POST /contracts/vault/set-admin
+### POST /contracts/vault/set-new-owner
 
-Establece el administrador de la bóveda.
+Establece el nuevo propietario de la bóveda (admin de bóveda).
 
 **Cuerpo de solicitud (Prepare):**
 
 \`\`\`json
 {
   "owner": "G...",
-  "admin": "G...",
+  "new_owner": "G...",
   "sourcePublicKey": "G...",
   "contractId": "C..."
 }
