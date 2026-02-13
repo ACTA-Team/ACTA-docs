@@ -791,7 +791,9 @@ https://acta.build/api/mainnet
 
 ## Authentication
 
-Most endpoints require an API key in the request header:
+Only **credential issuance** (\`POST /contracts/vc/issue\`) and **admin endpoints** require an API key. Vault operations (create, read, authorize, revoke, push, set-admin), contract version (\`GET /contracts/version\`), and credential revocation (\`POST /contracts/vc/revoke\`) do not require authentication.
+
+When required, send the API key in the request header:
 
 \`\`\`
 X-ACTA-Key: your_api_key_here
@@ -1127,13 +1129,7 @@ Endpoints for retrieving contract information.
 
 ### GET /contracts/version
 
-Returns the ACTA contract version string. Requires API key.
-
-**Headers:**
-
-\`\`\`
-X-ACTA-Key: your_api_key_here
-\`\`\`
+Returns the ACTA contract version string. No authentication required.
 
 **Query Parameters:**
 
@@ -1151,8 +1147,7 @@ X-ACTA-Key: your_api_key_here
 **Example:**
 
 \`\`\`bash
-curl -H "X-ACTA-Key: your_key" \\
-  "https://acta.build/api/testnet/contracts/version?sourcePublicKey=G..."
+curl "https://acta.build/api/testnet/contracts/version?sourcePublicKey=G..."
 \`\`\`
 
 ## Query Parameters
@@ -1179,19 +1174,13 @@ curl -H "X-ACTA-Key: your_key" \\
     content: `
 # Vault Operations (Read)
 
-Read-only operations for vault data. Requires API key and ownership validation.
+Read-only operations for vault data. No authentication required.
 
 ## List VC IDs
 
 ### POST /contracts/vault/list-vc-ids
 
 Lists verifiable credential (VC) IDs stored in an owner's vault.
-
-**Headers:**
-
-\`\`\`
-X-ACTA-Key: your_api_key_here
-\`\`\`
 
 **Request Body:**
 
@@ -1212,7 +1201,6 @@ X-ACTA-Key: your_api_key_here
 
 \`\`\`bash
 curl -X POST https://acta.build/api/testnet/contracts/vault/list-vc-ids \\
-  -H "X-ACTA-Key: your_key" \\
   -H "Content-Type: application/json" \\
   -d '{
     "owner": "G..."
@@ -1224,12 +1212,6 @@ curl -X POST https://acta.build/api/testnet/contracts/vault/list-vc-ids \\
 ### POST /contracts/vault/get-vc
 
 Gets a specific verifiable credential from a vault.
-
-**Headers:**
-
-\`\`\`
-X-ACTA-Key: your_api_key_here
-\`\`\`
 
 **Request Body:**
 
@@ -1260,7 +1242,6 @@ X-ACTA-Key: your_api_key_here
 
 \`\`\`bash
 curl -X POST https://acta.build/api/testnet/contracts/vault/get-vc \\
-  -H "X-ACTA-Key: your_key" \\
   -H "Content-Type: application/json" \\
   -d '{
     "owner": "G...",
@@ -1273,12 +1254,6 @@ curl -X POST https://acta.build/api/testnet/contracts/vault/get-vc \\
 ### POST /contracts/vault/verify-vc
 
 Verifies a VC by checking it exists in the owner's vault and returning its issuance status.
-
-**Headers:**
-
-\`\`\`
-X-ACTA-Key: your_api_key_here
-\`\`\`
 
 **Request Body:**
 
@@ -1312,7 +1287,6 @@ Or if revoked:
 
 \`\`\`bash
 curl -X POST https://acta.build/api/testnet/contracts/vault/verify-vc \\
-  -H "X-ACTA-Key: your_key" \\
   -H "Content-Type: application/json" \\
   -d '{
     "owner": "G...",
@@ -1351,19 +1325,13 @@ All endpoints require:
     content: `
 # Vault Operations (Write)
 
-Write operations for vault management. All endpoints support prepare/submit flow. Requires API key.
+Write operations for vault management. All endpoints support prepare/submit flow. No authentication required.
 
 ## Create Vault
 
 ### POST /contracts/vault/create
 
 Creates (initializes) a vault for an owner.
-
-**Headers:**
-
-\`\`\`
-X-ACTA-Key: your_api_key_here
-\`\`\`
 
 **Request Body (Prepare):**
 
@@ -1528,13 +1496,13 @@ All write endpoints follow the same pattern:
     content: `
 # Credential Operations
 
-Endpoints for issuing and revoking verifiable credentials. All endpoints support prepare/submit flow. Requires API key.
+Endpoints for issuing and revoking verifiable credentials. All support prepare/submit flow. **Only Issue Credential** (\`POST /contracts/vc/issue\`) requires an API key; **Revoke Credential** does not require authentication.
 
 ## Issue Credential
 
 ### POST /contracts/vc/issue
 
-Issues a VC: stores payload in the owner's vault and writes issuance status = valid.
+Issues a VC: stores payload in the owner's vault and writes issuance status = valid. **Requires API key.**
 
 **Headers:**
 
@@ -1609,7 +1577,7 @@ curl -X POST https://acta.build/api/testnet/contracts/vc/issue \\
 
 ### POST /contracts/vc/revoke
 
-Revokes a VC by ID.
+Revokes a VC by ID. No authentication required.
 
 **Request Body (Prepare):**
 
@@ -3495,7 +3463,9 @@ https://acta.build/api/mainnet
 
 ## Autenticación
 
-La mayoría de los endpoints requieren una API key en el header de la solicitud:
+Solo la **emisión de credenciales** (\`POST /contracts/vc/issue\`) y los **endpoints de administración** requieren API key. Las operaciones de bóveda (crear, leer, autorizar, revocar, push, set-admin), la versión del contrato (\`GET /contracts/version\`) y la revocación de credenciales (\`POST /contracts/vc/revoke\`) no requieren autenticación.
+
+Cuando sea necesario, envía la API key en el header de la solicitud:
 
 \`\`\`
 X-ACTA-Key: tu_api_key_aqui
@@ -3839,13 +3809,7 @@ Endpoints para recuperar información del contrato.
 
 ### GET /contracts/version
 
-Devuelve la cadena de versión del contrato ACTA. Requiere API key.
-
-**Headers:**
-
-\`\`\`
-X-ACTA-Key: tu_api_key_aqui
-\`\`\`
+Devuelve la cadena de versión del contrato ACTA. No requiere autenticación.
 
 **Parámetros de consulta:**
 
@@ -3863,8 +3827,7 @@ X-ACTA-Key: tu_api_key_aqui
 **Ejemplo:**
 
 \`\`\`bash
-curl -H "X-ACTA-Key: tu_key" \\
-  "https://acta.build/api/testnet/contracts/version?sourcePublicKey=G..."
+curl "https://acta.build/api/testnet/contracts/version?sourcePublicKey=G..."
 \`\`\`
 
 ## Parámetros de consulta
@@ -3891,19 +3854,13 @@ curl -H "X-ACTA-Key: tu_key" \\
     content: `
 # Operaciones de Bóveda (Lectura)
 
-Operaciones de solo lectura para datos de bóveda. Requiere API key y validación de propiedad.
+Operaciones de solo lectura para datos de bóveda. No requiere autenticación.
 
 ## Listar IDs de VC
 
 ### POST /contracts/vault/list-vc-ids
 
 Lista los IDs de credenciales verificables (VC) almacenados en la bóveda de un propietario.
-
-**Headers:**
-
-\`\`\`
-X-ACTA-Key: tu_api_key_aqui
-\`\`\`
 
 **Cuerpo de solicitud:**
 
@@ -3924,7 +3881,6 @@ X-ACTA-Key: tu_api_key_aqui
 
 \`\`\`bash
 curl -X POST https://acta.build/api/testnet/contracts/vault/list-vc-ids \\
-  -H "X-ACTA-Key: tu_key" \\
   -H "Content-Type: application/json" \\
   -d '{
     "owner": "G..."
@@ -3936,12 +3892,6 @@ curl -X POST https://acta.build/api/testnet/contracts/vault/list-vc-ids \\
 ### POST /contracts/vault/get-vc
 
 Obtiene una credencial verificable específica de una bóveda.
-
-**Headers:**
-
-\`\`\`
-X-ACTA-Key: tu_api_key_aqui
-\`\`\`
 
 **Cuerpo de solicitud:**
 
@@ -3972,7 +3922,6 @@ X-ACTA-Key: tu_api_key_aqui
 
 \`\`\`bash
 curl -X POST https://acta.build/api/testnet/contracts/vault/get-vc \\
-  -H "X-ACTA-Key: tu_key" \\
   -H "Content-Type: application/json" \\
   -d '{
     "owner": "G...",
@@ -3985,12 +3934,6 @@ curl -X POST https://acta.build/api/testnet/contracts/vault/get-vc \\
 ### POST /contracts/vault/verify-vc
 
 Verifica una VC comprobando que existe en la bóveda del propietario y devolviendo su estado de emisión.
-
-**Headers:**
-
-\`\`\`
-X-ACTA-Key: tu_api_key_aqui
-\`\`\`
 
 **Cuerpo de solicitud:**
 
@@ -4024,7 +3967,6 @@ O si está revocada:
 
 \`\`\`bash
 curl -X POST https://acta.build/api/testnet/contracts/vault/verify-vc \\
-  -H "X-ACTA-Key: tu_key" \\
   -H "Content-Type: application/json" \\
   -d '{
     "owner": "G...",
@@ -4063,19 +4005,13 @@ Todos los endpoints requieren:
     content: `
 # Operaciones de Bóveda (Escritura)
 
-Operaciones de escritura para gestión de bóvedas. Todos los endpoints soportan flujo prepare/submit. Requiere API key.
+Operaciones de escritura para gestión de bóvedas. Todos los endpoints soportan flujo prepare/submit. No requiere autenticación.
 
 ## Crear Bóveda
 
 ### POST /contracts/vault/create
 
 Crea (inicializa) una bóveda para un propietario.
-
-**Headers:**
-
-\`\`\`
-X-ACTA-Key: tu_api_key_aqui
-\`\`\`
 
 **Cuerpo de solicitud (Prepare):**
 
@@ -4240,13 +4176,13 @@ Todos los endpoints de escritura siguen el mismo patrón:
     content: `
 # Operaciones de Credenciales
 
-Endpoints para emitir y revocar credenciales verificables. Todos los endpoints soportan flujo prepare/submit. Requiere API key.
+Endpoints para emitir y revocar credenciales verificables. Todos soportan flujo prepare/submit. **Solo Emitir Credencial** (\`POST /contracts/vc/issue\`) requiere API key; **Revocar Credencial** no requiere autenticación.
 
 ## Emitir Credencial
 
 ### POST /contracts/vc/issue
 
-Emite una VC: almacena el payload en la bóveda del propietario y escribe el estado de emisión = válido.
+Emite una VC: almacena el payload en la bóveda del propietario y escribe el estado de emisión = válido. **Requiere API key.**
 
 **Headers:**
 
@@ -4321,7 +4257,7 @@ curl -X POST https://acta.build/api/testnet/contracts/vc/issue \\
 
 ### POST /contracts/vc/revoke
 
-Revoca una VC por ID.
+Revoca una VC por ID. No requiere autenticación.
 
 **Cuerpo de solicitud (Prepare):**
 

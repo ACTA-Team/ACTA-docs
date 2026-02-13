@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, ChevronDown, Check } from "lucide-react";
+import { Copy, ChevronDown, Check, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MarkdownContent } from "./MarkdownContent";
 import { useContent } from "../hooks/useContent";
@@ -22,25 +22,36 @@ export function Content({ page, onNavigate }: ContentProps) {
           <span className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
             {sectionLabel}
           </span>
-          <Button
-            variant="outline"
-            size="sm"
-            className="bg-secondary border-border text-foreground hover:bg-muted"
-            onClick={handleCopy}
-          >
-            {copied ? (
-              <>
-                <Check className="w-4 h-4 mr-2 text-green-500" />
-                {t.copied}
-              </>
-            ) : (
-              <>
-                <Copy className="w-4 h-4 mr-2" />
-                {t.copy}
-                <ChevronDown className="w-4 h-4 ml-2" />
-              </>
-            )}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="bg-secondary border-border text-foreground hover:bg-muted"
+              onClick={handleCopy}
+            >
+              {copied ? (
+                <>
+                  <Check className="w-4 h-4 mr-2 text-green-500" />
+                  {t.copied}
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4 mr-2" />
+                  {t.copy}
+                  <ChevronDown className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="bg-secondary border-border text-foreground hover:bg-muted"
+              onClick={() => window.print()}
+            >
+              <Download className="w-4 h-4 mr-2" />
+              {t.downloadPdf}
+            </Button>
+          </div>
         </div>
 
         {/* Content */}
