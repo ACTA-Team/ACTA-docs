@@ -51,6 +51,7 @@ const iconMap: Record<string, React.ReactNode> = {
   "zk-circuits": <Code className="w-3.5 h-3.5" />,
   "zk-generation": <Zap className="w-3.5 h-3.5" />,
   "zk-verification": <ShieldCheck className="w-3.5 h-3.5" />,
+  "scf-41": <FileText className="w-3.5 h-3.5" />,
   faq: <HelpCircle className="w-3.5 h-3.5" />,
   support: <Headphones className="w-3.5 h-3.5" />,
 };
@@ -143,6 +144,7 @@ export function Sidebar({
     "api-reference": true,
     dapp: true,
     "zk-proofs": true,
+    scf: true,
     help: true,
   });
 
@@ -181,6 +183,21 @@ export function Sidebar({
 
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto px-2 pt-2">
+        <CollapsibleSection
+          title={t.scf}
+          isExpanded={expandedSections.scf}
+          onToggle={() => toggleSection("scf")}
+        >
+          {nav.scf?.map(item => (
+            <NavItem
+              key={item.slug}
+              item={item}
+              isActive={currentSlug === item.slug}
+              onClick={() => handleNavigate(item.slug)}
+            />
+          ))}
+        </CollapsibleSection>
+
         <CollapsibleSection
           title={t.welcome}
           isExpanded={expandedSections.welcome}

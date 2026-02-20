@@ -6,6 +6,7 @@ export interface Translations {
   reactSdk: string;
   apiReference: string;
   zkProofs: string;
+  scf: string;
   dApp: string;
   introduction: string;
   architecture: string;
