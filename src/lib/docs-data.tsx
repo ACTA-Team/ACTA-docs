@@ -2597,6 +2597,201 @@ curl -X POST https://acta.build/api/testnet/contracts/zk-verifier/verify \\
 - **verifierContractId** (optional): Override verifier contract ID
     `,
   },
+  "scf-41": {
+    slug: "scf-41",
+    title: "SCF 41",
+    section: "SCF",
+    tocItems: [
+      "Overview",
+      "Stellar DID Method (v0.1)",
+      "Identifier format & network binding",
+      "DID Document model",
+      "Native key derivation",
+      "Proof of control",
+      "Deterministic resolution",
+      "Reference resolver tooling",
+      "Soroban contracts",
+      "Testnet API/SDK",
+      "ZK milestone (Stellar X-Ray)",
+      "Selective disclosure",
+      "BN254 and on-chain verification",
+      "Minimal executable PoC",
+    ],
+    content: `
+# SCF 41
+
+Technical architecture for SCF 41: Stellar DID method, resolver tooling, Soroban contracts for credentials and vaults, and testnet API/SDK.
+
+## Overview
+
+- **Stellar DID Method (v0.1) + resolution tooling** — Specification and open-source resolver so \`did:stellar\` identifiers resolve to DID Documents for Verifiable Credential issuance and verification.
+- **Soroban contracts** — Credential lifecycle, encrypted vaults, holder-controlled issuer acceptance, USDC fee tiers, and versioning.
+- **Testnet API/SDK** — Stable, versioned testnet release with wallet signing and reproducible end-to-end flows.
+
+## Stellar DID Method (v0.1)
+
+v0.1 scope is single-signature and ecosystem-ready.
+
+### Identifier format & network binding
+
+Normative identifier syntax bound to Stellar networks:
+
+\`\`\`
+did:stellar:<network>:<accountId>
+\`\`\`
+
+- **<network>**: \`mainnet\` | \`testnet\`
+- **<accountId>**: Stellar StrKey public key (G...)
+
+Chain-agnostic account representation (blockchainAccountId-style):
+
+\`\`\`
+stellar:mainnet:<G...>   /   stellar:testnet:<G...>
+\`\`\`
+
+### Minimum DID Document model (VC-ready)
+
+The v0.1 DID Document includes the minimum verification material for VC flows and follows the [W3C DID Core](https://w3c.github.io/did/#did-document-properties) data model. Required properties: \`id\`, \`verificationMethod\`, \`authentication\`, \`assertionMethod\`.
+
+Example structure for \`did:stellar\` (v0.1, single-sig, Ed25519). This structure may vary in future versions:
+
+\`\`\`json
+{
+  "@context": [
+    "https://www.w3.org/ns/did/v1",
+    "https://w3id.org/security/suites/ed25519-2020/v1"
+  ],
+  "id": "did:stellar:testnet:GEXAMPLE1234567890ABCDEFGHIJKLM",
+  "verificationMethod": [{
+    "id": "did:stellar:testnet:GEXAMPLE1234567890ABCDEFGHIJKLM#controller",
+    "type": "Ed25519VerificationKey2020",
+    "controller": "did:stellar:testnet:GEXAMPLE1234567890ABCDEFGHIJKLM",
+    "publicKeyMultibase": "z6Mk...",
+    "blockchainAccountId": "stellar:testnet:GEXAMPLE1234567890ABCDEFGHIJKLM"
+  }],
+  "authentication": [
+    "did:stellar:testnet:GEXAMPLE1234567890ABCDEFGHIJKLM#controller"
+  ],
+  "assertionMethod": [
+    "did:stellar:testnet:GEXAMPLE1234567890ABCDEFGHIJKLM#controller"
+  ]
+}
+\`\`\`
+
+See [DID Document properties (W3C)](https://w3c.github.io/did/#did-document-properties) for the full normative definition.
+
+### Native key derivation from Stellar account state (single-sig only)
+
+The DID Document is built deterministically from on-ledger account configuration:
+
+- \`verificationMethod\` is derived from the account signer (Ed25519 key).
+- v0.1 is limited to single-signature accounts (one effective Ed25519 signer).
+- Accounts with multisig (multiple signers and/or thresholds) are out of scope and MUST return a typed error (e.g. \`unsupportedAccountConfiguration\`) or be treated as unsupported by policy.
+- In v0.1 only Ed25519 keys are exposed as \`verificationMethod\`; other signer types are unsupported or reflected only in metadata.
+
+### Proof of control (issuer/holder)
+
+Standard mechanism for proving control of a \`did:stellar\` identifier via wallet signing:
+
+- **Option A (simple)**: Ed25519 signature over a canonical challenge (nonce + domain + DID + timestamp).
+- **Option B (wallet-friendly)**: SEP-10–style challenge signing for existing Stellar wallet flows.
+
+v0.1 defines one option as recommended and keeps the other as a compatible alternative, with canonicalization and anti-replay rules (nonce, domain binding, expiration).
+
+### Deterministic resolution rules (normative)
+
+Resolution is deterministic and uses only public ledger state:
+
+1. Parse and validate the DID (network, StrKey).
+2. Fetch account state via Horizon/RPC.
+3. Validate v0.1 account constraints (single-sig).
+4. Construct the DID Document from: account signer (verification methods), optional ManageData entries under a reserved namespace (services/attributes). Given ManageData size limits, v0.1 stores mainly pointers and short URIs, not large payloads.
+5. Return a DID Resolution Result with:
+   - \`didDocument\`
+   - \`didResolutionMetadata\` (errors: \`invalidDid\`, \`unknownNetwork\`, \`notFound\`, \`unsupportedFormat\`, \`unsupportedAccountConfiguration\`)
+   - \`didDocumentMetadata\` (network, ledger info, updated/versioning where available)
+
+### Reference resolver tooling (OSS)
+
+Open-source resolver compatible with the DIF did-resolver interface (JS/TS):
+
+- Multi-network (mainnet/testnet)
+- \`did+json\` and \`did+ld+json\`
+- SDK utilities: DID parse/normalize, canonical challenge builder/verifier (proof of control), end-to-end examples for issuers and verifiers in VC flows.
+
+The draft is developed with advisory input from a contributor active in W3C identity standardization (DID Core / DID Resolution alignment).
+
+## Soroban contracts (credentials + encrypted vaults)
+
+Soroban (Rust) contracts provide a clear, production-oriented surface on testnet:
+
+- **Credential lifecycle**: Issue, verify, revoke; on-chain anchoring and status checks, including revocation state.
+- **Encrypted vaults**: Per-holder vault operations (store/list/get), controlled credential sharing and transfer where applicable.
+- **Holder-controlled issuer acceptance** (permissionless, anti-spam): ACTA does not gate who can issue on Stellar; per-holder issuer controls are enforced at the vault layer:
+  - **Required**: Per-holder issuer blocklist enforced on vault write (writes from blocked issuers fail deterministically).
+  - **Configurable default**: Vault policy supports a default “accept-all” mode with an extensible path to stricter modes.
+- **USDC-denominated fee tiers**: On-chain fee logic in USDC (tier configuration and enforcement), with clear payer and collection semantics.
+- **Versioning & deployment**: Published contract IDs, interface documentation, and a clear upgrade/version strategy for testnet.
+
+## Testnet API/SDK
+
+The testnet API/SDK (issuance and on-chain verification) is hardened into a stable, versioned release:
+
+- **API/SDK stability**: Versioning, consistent error handling, and documented request/response contracts.
+- **Wallet signing**: Freighter (and WalletConnect where applicable); transactions are prepared server-side and signed client-side.
+- **Reproducible demo**: Documented, scriptable end-to-end flow: issuer prepares issuance transaction (XDR), signs via wallet, credential is anchored on-chain, holder stores or uses it via vault, verifier performs on-chain verification (including status and revocation checks), with transaction links for every step.
+
+## ZK milestone (Stellar X-Ray / Protocol 25)
+
+The ZK work delivers a clear design and integration for **selective disclosure** plus a **minimal executable proof of concept** for privacy-preserving on-chain verification on Stellar using Stellar X-Ray (Protocol 25) BN254 primitives.
+
+### Selective disclosure design and integration
+
+A design document describes how ACTA credentials support selective disclosure: which fields can be revealed, which predicates are proven in zero knowledge (e.g. “age ≥ 18”, “not expired”, “valid status”), and how the holder generates a ZK proof and a shareable link. The design is aligned with Stellar X-Ray (Protocol 25) and BN254-compatible tooling.
+
+### Soroban ZK verifier contract
+
+A Soroban contract performs **on-chain verification of a single type of ZK proof** using the BN254 primitives of Protocol 25. The contract:
+
+- Accepts a Groth16 proof (G1/G2 points and public inputs) and a verification key (or a circuit identifier that maps to a fixed key).
+- Uses the BN254 host functions (\`bn254_multi_pairing_check\`, \`bn254_g1_add\`, \`bn254_g1_mul\`) to verify the proof.
+- Optionally uses a **nullifier** (e.g. derived with Poseidon or a hash) to prevent replay and record that the proof was verified.
+
+No pairing or curve arithmetic is implemented in contract code; the contract relies solely on Protocol 25 host functions for BN254 (and, where used, Poseidon).
+
+### How BN254 primitives are used (on-chain Groth16 verification)
+
+The credential flow uses ZK proofs compatible with the BN254 curve. The **Groth16 verifier** in the Soroban contract:
+
+- Receives the proof elements (points A, B, C in G1/G2) and the public inputs.
+- Reconstructs the vk_x term using the verification key and public inputs via \`bn254_g1_mul\` and \`bn254_g1_add\`.
+- Performs the pairing check using \`bn254_multi_pairing_check\` (equation below must hold):
+
+  > **e(−A,B) · e(α,β) · e(vkₓ,γ) · e(C,δ) = 1**
+
+  Proofs produced off-chain with any BN254-compatible prover can be verified on Stellar.
+
+**Nullifier and replay protection**: Each verification is tied to a unique **nullifier** derived via **Poseidon** (part of X-Ray), using host functions so that the same derivation is applied off-chain and on-chain. The nullifier construction (hash function, parameters, derivation scheme) is documented for clarity and reproducibility.
+
+### What is verified on-chain
+
+On-chain verification of zk-SNARK proofs runs on networks with Protocol 25 (X-Ray) or higher, using the BN254 host functions in the Soroban environment.
+
+- **ZK proof correctness** — The contract checks that the Groth16 proof is valid for the given verification key and public inputs, using BN254 pairing and curve operations.
+- **Replay protection** — The contract ensures the nullifier has not been used before and records it after a successful verification, so the same proof cannot be accepted again. Documentation states which network and protocol version were used.
+
+### Minimal executable PoC
+
+The minimal executable PoC demonstrates the following in a reproducible way:
+
+- **Credential and claim** — A user holds a verifiable credential (issued and stored in ACTA) that contains a **private attribute** not revealed (e.g. exact date of birth or expiration timestamp).
+- **Selective disclosure and proof generation** — The user reveals only what is necessary (e.g. “I am over 18” or “this credential has not expired”) and generates a **zero-knowledge proof** with a BN254-compatible circuit (e.g. age ≥ 18 or not expired), producing a Groth16 proof and BN254-compatible public inputs.
+- **On-chain verification** — The PoC sends the proof (with required public inputs and nullifier) to the ZK verifier contract in Soroban. The contract verifies the proof via BN254 primitives, applies nullifier-based replay protection, and records a successful verification on-chain (e.g. via event or state).
+- **Observable outcome** — A third party can verify **on-chain** that a valid proof was verified, **without** the verifier or the chain learning the underlying PII (e.g. exact age or expiration date). The PoC is executable on a public network (e.g. testnet) with step-by-step instructions for reproduction.
+
+The exact predicate (e.g. “age ≥ 18” or “not expired”), circuit/artifact version, and contract interface are documented so the PoC scope is clear and auditable.
+    `,
+  },
 };
 
 export const navigationItemsEn = {
@@ -2631,6 +2826,7 @@ export const navigationItemsEn = {
     { slug: "zk-generation", title: "Proof Generation" },
     { slug: "zk-verification", title: "Proof Verification" },
   ],
+  scf: [{ slug: "scf-41", title: "SCF 41" }],
   help: [
     { slug: "faq", title: "FAQ" },
     { slug: "support", title: "Support" },
@@ -5242,6 +5438,196 @@ curl -X POST https://acta.build/api/testnet/contracts/zk-verifier/verify \\
 - **verifierContractId** (opcional): Sobrescribir ID del contrato verificador
     `,
   },
+  "scf-41": {
+    slug: "scf-41",
+    title: "SCF 41",
+    section: "SCF",
+    tocItems: [
+      "Resumen",
+      "Stellar DID Method (v0.1)",
+      "Formato de identificador y binding de red",
+      "Modelo DID Document",
+      "Derivación de claves nativa",
+      "Prueba de control",
+      "Resolución determinística",
+      "Resolver de referencia (OSS)",
+      "Contratos Soroban",
+      "API/SDK testnet",
+      "Hito ZK (Stellar X-Ray)",
+      "Revelación selectiva",
+      "BN254 y verificación on-chain",
+      "PoC ejecutable mínimo",
+    ],
+    content: `
+# SCF 41
+
+Arquitectura técnica de SCF 41: método DID Stellar, tooling de resolución, contratos Soroban para credenciales y bóvedas, y API/SDK en testnet.
+
+## Resumen
+
+- **Stellar DID Method (v0.1) + tooling de resolución** — Especificación y resolver open-source para que los identificadores \`did:stellar\` resuelvan a DID Documents para emisión y verificación de Credenciales Verificables.
+- **Contratos Soroban** — Ciclo de vida de credenciales, bóvedas cifradas, aceptación de emisores controlada por el holder, niveles de fee en USDC y versionado.
+- **API/SDK testnet** — Release estable y versionada en testnet con firma por wallet y flujos reproducibles de extremo a extremo.
+
+## Stellar DID Method (v0.1)
+
+El alcance v0.1 es single-signature y listo para el ecosistema.
+
+### Formato de identificador y binding de red
+
+Sintaxis normativa del identificador ligada a redes Stellar:
+
+\`\`\`
+did:stellar:<network>:<accountId>
+\`\`\`
+
+- **<network>**: \`mainnet\` | \`testnet\`
+- **<accountId>**: clave pública Stellar StrKey (G...)
+
+Representación de cuenta agnóstica de cadena (estilo blockchainAccountId):
+
+\`\`\`
+stellar:mainnet:<G...>   /   stellar:testnet:<G...>
+\`\`\`
+
+### Modelo mínimo de DID Document (listo para VC)
+
+El DID Document v0.1 incluye el material de verificación mínimo para flujos VC y sigue el modelo de datos [W3C DID Core](https://w3c.github.io/did/#did-document-properties). Propiedades requeridas: \`id\`, \`verificationMethod\`, \`authentication\`, \`assertionMethod\`.
+
+Ejemplo de estructura para \`did:stellar\` (v0.1, single-sig, Ed25519). Esta estructura puede variar en versiones futuras:
+
+\`\`\`json
+{
+  "@context": [
+    "https://www.w3.org/ns/did/v1",
+    "https://w3id.org/security/suites/ed25519-2020/v1"
+  ],
+  "id": "did:stellar:testnet:GEXAMPLE1234567890ABCDEFGHIJKLM",
+  "verificationMethod": [{
+    "id": "did:stellar:testnet:GEXAMPLE1234567890ABCDEFGHIJKLM#controller",
+    "type": "Ed25519VerificationKey2020",
+    "controller": "did:stellar:testnet:GEXAMPLE1234567890ABCDEFGHIJKLM",
+    "publicKeyMultibase": "z6Mk...",
+    "blockchainAccountId": "stellar:testnet:GEXAMPLE1234567890ABCDEFGHIJKLM"
+  }],
+  "authentication": [
+    "did:stellar:testnet:GEXAMPLE1234567890ABCDEFGHIJKLM#controller"
+  ],
+  "assertionMethod": [
+    "did:stellar:testnet:GEXAMPLE1234567890ABCDEFGHIJKLM#controller"
+  ]
+}
+\`\`\`
+
+Consulta [DID Document properties (W3C)](https://w3c.github.io/did/#did-document-properties) para la definición normativa completa.
+
+### Derivación de claves nativa desde estado de cuenta Stellar (solo single-sig)
+
+El DID Document se construye de forma determinística desde la configuración de la cuenta on-ledger:
+
+- \`verificationMethod\` se deriva del signer de la cuenta (clave Ed25519).
+- v0.1 se limita a cuentas de una sola firma (un signer Ed25519 efectivo).
+- Las cuentas con multisig (múltiples signers y/o umbrales) quedan fuera de alcance y DEBEN devolver un error tipado (ej. \`unsupportedAccountConfiguration\`) o tratarse como no soportadas por política.
+- En v0.1 solo se exponen claves Ed25519 como \`verificationMethod\`; otros tipos de signer no se soportan o solo se reflejan en metadata.
+
+### Prueba de control (issuer/holder)
+
+Mecanismo estándar para probar control del identificador \`did:stellar\` vía firma de wallet:
+
+- **Opción A (simple)**: Firma Ed25519 sobre un challenge canónico (nonce + domain + DID + timestamp).
+- **Opción B (wallet-friendly)**: Firma de challenge estilo SEP-10 para flujos de wallet Stellar existentes.
+
+En v0.1 se define una opción como recomendada y la otra como alternativa compatible, con canonicalización y reglas anti-replay (nonce, binding de dominio, expiración).
+
+### Reglas de resolución determinística (normativas)
+
+La resolución es determinística y usa solo estado público del ledger:
+
+1. Parsear y validar el DID (network, StrKey).
+2. Obtener estado de la cuenta vía Horizon/RPC.
+3. Validar restricciones de cuenta v0.1 (single-sig).
+4. Construir el DID Document desde: signer de la cuenta (verification methods), entradas ManageData opcionales bajo un namespace reservado (services/attributes). Por límites de tamaño de ManageData, v0.1 almacena sobre todo punteros/URIs cortos, no payloads grandes.
+5. Devolver un DID Resolution Result con: \`didDocument\`, \`didResolutionMetadata\` (errores: \`invalidDid\`, \`unknownNetwork\`, \`notFound\`, \`unsupportedFormat\`, \`unsupportedAccountConfiguration\`), \`didDocumentMetadata\` (network, info de ledger, updated/versioning donde exista).
+
+### Resolver de referencia (OSS)
+
+Resolver open-source compatible con la interfaz DIF did-resolver (JS/TS):
+
+- Multi-red (mainnet/testnet)
+- \`did+json\` y \`did+ld+json\`
+- Utilidades SDK: parse/normalización de DID, builder/verificador de challenge canónico (prueba de control), ejemplos de extremo a extremo para emisores/verificadores en flujos VC.
+
+El borrador se desarrolla con asesoría de un contribuidor activo en estandarización de identidad W3C (alineación con DID Core / DID Resolution).
+
+## Contratos Soroban (credenciales + bóvedas cifradas)
+
+Los contratos Soroban (Rust) ofrecen una superficie clara y orientada a producción en testnet:
+
+- **Ciclo de vida de credenciales**: Emitir, verificar, revocar; anclaje on-chain y chequeos de estado, incluyendo estado de revocación.
+- **Bóvedas cifradas**: Operaciones de bóveda por holder (store/list/get), compartición y transferencia controlada de credenciales donde aplique.
+- **Aceptación de emisores controlada por el holder** (permissionless, anti-spam): ACTA no restringe quién puede emitir en Stellar; controles por holder a nivel de bóveda: **Requerido**: blocklist de emisores por holder aplicada en escritura de bóveda (las escrituras de emisores bloqueados fallan de forma determinística). **Por defecto configurable**: política de bóveda soporta modo “accept-all” con camino extensible a modos más estrictos.
+- **Niveles de fee en USDC**: Lógica de fees on-chain en USDC (configuración de niveles y aplicación), con semántica clara de pagador y cobro.
+- **Versionado y despliegue**: Contract IDs publicados, documentación de interfaz y estrategia clara de upgrade/versión para testnet.
+
+## API/SDK testnet
+
+La API/SDK de testnet (emisión y verificación on-chain) se endurece en una release estable y versionada:
+
+- **Estabilidad API/SDK**: Versionado, manejo de errores consistente y contratos request/response documentados.
+- **Firma por wallet**: Freighter (y WalletConnect donde aplique); las transacciones se preparan en servidor y se firman en cliente.
+- **Demo reproducible**: Flujo documentado y scripteable de extremo a extremo: el emisor prepara la transacción de emisión (XDR), firma vía wallet, la credencial se ancla on-chain, el holder la almacena o usa vía bóveda, el verificador realiza la verificación on-chain (incluyendo estado y revocación), con enlaces de transacción en cada paso.
+
+## Hito ZK (Stellar X-Ray / Protocol 25)
+
+El trabajo ZK incluye un diseño e integración claros para **revelación selectiva** y un **proof of concept ejecutable mínimo** que demuestra verificación on-chain preservando privacidad en Stellar usando los primitivos BN254 de Stellar X-Ray (Protocol 25).
+
+### Diseño e integración de revelación selectiva
+
+Un documento de diseño describe cómo las credenciales ACTA soportan revelación selectiva: qué campos pueden revelarse, qué predicados se prueban en cero conocimiento (ej. “edad ≥ 18”, “no expirado”, “estado válido”) y cómo el holder genera una prueba ZK y un enlace compartible. El diseño está alineado con Stellar X-Ray (Protocol 25) y con tooling compatible con BN254.
+
+### Contrato verificador ZK en Soroban
+
+Un contrato Soroban realiza **verificación on-chain de un único tipo de prueba ZK** usando los primitivos BN254 de Protocol 25. El contrato:
+
+- Acepta una prueba Groth16 (puntos G1/G2 e inputs públicos) y una clave de verificación (o un identificador de circuito que mapea a una clave fija).
+- Usa las host functions BN254 (\`bn254_multi_pairing_check\`, \`bn254_g1_add\`, \`bn254_g1_mul\`) para verificar la prueba.
+- Opcionalmente usa un **nullifier** (ej. derivado con Poseidon o un hash) para evitar replay y registrar que la prueba fue verificada.
+
+No se implementa emparejamiento ni aritmética de curvas en el contrato; se usan únicamente las host functions de Protocol 25 para BN254 (y, si aplica, Poseidon).
+
+### Uso de los primitivos BN254 (verificación Groth16 on-chain)
+
+El flujo de credenciales usa pruebas ZK compatibles con la curva BN254. El **verificador Groth16** en el contrato Soroban:
+
+- Recibe los elementos de la prueba (puntos A, B, C en G1/G2) y los inputs públicos.
+- Reconstruye el término vk_x usando la clave de verificación y los inputs públicos vía \`bn254_g1_mul\` y \`bn254_g1_add\`.
+- Realiza el chequeo de pairing usando \`bn254_multi_pairing_check\` (la ecuación siguiente debe cumplirse):
+
+  > **e(−A,B) · e(α,β) · e(vkₓ,γ) · e(C,δ) = 1**
+
+  Las pruebas generadas off-chain con cualquier prover compatible con BN254 pueden verificarse en Stellar.
+
+**Nullifier y protección contra replay**: Cada verificación se asocia a un **nullifier** único derivado vía **Poseidon** (parte de X-Ray), usando host functions para que la misma derivación se aplique off-chain y on-chain. La construcción del nullifier (función hash, parámetros, esquema de derivación) se documenta para claridad y reproducibilidad.
+
+### Qué se verifica on-chain
+
+La verificación on-chain de pruebas zk-SNARK se ejecuta en redes con Protocol 25 (X-Ray) o superior, usando las host functions BN254 en el entorno Soroban.
+
+- **Corrección de la prueba ZK** — El contrato comprueba que la prueba Groth16 es válida para la clave de verificación e inputs públicos dados, usando operaciones de pairing y curvas BN254.
+- **Protección contra replay** — El contrato garantiza que el nullifier no se ha usado antes y lo registra tras una verificación exitosa, de modo que la misma prueba no pueda aceptarse de nuevo. La documentación indica qué red y versión de protocolo se utilizaron.
+
+### PoC ejecutable mínimo
+
+El PoC ejecutable mínimo demuestra de forma reproducible:
+
+- **Credencial y claim** — Un usuario posee una credencial verificable (emitida y almacenada en ACTA) que contiene un **atributo privado** que no se revela (ej. fecha de nacimiento exacta o timestamp de expiración).
+- **Revelación selectiva y generación de prueba** — El usuario revela solo lo necesario (ej. “soy mayor de 18” o “esta credencial no ha expirado”) y genera una **prueba de conocimiento cero** con un circuito compatible con BN254 (ej. edad ≥ 18 o no expirado), produciendo una prueba Groth16 e inputs públicos compatibles con BN254.
+- **Verificación on-chain** — El PoC envía la prueba (con inputs públicos y nullifier requeridos) al contrato verificador ZK en Soroban. El contrato verifica la prueba vía primitivos BN254, aplica la protección contra replay basada en nullifier y registra una verificación exitosa on-chain (ej. vía evento o estado).
+- **Resultado observable** — Un tercero puede verificar **on-chain** que una prueba válida fue verificada, **sin** que el verificador o la cadena conozcan el PII subyacente (ej. edad exacta o fecha de expiración). El PoC es ejecutable en una red pública (ej. testnet) con instrucciones paso a paso para su reproducción.
+
+El predicado exacto (ej. “edad ≥ 18” o “no expirado”), la versión del circuito/artefacto y la interfaz del contrato se documentan para que el alcance del PoC sea claro y auditable.
+    `,
+  },
 };
 
 // Combined export for API route (uses English by default)
@@ -5281,6 +5667,7 @@ export const navigationItemsEs = {
     { slug: "zk-generation", title: "Generación de Pruebas" },
     { slug: "zk-verification", title: "Verificación de Pruebas" },
   ],
+  scf: [{ slug: "scf-41", title: "SCF 41" }],
   help: [
     { slug: "faq", title: "Preguntas Frecuentes" },
     { slug: "support", title: "Soporte" },
