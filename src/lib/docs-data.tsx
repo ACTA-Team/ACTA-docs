@@ -94,7 +94,6 @@ Multi-tenant credential storage repository:
 - **Store**: Stores encrypted credentials in the user's vault
 - **List/Get**: Retrieves credential IDs and data
 - **Verify**: Verifies credentials via issuance contract delegation
-- **Push**: Transfers credentials between vaults
 - **Authorization**: Manages issuer authorization lists
 
 Each user has an isolated vault with independent admin controls and issuer authorization.
@@ -797,7 +796,7 @@ https://acta.build/api/mainnet
 
 ## Authentication
 
-Only **credential issuance** (\`POST /contracts/vc/issue\`) and **admin endpoints** require an API key. Vault operations (create, read, authorize, revoke, push, set-new-owner), contract version (\`GET /contracts/version\`), and credential revocation (\`POST /contracts/vc/revoke\`) do not require authentication.
+Only **credential issuance** (\`POST /contracts/vc/issue\`) and **admin endpoints** require an API key. Vault operations (create, read, authorize, revoke, set-new-owner), contract version (\`GET /contracts/version\`), and credential revocation (\`POST /contracts/vc/revoke\`) do not require authentication.
 
 When required, send the API key in the request header:
 
@@ -1294,8 +1293,8 @@ All endpoints require:
       "Revoke Issuer",
       "Revoke Vault",
       "Set New Owner",
-      "Push",
       "Migrate",
+      "Create Sponsored Vault",
       "Prepare/Submit Flow",
     ],
     content: `
@@ -1514,57 +1513,6 @@ Sets the new vault owner (vault admin). Must be signed by the current owner.
 }
 \`\`\`
 
-## Push
-
-### POST /contracts/vault/push
-
-Moves a credential from one owner's vault to another. Must be signed by the origin owner.
-
-**Request Body (Prepare):**
-
-\`\`\`json
-{
-  "fromOwner": "G...",
-  "toOwner": "G...",
-  "vcId": "credential-123",
-  "issuer": "G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
-}
-\`\`\`
-
-**Request Body (Submit):**
-
-\`\`\`json
-{
-  "signedXdr": "AAAA..."
-}
-\`\`\`
-
-**Response (Prepare):**
-
-\`\`\`json
-{
-  "xdr": "AAAA...",
-  "network": "Test SDF Network ; September 2015"
-}
-\`\`\`
-
-**Response (Submit):**
-
-\`\`\`json
-{
-  "tx_id": "abc123..."
-}
-\`\`\`
-
-**Parameters:**
-- **fromOwner** (required): Origin vault owner address (G...)
-- **toOwner** (required): Destination vault owner address (G...)
-- **vcId** (required): Credential identifier
-- **issuer** (required): Issuer address authorized in the origin vault (G...)
-- **sourcePublicKey** (required): Must be \`fromOwner\`
-
 ## Migrate
 
 ### POST /contracts/vault/migrate
@@ -1605,6 +1553,56 @@ Migrates legacy vault data for an owner to the current format.
   "tx_id": "abc123..."
 }
 \`\`\`
+
+## Create Sponsored Vault
+
+### POST /contracts/sponsored-vault/create
+
+Creates a sponsored vault for an owner. A sponsor pays for the vault creation on behalf of the owner. No authentication required.
+
+**Request Body (Prepare):**
+
+\`\`\`json
+{
+  "sponsor": "G...",
+  "owner": "G...",
+  "didUri": "did:pkh:stellar:testnet:G...",
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+**Request Body (Submit):**
+
+\`\`\`json
+{
+  "signedXdr": "AAAA..."
+}
+\`\`\`
+
+**Response (Prepare):**
+
+\`\`\`json
+{
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Response (Submit):**
+
+\`\`\`json
+{
+  "tx_id": "abc123..."
+}
+\`\`\`
+
+**Parameters:**
+- **sponsor** (required): Sponsor address that pays for vault creation (G...)
+- **owner** (required): Vault owner address (G...)
+- **didUri** (required): DID URI of the vault owner
+- **sourcePublicKey** (required): Transaction source that will sign (must be sponsor)
+- **contractId** (optional): Override ACTA contract ID (C...)
 
 ## Prepare/Submit Flow
 
@@ -3099,8 +3097,7 @@ Repositorio multi-tenant de almacenamiento de credenciales:
 - **Almacenar**: Guarda credenciales cifradas en la bóveda del usuario  
 - **Listar/Obtener**: Recupera IDs y datos de credenciales  
 - **Verificar**: Verifica credenciales delegando al contrato de emisión  
-- **Enviar (Push)**: Transfiere credenciales entre bóvedas  
-- **Autorización**: Gestiona las listas de emisores autorizados  
+- **Autorización**: Gestiona las listas de emisores autorizados
 
 Cada usuario tiene una bóveda aislada con controles de administración e autorización de emisores independientes.
 
@@ -3803,7 +3800,7 @@ https://acta.build/api/mainnet
 
 ## Autenticación
 
-Solo la **emisión de credenciales** (\`POST /contracts/vc/issue\`) y los **endpoints de administración** requieren API key. Las operaciones de bóveda (crear, leer, autorizar, revocar, push, set-new-owner), la versión del contrato (\`GET /contracts/version\`) y la revocación de credenciales (\`POST /contracts/vc/revoke\`) no requieren autenticación.
+Solo la **emisión de credenciales** (\`POST /contracts/vc/issue\`) y los **endpoints de administración** requieren API key. Las operaciones de bóveda (crear, leer, autorizar, revocar, set-new-owner), la versión del contrato (\`GET /contracts/version\`) y la revocación de credenciales (\`POST /contracts/vc/revoke\`) no requieren autenticación.
 
 Cuando sea necesario, envía la API key en el header de la solicitud:
 
@@ -4307,8 +4304,8 @@ Todos los endpoints requieren:
       "Revocar Emisor",
       "Revocar Bóveda",
       "Establecer nuevo propietario",
-      "Push",
       "Migrate",
+      "Crear Bóveda Patrocinada",
       "Flujo Prepare/Submit",
     ],
     content: `
@@ -4527,57 +4524,6 @@ Establece el nuevo propietario de la bóveda (admin de bóveda). Debe ser firmad
 }
 \`\`\`
 
-## Push
-
-### POST /contracts/vault/push
-
-Mueve una credencial de la bóveda de un propietario a otra. Debe ser firmado por el propietario de origen.
-
-**Cuerpo de solicitud (Prepare):**
-
-\`\`\`json
-{
-  "fromOwner": "G...",
-  "toOwner": "G...",
-  "vcId": "credential-123",
-  "issuer": "G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
-}
-\`\`\`
-
-**Cuerpo de solicitud (Submit):**
-
-\`\`\`json
-{
-  "signedXdr": "AAAA..."
-}
-\`\`\`
-
-**Respuesta (Prepare):**
-
-\`\`\`json
-{
-  "xdr": "AAAA...",
-  "network": "Test SDF Network ; September 2015"
-}
-\`\`\`
-
-**Respuesta (Submit):**
-
-\`\`\`json
-{
-  "tx_id": "abc123..."
-}
-\`\`\`
-
-**Parámetros:**
-- **fromOwner** (requerido): Dirección del propietario de la bóveda de origen (G...)
-- **toOwner** (requerido): Dirección del propietario de la bóveda de destino (G...)
-- **vcId** (requerido): Identificador de la credencial
-- **issuer** (requerido): Dirección del emisor autorizado en la bóveda de origen (G...)
-- **sourcePublicKey** (requerido): Debe ser \`fromOwner\`
-
 ## Migrate
 
 ### POST /contracts/vault/migrate
@@ -4618,6 +4564,56 @@ Migra los datos heredados de la bóveda de un propietario al formato actual.
   "tx_id": "abc123..."
 }
 \`\`\`
+
+## Crear Bóveda Patrocinada
+
+### POST /contracts/sponsored-vault/create
+
+Crea una bóveda patrocinada para un propietario. Un patrocinador paga la creación de la bóveda en nombre del propietario. No requiere autenticación.
+
+**Cuerpo de solicitud (Prepare):**
+
+\`\`\`json
+{
+  "sponsor": "G...",
+  "owner": "G...",
+  "didUri": "did:pkh:stellar:testnet:G...",
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+**Cuerpo de solicitud (Submit):**
+
+\`\`\`json
+{
+  "signedXdr": "AAAA..."
+}
+\`\`\`
+
+**Respuesta (Prepare):**
+
+\`\`\`json
+{
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Respuesta (Submit):**
+
+\`\`\`json
+{
+  "tx_id": "abc123..."
+}
+\`\`\`
+
+**Parámetros:**
+- **sponsor** (requerido): Dirección del patrocinador que paga la creación de la bóveda (G...)
+- **owner** (requerido): Dirección del propietario de la bóveda (G...)
+- **didUri** (requerido): DID URI del propietario de la bóveda
+- **sourcePublicKey** (requerido): Fuente de transacción que firmará (debe ser el patrocinador)
+- **contractId** (opcional): Sobrescribir ID de contrato ACTA (C...)
 
 ## Flujo Prepare/Submit
 
