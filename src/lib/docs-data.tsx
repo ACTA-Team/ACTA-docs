@@ -180,11 +180,11 @@ For React/Next.js applications:
 1. **Install SDK**:
 
 \`\`\`bash
-npm install @acta/react-sdk
+npm install @acta-team/acta-sdk
 \`\`\`
 
-2. **Configure Provider**: Wrap app with \`ActaProvider\`
-3. **Use Hooks**: \`useCreateCredential\`, \`useVaultApi\`, etc.
+2. **Configure Provider**: Wrap app with \`ActaConfig\`
+3. **Use Hooks**: \`useCredential\`, \`useVault\`, \`useVaultRead\`, etc.
 
 See React SDK Documentation for hooks and examples.
 
@@ -347,11 +347,12 @@ Issues a credential (stores it in the vault and marks it as valid).
 
 \`\`\`ts
 {
-  owner: string;                    // Stellar public key of the credential owner
+  owner: string;                    // Stellar public key of the credential owner (vault owner)
   vcId: string;                    // Unique credential identifier
-  vcData: string;                  // Credential data (JSON stringified)
+  vcData: string | object;         // Credential data (JSON string or object). @context is added automatically
   issuer: string;                  // Stellar public key of the issuer
-  issuerDid?: string;              // Issuer DID URI (optional)
+  holder: string;                  // Wallet address or DID of the holder (DID is built automatically from address)
+  issuerDid?: string;              // Wallet address or DID of the issuer (DID is built automatically from address)
   signTransaction: Signer;         // Function that signs the unsigned XDR
   contractId?: string;             // Contract ID (optional, uses the configured default)
 }
@@ -381,15 +382,19 @@ const { txId } = await issue({
   owner: "G...",
   vcId: "credential-123",
   vcData: JSON.stringify({
-    "@context": ["https://www.w3.org/2018/credentials/v1"],
+    "@context": [
+      "https://www.w3.org/ns/credentials/v2",
+      "https://www.w3.org/ns/credentials/examples/v2"
+    ],
     type: ["VerifiableCredential"],
     credentialSubject: {
-      id: "did:stellar:G...",
+      id: "did:pkh:stellar:testnet:G...",
       name: "John Doe"
     }
   }),
   issuer: "G...",
-  issuerDid: "did:stellar:G...",
+  holder: "G...",        // wallet address — DID is built automatically
+  issuerDid: "G...",     // wallet address — DID is built automatically
   signTransaction: async (xdr, { networkPassphrase }) => {
     // Sign the XDR with your wallet
     return signedXdr;
@@ -843,18 +848,20 @@ Example submit request:
 
 ### Success Response
 
+Prepare mode returns unsigned XDR + network passphrase:
+
 \`\`\`json
 {
-  "unsignedXdr": "AAAA...",
-  "networkPassphrase": "Test SDF Network ; September 2015"
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
 }
 \`\`\`
 
-Or for submit:
+Submit mode returns the transaction ID:
 
 \`\`\`json
 {
-  "txId": "abc123..."
+  "tx_id": "abc123..."
 }
 \`\`\`
 
@@ -870,7 +877,7 @@ Or for submit:
 ## Prepare/Submit Flow
 
 1. **Prepare**: Call endpoint with operation parameters (no \`signedXdr\`)
-2. **Sign**: Sign the returned \`unsignedXdr\` with your Stellar wallet
+2. **Sign**: Sign the returned \`xdr\` with your Stellar wallet using the \`network\` passphrase
 3. **Submit**: Call the same endpoint with \`signedXdr\` to execute
 
 ## Error Handling
@@ -1193,10 +1200,13 @@ Gets a specific verifiable credential from a vault.
 \`\`\`json
 {
   "vcData": {
-    "@context": ["https://www.w3.org/2018/credentials/v1"],
+    "@context": [
+      "https://www.w3.org/ns/credentials/v2",
+      "https://www.w3.org/ns/credentials/examples/v2"
+    ],
     "type": ["VerifiableCredential"],
     "credentialSubject": {
-      "id": "did:stellar:G...",
+      "id": "did:pkh:stellar:testnet:G...",
       "name": "John Doe"
     }
   }
@@ -1285,6 +1295,7 @@ All endpoints require:
       "Revoke Vault",
       "Set New Owner",
       "Push",
+      "Migrate",
       "Prepare/Submit Flow",
     ],
     content: `
@@ -1321,8 +1332,8 @@ Creates (initializes) a vault for an owner.
 
 \`\`\`json
 {
-  "unsignedXdr": "AAAA...",
-  "networkPassphrase": "Test SDF Network ; September 2015"
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
 }
 \`\`\`
 
@@ -1330,7 +1341,7 @@ Creates (initializes) a vault for an owner.
 
 \`\`\`json
 {
-  "txId": "abc123..."
+  "tx_id": "abc123..."
 }
 \`\`\`
 
@@ -1351,11 +1362,28 @@ Adds a single authorized issuer to an owner's vault.
 }
 \`\`\`
 
+**Response (Prepare):**
+
+\`\`\`json
+{
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Response (Submit):**
+
+\`\`\`json
+{
+  "tx_id": "abc123..."
+}
+\`\`\`
+
 ## Authorize Issuers (Multiple)
 
 ### POST /contracts/vault/authorize-issuers
 
-Authorizes multiple issuers in a vault.
+Replaces the full authorized issuer list for a vault with the given array.
 
 **Request Body (Prepare):**
 
@@ -1365,6 +1393,23 @@ Authorizes multiple issuers in a vault.
   "issuers": ["G...", "G...", "G..."],
   "sourcePublicKey": "G...",
   "contractId": "C..."
+}
+\`\`\`
+
+**Response (Prepare):**
+
+\`\`\`json
+{
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Response (Submit):**
+
+\`\`\`json
+{
+  "tx_id": "abc123..."
 }
 \`\`\`
 
@@ -1385,6 +1430,23 @@ Revokes an issuer's authorization from a vault.
 }
 \`\`\`
 
+**Response (Prepare):**
+
+\`\`\`json
+{
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Response (Submit):**
+
+\`\`\`json
+{
+  "tx_id": "abc123..."
+}
+\`\`\`
+
 ## Revoke Vault
 
 ### POST /contracts/vault/revoke-vault
@@ -1401,11 +1463,28 @@ Completely revokes a vault.
 }
 \`\`\`
 
+**Response (Prepare):**
+
+\`\`\`json
+{
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Response (Submit):**
+
+\`\`\`json
+{
+  "tx_id": "abc123..."
+}
+\`\`\`
+
 ## Set New Owner
 
 ### POST /contracts/vault/set-new-owner
 
-Sets the new vault owner (vault admin).
+Sets the new vault owner (vault admin). Must be signed by the current owner.
 
 **Request Body (Prepare):**
 
@@ -1418,11 +1497,79 @@ Sets the new vault owner (vault admin).
 }
 \`\`\`
 
+**Response (Prepare):**
+
+\`\`\`json
+{
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Response (Submit):**
+
+\`\`\`json
+{
+  "tx_id": "abc123..."
+}
+\`\`\`
+
 ## Push
 
 ### POST /contracts/vault/push
 
-Pushes data to a vault.
+Moves a credential from one owner's vault to another. Must be signed by the origin owner.
+
+**Request Body (Prepare):**
+
+\`\`\`json
+{
+  "fromOwner": "G...",
+  "toOwner": "G...",
+  "vcId": "credential-123",
+  "issuer": "G...",
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+**Request Body (Submit):**
+
+\`\`\`json
+{
+  "signedXdr": "AAAA..."
+}
+\`\`\`
+
+**Response (Prepare):**
+
+\`\`\`json
+{
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Response (Submit):**
+
+\`\`\`json
+{
+  "tx_id": "abc123..."
+}
+\`\`\`
+
+**Parameters:**
+- **fromOwner** (required): Origin vault owner address (G...)
+- **toOwner** (required): Destination vault owner address (G...)
+- **vcId** (required): Credential identifier
+- **issuer** (required): Issuer address authorized in the origin vault (G...)
+- **sourcePublicKey** (required): Must be \`fromOwner\`
+
+## Migrate
+
+### POST /contracts/vault/migrate
+
+Migrates legacy vault data for an owner to the current format.
 
 **Request Body (Prepare):**
 
@@ -1434,12 +1581,37 @@ Pushes data to a vault.
 }
 \`\`\`
 
+**Request Body (Submit):**
+
+\`\`\`json
+{
+  "signedXdr": "AAAA..."
+}
+\`\`\`
+
+**Response (Prepare):**
+
+\`\`\`json
+{
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Response (Submit):**
+
+\`\`\`json
+{
+  "tx_id": "abc123..."
+}
+\`\`\`
+
 ## Prepare/Submit Flow
 
 All write endpoints follow the same pattern:
 
 1. **Prepare**: Send request with operation parameters (no \`signedXdr\`)
-2. **Sign**: Sign the returned \`unsignedXdr\` with your Stellar wallet
+2. **Sign**: Sign the returned \`xdr\` with your Stellar wallet using the \`network\` passphrase
 3. **Submit**: Send request with \`signedXdr\` to execute
 
 **Common Parameters:**
@@ -1481,8 +1653,9 @@ X-ACTA-Key: your_api_key_here
 {
   "owner": "G...",
   "vcId": "credential-123",
-  "vcData": "{\\"@context\\":[\\"https://www.w3.org/2018/credentials/v1\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:stellar:G...\\",\\"name\\":\\"John Doe\\"}}",
+  "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:pkh:stellar:testnet:G...\\",\\"name\\":\\"John Doe\\"}}",
   "issuer": "G...",
+  "holder": "did:pkh:stellar:testnet:G...",
   "issuerDid": "did:pkh:stellar:testnet:G...",
   "sourcePublicKey": "G...",
   "contractId": "C..."
@@ -1501,8 +1674,8 @@ X-ACTA-Key: your_api_key_here
 
 \`\`\`json
 {
-  "unsignedXdr": "AAAA...",
-  "networkPassphrase": "Test SDF Network ; September 2015"
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
 }
 \`\`\`
 
@@ -1510,7 +1683,7 @@ X-ACTA-Key: your_api_key_here
 
 \`\`\`json
 {
-  "txId": "abc123..."
+  "tx_id": "abc123..."
 }
 \`\`\`
 
@@ -1524,8 +1697,9 @@ curl -X POST https://acta.build/api/testnet/contracts/vc/issue \\
   -d '{
     "owner": "G...",
     "vcId": "credential-123",
-    "vcData": "{\\"@context\\":[\\"https://www.w3.org/2018/credentials/v1\\"],\\"type\\":[\\"VerifiableCredential\\"]}",
+    "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"]}",
     "issuer": "G...",
+    "holder": "did:pkh:stellar:testnet:G...",
     "sourcePublicKey": "G..."
   }'
 
@@ -1567,8 +1741,8 @@ Revokes a VC by ID. No authentication required.
 
 \`\`\`json
 {
-  "unsignedXdr": "AAAA...",
-  "networkPassphrase": "Test SDF Network ; September 2015"
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
 }
 \`\`\`
 
@@ -1576,7 +1750,7 @@ Revokes a VC by ID. No authentication required.
 
 \`\`\`json
 {
-  "txId": "abc123..."
+  "tx_id": "abc123..."
 }
 \`\`\`
 
@@ -1586,9 +1760,10 @@ Revokes a VC by ID. No authentication required.
 
 - **owner** (required): Vault owner address (G...)
 - **vcId** (required): Credential identifier
-- **vcData** (required): Credential data payload (string, will be automatically encrypted with AES-256 before storage)
+- **vcData** (required): Credential data payload (JSON string). Must include \`@context\` with at least \`"https://www.w3.org/ns/credentials/v2"\`
 - **issuer** (required): Issuer address (G...)
-- **issuerDid** (optional): Issuer DID metadata
+- **holder** (required): DID of the credential holder in format \`did:pkh:stellar:{network}:{address}\`
+- **issuerDid** (optional): DID of the issuer in format \`did:pkh:stellar:{network}:{address}\`
 - **sourcePublicKey** (required): Transaction source that will sign (must be issuer)
 - **contractId** (optional): Override ACTA contract ID (C...)
 
@@ -1602,13 +1777,12 @@ Revokes a VC by ID. No authentication required.
 ## Prepare/Submit Flow
 
 1. **Prepare**: Send request with operation parameters (no \`signedXdr\`)
-2. **Sign**: Sign the returned \`unsignedXdr\` with your Stellar wallet
+2. **Sign**: Sign the returned \`xdr\` with your Stellar wallet using the \`network\` passphrase
 3. **Submit**: Send request with \`signedXdr\` to execute
 
-**Note:** The \`issue\` method automatically stores the credential in the vault and marks it as valid in a single transaction.
+**Note:** The \`issue\` endpoint automatically stores the credential in the vault and marks it as valid in a single transaction.
     `,
   },
-
   // dApp Section
   "dapp-overview": {
     slug: "dapp-overview",
@@ -2791,7 +2965,7 @@ The minimal executable PoC demonstrates the following in a reproducible way:
 
 The exact predicate (e.g. “age ≥ 18” or “not expired”), circuit/artifact version, and contract interface are documented so the PoC scope is clear and auditable.
     `,
-  },
+  }
 };
 
 export const navigationItemsEn = {
@@ -3011,11 +3185,11 @@ Para aplicaciones React/Next.js:
 1. **Instalar SDK**:
 
 \`\`\`bash
-npm install @acta/react-sdk
+npm install @acta-team/acta-sdk
 \`\`\`
 
 2. **Configurar provider**: Envuelve tu app con \`ActaConfig\`  
-3. **Usar hooks**: \`useCreateCredential\`, \`useVaultApi\`, etc.  
+3. **Usar hooks**: \`useCredential\`, \`useVault\`, \`useVaultRead\`, etc.  
 
 Revisa la documentación del React SDK para hooks y ejemplos.
 
@@ -3179,11 +3353,12 @@ Emite una credencial (la guarda en la bóveda y la marca como válida).
 
 \`\`\`ts
 {
-  owner: string;                    // Clave pública Stellar del titular de la credencial
+  owner: string;                    // Clave pública Stellar del propietario de la bóveda
   vcId: string;                    // Identificador único de la credencial
-  vcData: string;                  // Datos de la credencial (JSON stringify)
+  vcData: string | object;         // Datos de la credencial (JSON string u objeto). @context se agrega automáticamente
   issuer: string;                  // Clave pública Stellar del emisor
-  issuerDid?: string;              // DID del emisor (opcional)
+  holder: string;                  // Dirección de wallet o DID del titular (el DID se construye automáticamente desde la dirección)
+  issuerDid?: string;              // Dirección de wallet o DID del emisor (el DID se construye automáticamente desde la dirección)
   signTransaction: Signer;         // Función que firma el XDR sin firmar
   contractId?: string;             // ID de contrato (opcional, usa el configurado por defecto)
 }
@@ -3213,15 +3388,19 @@ const { txId } = await issue({
   owner: "G...",
   vcId: "credential-123",
   vcData: JSON.stringify({
-    "@context": ["https://www.w3.org/2018/credentials/v1"],
+    "@context": [
+      "https://www.w3.org/ns/credentials/v2",
+      "https://www.w3.org/ns/credentials/examples/v2"
+    ],
     type: ["VerifiableCredential"],
     credentialSubject: {
-      id: "did:stellar:G...",
+      id: "did:pkh:stellar:testnet:G...",
       name: "John Doe"
     }
   }),
   issuer: "G...",
-  issuerDid: "did:stellar:G...",
+  holder: "G...",        // dirección de wallet — el DID se construye automáticamente
+  issuerDid: "G...",     // dirección de wallet — el DID se construye automáticamente
   signTransaction: async (xdr, { networkPassphrase }) => {
     // Firma el XDR con tu wallet
     return signedXdr;
@@ -3675,18 +3854,20 @@ Ejemplo de solicitud submit:
 
 ### Respuesta exitosa
 
+El modo prepare devuelve XDR sin firmar + network passphrase:
+
 \`\`\`json
 {
-  "unsignedXdr": "AAAA...",
-  "networkPassphrase": "Test SDF Network ; September 2015"
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
 }
 \`\`\`
 
-O para submit:
+El modo submit devuelve el ID de la transacción:
 
 \`\`\`json
 {
-  "txId": "abc123..."
+  "tx_id": "abc123..."
 }
 \`\`\`
 
@@ -3702,7 +3883,7 @@ O para submit:
 ## Flujo Prepare/Submit
 
 1. **Prepare**: Llama al endpoint con parámetros de operación (sin \`signedXdr\`)
-2. **Firmar**: Firma el \`unsignedXdr\` devuelto con tu wallet Stellar
+2. **Firmar**: Firma el \`xdr\` devuelto con tu wallet Stellar usando el \`network\` passphrase
 3. **Submit**: Llama al mismo endpoint con \`signedXdr\` para ejecutar
 
 ## Manejo de errores
@@ -4032,10 +4213,13 @@ Obtiene una credencial verificable específica de una bóveda.
 \`\`\`json
 {
   "vcData": {
-    "@context": ["https://www.w3.org/2018/credentials/v1"],
+    "@context": [
+      "https://www.w3.org/ns/credentials/v2",
+      "https://www.w3.org/ns/credentials/examples/v2"
+    ],
     "type": ["VerifiableCredential"],
     "credentialSubject": {
-      "id": "did:stellar:G...",
+      "id": "did:pkh:stellar:testnet:G...",
       "name": "John Doe"
     }
   }
@@ -4124,6 +4308,7 @@ Todos los endpoints requieren:
       "Revocar Bóveda",
       "Establecer nuevo propietario",
       "Push",
+      "Migrate",
       "Flujo Prepare/Submit",
     ],
     content: `
@@ -4160,8 +4345,8 @@ Crea (inicializa) una bóveda para un propietario.
 
 \`\`\`json
 {
-  "unsignedXdr": "AAAA...",
-  "networkPassphrase": "Test SDF Network ; September 2015"
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
 }
 \`\`\`
 
@@ -4169,7 +4354,7 @@ Crea (inicializa) una bóveda para un propietario.
 
 \`\`\`json
 {
-  "txId": "abc123..."
+  "tx_id": "abc123..."
 }
 \`\`\`
 
@@ -4190,11 +4375,28 @@ Añade un emisor autorizado a la bóveda de un propietario.
 }
 \`\`\`
 
+**Respuesta (Prepare):**
+
+\`\`\`json
+{
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Respuesta (Submit):**
+
+\`\`\`json
+{
+  "tx_id": "abc123..."
+}
+\`\`\`
+
 ## Autorizar Emisores (Múltiples)
 
 ### POST /contracts/vault/authorize-issuers
 
-Autoriza múltiples emisores en una bóveda.
+Reemplaza la lista completa de emisores autorizados de la bóveda con el array dado.
 
 **Cuerpo de solicitud (Prepare):**
 
@@ -4204,6 +4406,23 @@ Autoriza múltiples emisores en una bóveda.
   "issuers": ["G...", "G...", "G..."],
   "sourcePublicKey": "G...",
   "contractId": "C..."
+}
+\`\`\`
+
+**Respuesta (Prepare):**
+
+\`\`\`json
+{
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Respuesta (Submit):**
+
+\`\`\`json
+{
+  "tx_id": "abc123..."
 }
 \`\`\`
 
@@ -4224,6 +4443,23 @@ Revoca la autorización de un emisor de una bóveda.
 }
 \`\`\`
 
+**Respuesta (Prepare):**
+
+\`\`\`json
+{
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Respuesta (Submit):**
+
+\`\`\`json
+{
+  "tx_id": "abc123..."
+}
+\`\`\`
+
 ## Revocar Bóveda
 
 ### POST /contracts/vault/revoke-vault
@@ -4240,11 +4476,28 @@ Revoca completamente una bóveda.
 }
 \`\`\`
 
+**Respuesta (Prepare):**
+
+\`\`\`json
+{
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Respuesta (Submit):**
+
+\`\`\`json
+{
+  "tx_id": "abc123..."
+}
+\`\`\`
+
 ## Establecer nuevo propietario
 
 ### POST /contracts/vault/set-new-owner
 
-Establece el nuevo propietario de la bóveda (admin de bóveda).
+Establece el nuevo propietario de la bóveda (admin de bóveda). Debe ser firmado por el propietario actual.
 
 **Cuerpo de solicitud (Prepare):**
 
@@ -4257,11 +4510,79 @@ Establece el nuevo propietario de la bóveda (admin de bóveda).
 }
 \`\`\`
 
+**Respuesta (Prepare):**
+
+\`\`\`json
+{
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Respuesta (Submit):**
+
+\`\`\`json
+{
+  "tx_id": "abc123..."
+}
+\`\`\`
+
 ## Push
 
 ### POST /contracts/vault/push
 
-Envía datos a una bóveda.
+Mueve una credencial de la bóveda de un propietario a otra. Debe ser firmado por el propietario de origen.
+
+**Cuerpo de solicitud (Prepare):**
+
+\`\`\`json
+{
+  "fromOwner": "G...",
+  "toOwner": "G...",
+  "vcId": "credential-123",
+  "issuer": "G...",
+  "sourcePublicKey": "G...",
+  "contractId": "C..."
+}
+\`\`\`
+
+**Cuerpo de solicitud (Submit):**
+
+\`\`\`json
+{
+  "signedXdr": "AAAA..."
+}
+\`\`\`
+
+**Respuesta (Prepare):**
+
+\`\`\`json
+{
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Respuesta (Submit):**
+
+\`\`\`json
+{
+  "tx_id": "abc123..."
+}
+\`\`\`
+
+**Parámetros:**
+- **fromOwner** (requerido): Dirección del propietario de la bóveda de origen (G...)
+- **toOwner** (requerido): Dirección del propietario de la bóveda de destino (G...)
+- **vcId** (requerido): Identificador de la credencial
+- **issuer** (requerido): Dirección del emisor autorizado en la bóveda de origen (G...)
+- **sourcePublicKey** (requerido): Debe ser \`fromOwner\`
+
+## Migrate
+
+### POST /contracts/vault/migrate
+
+Migra los datos heredados de la bóveda de un propietario al formato actual.
 
 **Cuerpo de solicitud (Prepare):**
 
@@ -4273,12 +4594,37 @@ Envía datos a una bóveda.
 }
 \`\`\`
 
+**Cuerpo de solicitud (Submit):**
+
+\`\`\`json
+{
+  "signedXdr": "AAAA..."
+}
+\`\`\`
+
+**Respuesta (Prepare):**
+
+\`\`\`json
+{
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Respuesta (Submit):**
+
+\`\`\`json
+{
+  "tx_id": "abc123..."
+}
+\`\`\`
+
 ## Flujo Prepare/Submit
 
 Todos los endpoints de escritura siguen el mismo patrón:
 
 1. **Prepare**: Envía solicitud con parámetros de operación (sin \`signedXdr\`)
-2. **Firmar**: Firma el \`unsignedXdr\` devuelto con tu wallet Stellar
+2. **Firmar**: Firma el \`xdr\` devuelto con tu wallet Stellar usando el \`network\` passphrase
 3. **Submit**: Envía solicitud con \`signedXdr\` para ejecutar
 
 **Parámetros comunes:**
@@ -4320,8 +4666,9 @@ X-ACTA-Key: tu_api_key_aqui
 {
   "owner": "G...",
   "vcId": "credential-123",
-  "vcData": "{\\"@context\\":[\\"https://www.w3.org/2018/credentials/v1\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:stellar:G...\\",\\"name\\":\\"John Doe\\"}}",
+  "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:pkh:stellar:testnet:G...\\",\\"name\\":\\"John Doe\\"}}",
   "issuer": "G...",
+  "holder": "did:pkh:stellar:testnet:G...",
   "issuerDid": "did:pkh:stellar:testnet:G...",
   "sourcePublicKey": "G...",
   "contractId": "C..."
@@ -4340,8 +4687,8 @@ X-ACTA-Key: tu_api_key_aqui
 
 \`\`\`json
 {
-  "unsignedXdr": "AAAA...",
-  "networkPassphrase": "Test SDF Network ; September 2015"
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
 }
 \`\`\`
 
@@ -4349,7 +4696,7 @@ X-ACTA-Key: tu_api_key_aqui
 
 \`\`\`json
 {
-  "txId": "abc123..."
+  "tx_id": "abc123..."
 }
 \`\`\`
 
@@ -4363,8 +4710,9 @@ curl -X POST https://acta.build/api/testnet/contracts/vc/issue \\
   -d '{
     "owner": "G...",
     "vcId": "credential-123",
-    "vcData": "{\\"@context\\":[\\"https://www.w3.org/2018/credentials/v1\\"],\\"type\\":[\\"VerifiableCredential\\"]}",
+    "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"]}",
     "issuer": "G...",
+    "holder": "did:pkh:stellar:testnet:G...",
     "sourcePublicKey": "G..."
   }'
 
@@ -4406,8 +4754,8 @@ Revoca una VC por ID. No requiere autenticación.
 
 \`\`\`json
 {
-  "unsignedXdr": "AAAA...",
-  "networkPassphrase": "Test SDF Network ; September 2015"
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
 }
 \`\`\`
 
@@ -4415,7 +4763,7 @@ Revoca una VC por ID. No requiere autenticación.
 
 \`\`\`json
 {
-  "txId": "abc123..."
+  "tx_id": "abc123..."
 }
 \`\`\`
 
@@ -4425,9 +4773,10 @@ Revoca una VC por ID. No requiere autenticación.
 
 - **owner** (requerido): Dirección del propietario de la bóveda (G...)
 - **vcId** (requerido): Identificador de credencial
-- **vcData** (requerido): Payload de datos de credencial (cadena, se cifrará automáticamente con AES-256 antes del almacenamiento)
+- **vcData** (requerido): Payload de datos de credencial (JSON string). Debe incluir \`@context\` con al menos \`"https://www.w3.org/ns/credentials/v2"\`
 - **issuer** (requerido): Dirección del emisor (G...)
-- **issuerDid** (opcional): Metadatos DID del emisor
+- **holder** (requerido): DID del titular de la credencial en formato \`did:pkh:stellar:{network}:{address}\`
+- **issuerDid** (opcional): DID del emisor en formato \`did:pkh:stellar:{network}:{address}\`
 - **sourcePublicKey** (requerido): Fuente de transacción que firmará (debe ser el emisor)
 - **contractId** (opcional): Sobrescribir ID de contrato ACTA (C...)
 
@@ -4441,13 +4790,12 @@ Revoca una VC por ID. No requiere autenticación.
 ## Flujo Prepare/Submit
 
 1. **Prepare**: Envía solicitud con parámetros de operación (sin \`signedXdr\`)
-2. **Firmar**: Firma el \`unsignedXdr\` devuelto con tu wallet Stellar
+2. **Firmar**: Firma el \`xdr\` devuelto con tu wallet Stellar usando el \`network\` passphrase
 3. **Submit**: Envía solicitud con \`signedXdr\` para ejecutar
 
-**Nota:** El método \`issue\` almacena automáticamente la credencial en la bóveda y la marca como válida en una sola transacción.
+**Nota:** El endpoint \`issue\` almacena automáticamente la credencial en la bóveda y la marca como válida en una sola transacción.
     `,
   },
-
   // dApp Section
   "dapp-overview": {
     slug: "dapp-overview",
