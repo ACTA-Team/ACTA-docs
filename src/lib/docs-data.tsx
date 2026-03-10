@@ -299,13 +299,15 @@ const config = await client.getConfig();
   - \`authorizeIssuer\`: Authorize an issuer in the vault
   - \`revokeIssuer\`: Revoke an authorized issuer from the vault
 
-- \`useCredential\`: Credential operations - issue and revoke
+- \`useCredential\`: Credential operations - issue, issueLinked, and revoke
   - \`issue\`: Issue a credential (stores in vault and marks as valid)
+  - \`issueLinked\`: Issue a credential linked to a parent VC
   - \`revoke\`: Revoke a credential
 
-- \`useVaultRead\`: Vault read operations - list IDs, get VC, verify VC
+- \`useVaultRead\`: Vault read operations - list IDs, get VC, get VC parent, verify VC
   - \`listVcIds\`: List credential IDs owned by an owner
   - \`getVc\`: Get a credential from the vault
+  - \`getVcParent\`: Get parent VC info for a linked credential
   - \`verifyVc\`: Verify the status of a credential in the vault
     `,
   },
@@ -320,6 +322,7 @@ const config = await client.getConfig();
       "Signer Type",
       "Return Value",
       "Example",
+      "issueLinked",
       "revoke",
       "Transaction Flow",
       "Notes",
@@ -327,13 +330,14 @@ const config = await client.getConfig();
     content: `
 # useCredential
 
-Hook for credential operations: issue and revoke.
+Hook for credential operations: issue, issueLinked, and revoke.
 
 ## Function
 
 \`\`\`ts
 useCredential(): {
   issue: (args: IssueArgs) => Promise<{ txId: string }>;
+  issueLinked: (args: IssueLinkedArgs) => Promise<{ txId: string }>;
   revoke: (args: RevokeArgs) => Promise<{ txId: string }>;
 }
 \`\`\`
@@ -401,6 +405,64 @@ const { txId } = await issue({
 });
 \`\`\`
 
+## issueLinked
+
+Issues a credential linked to a parent VC. The parent VC must exist and be valid in its vault. This enables hierarchical credential relationships.
+
+### Arguments
+
+\`\`\`ts
+{
+  owner: string;                    // Stellar public key of the credential owner (vault owner)
+  vcId: string;                    // Unique credential identifier
+  vcData: string | object;         // Credential data (JSON string or object). @context is added automatically
+  issuer: string;                  // Stellar public key of the issuer
+  holder: string;                  // Wallet address or DID of the holder (DID is built automatically from address)
+  issuerDid?: string;              // Wallet address or DID of the issuer (DID is built automatically from address)
+  signTransaction: Signer;         // Function that signs the unsigned XDR
+  contractId?: string;             // Contract ID (optional, uses the configured default)
+  parentOwner: string;             // Stellar public key of the parent VC owner
+  parentVcId: string;              // Identifier of the parent VC
+}
+\`\`\`
+
+### Return Value
+
+- \`Promise<{ txId: string }>\`: Transaction ID after sending to the network
+
+### Example
+
+\`\`\`ts
+import { useCredential } from "@acta-team/acta-sdk";
+
+const { issueLinked } = useCredential();
+
+const { txId } = await issueLinked({
+  owner: "G...",
+  vcId: "linked-credential-456",
+  vcData: JSON.stringify({
+    "@context": [
+      "https://www.w3.org/ns/credentials/v2",
+      "https://www.w3.org/ns/credentials/examples/v2"
+    ],
+    type: ["VerifiableCredential"],
+    credentialSubject: {
+      id: "did:pkh:stellar:testnet:G...",
+      name: "John Doe",
+      certification: "Advanced Level"
+    }
+  }),
+  issuer: "G...",
+  holder: "G...",
+  signTransaction: async (xdr, { networkPassphrase }) => {
+    // Sign the XDR with your wallet
+    return signedXdr;
+  },
+  parentOwner: "G...",             // Owner of the parent VC
+  parentVcId: "credential-123"    // ID of the parent VC
+});
+\`\`\`
+
 ## revoke
 
 Revokes a credential.
@@ -441,7 +503,7 @@ const { txId } = await revoke({
 
 ## Transaction Flow
 
-Both methods follow the same flow:
+All methods follow the same flow:
 
 1. **Prepare**: Calls the API to get an unsigned XDR and the network passphrase
 2. **Sign**: Uses \`signTransaction\` to sign the XDR with the provided passphrase
@@ -625,13 +687,14 @@ The hook automatically handles the distinction between prepare and submit respon
       "Return Value",
       "Example",
       "getVc",
+      "getVcParent",
       "verifyVc",
       "Notes",
     ],
     content: `
 # useVaultRead
 
-Hook for reading vault data: list credential IDs, get credentials, verify credentials.
+Hook for reading vault data: list credential IDs, get credentials, get parent VC info, verify credentials.
 
 ## Function
 
@@ -639,6 +702,7 @@ Hook for reading vault data: list credential IDs, get credentials, verify creden
 useVaultRead(): {
   listVcIds: (args: ListVcIdsArgs) => Promise<string[]>;
   getVc: (args: GetVcArgs) => Promise<unknown | null>;
+  getVcParent: (args: GetVcParentArgs) => Promise<{ owner: string; vc_id: string } | null>;
   verifyVc: (args: VerifyVcArgs) => Promise<VaultVerifyVcResponse>;
 }
 \`\`\`
@@ -710,6 +774,48 @@ if (vc) {
 }
 \`\`\`
 
+## getVcParent
+
+Gets the parent VC info for a linked credential. Returns \`null\` if the credential has no parent link.
+
+### Arguments
+
+\`\`\`ts
+{
+  owner: string;                   // Stellar public key of the owner
+  vcId: string;                    // Unique credential identifier
+  contractId?: string;             // Contract ID (optional, uses the configured default)
+}
+\`\`\`
+
+### Return Value
+
+\`\`\`ts
+Promise<{ owner: string; vc_id: string } | null>
+\`\`\`
+
+- Returns an object with the parent VC's \`owner\` address and \`vc_id\`, or \`null\` if the credential is not linked to a parent.
+
+### Example
+
+\`\`\`ts
+import { useVaultRead } from "@acta-team/acta-sdk";
+
+const { getVcParent } = useVaultRead();
+
+const parent = await getVcParent({
+  owner: "G...",
+  vcId: "linked-credential-456"
+});
+
+if (parent) {
+  console.log("Parent owner:", parent.owner);
+  console.log("Parent VC ID:", parent.vc_id);
+} else {
+  console.log("This credential has no parent link");
+}
+\`\`\`
+
 ## verifyVc
 
 Verifies the status of a credential in the vault.
@@ -756,6 +862,7 @@ if (verification.since) {
 - All these operations are **read-only** and do not require signing transactions
 - Methods automatically handle different API response formats
 - \`getVc\` returns \`null\` if the credential does not exist in the vault
+- \`getVcParent\` returns \`null\` if the credential has no parent link
 - \`verifyVc\` always returns a result with the current status of the credential
     `,
   },
@@ -796,7 +903,7 @@ https://acta.build/api/mainnet
 
 ## Authentication
 
-Only **credential issuance** (\`POST /contracts/vc/issue\`) and **admin endpoints** require an API key. Vault operations (create, read, authorize, revoke, set-new-owner), contract version (\`GET /contracts/version\`), and credential revocation (\`POST /contracts/vc/revoke\`) do not require authentication.
+Only **credential issuance** (\`POST /contracts/vc/issue\`), **linked credential issuance** (\`POST /contracts/vc/issue-linked\`), and **admin endpoints** require an API key. Vault operations (create, read, authorize, revoke, set-new-owner), contract version (\`GET /contracts/version\`), and credential revocation (\`POST /contracts/vc/revoke\`) do not require authentication.
 
 When required, send the API key in the request header:
 
@@ -1138,6 +1245,7 @@ curl "https://acta.build/api/testnet/contracts/version?sourcePublicKey=G..."
     tocItems: [
       "List VC IDs",
       "Get VC",
+      "Get VC Parent",
       "Verify VC",
       "Request Body",
       "Responses",
@@ -1223,6 +1331,52 @@ curl -X POST https://acta.build/api/testnet/contracts/vault/get-vc \\
   }'
 \`\`\`
 
+## Get VC Parent
+
+### POST /contracts/vault/get-vc-parent
+
+Gets the parent VC info for a linked credential. Returns \`null\` if the credential has no parent link. No authentication required.
+
+**Request Body:**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "vcId": "linked-credential-456",
+  "contractId": "C..."
+}
+\`\`\`
+
+**Response (with parent):**
+
+\`\`\`json
+{
+  "parent": {
+    "owner": "G...",
+    "vc_id": "credential-123"
+  }
+}
+\`\`\`
+
+**Response (no parent):**
+
+\`\`\`json
+{
+  "parent": null
+}
+\`\`\`
+
+**Example:**
+
+\`\`\`bash
+curl -X POST https://acta.build/api/testnet/contracts/vault/get-vc-parent \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "owner": "G...",
+    "vcId": "linked-credential-456"
+  }'
+\`\`\`
+
 ## Verify VC
 
 ### POST /contracts/vault/verify-vc
@@ -1272,7 +1426,7 @@ curl -X POST https://acta.build/api/testnet/contracts/vault/verify-vc \\
 
 All endpoints require:
 - **owner** (required): Vault owner address (G...)
-- **vcId** (required for get-vc and verify-vc): Credential identifier
+- **vcId** (required for get-vc, get-vc-parent, and verify-vc): Credential identifier
 - **contractId** (optional): Override ACTA contract ID (C...)
 
 ## Responses
@@ -1624,6 +1778,7 @@ All write endpoints follow the same pattern:
     section: "API Reference",
     tocItems: [
       "Issue Credential",
+      "Issue Linked Credential",
       "Revoke Credential",
       "Request Body",
       "Prepare/Submit Flow",
@@ -1631,7 +1786,7 @@ All write endpoints follow the same pattern:
     content: `
 # Credential Operations
 
-Endpoints for issuing and revoking verifiable credentials. All support prepare/submit flow. **Only Issue Credential** (\`POST /contracts/vc/issue\`) requires an API key; **Revoke Credential** does not require authentication.
+Endpoints for issuing and revoking verifiable credentials. All support prepare/submit flow. **Issue Credential** (\`POST /contracts/vc/issue\`) and **Issue Linked Credential** (\`POST /contracts/vc/issue-linked\`) require an API key; **Revoke Credential** does not require authentication.
 
 ## Issue Credential
 
@@ -1710,6 +1865,87 @@ curl -X POST https://acta.build/api/testnet/contracts/vc/issue \\
   }'
 \`\`\`
 
+## Issue Linked Credential
+
+### POST /contracts/vc/issue-linked
+
+Issues a VC linked to a parent VC: stores payload in the owner's vault with a reference to the parent credential. The parent VC must exist and be valid. **Requires API key.**
+
+**Headers:**
+
+\`\`\`
+X-ACTA-Key: your_api_key_here
+\`\`\`
+
+**Request Body (Prepare):**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "vcId": "linked-credential-456",
+  "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:pkh:stellar:testnet:G...\\",\\"name\\":\\"John Doe\\"}}",
+  "issuer": "G...",
+  "holder": "did:pkh:stellar:testnet:G...",
+  "issuerDid": "did:pkh:stellar:testnet:G...",
+  "sourcePublicKey": "G...",
+  "contractId": "C...",
+  "parentOwner": "G...",
+  "parentVcId": "credential-123"
+}
+\`\`\`
+
+**Request Body (Submit):**
+
+\`\`\`json
+{
+  "signedXdr": "AAAA..."
+}
+\`\`\`
+
+**Response (Prepare):**
+
+\`\`\`json
+{
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Response (Submit):**
+
+\`\`\`json
+{
+  "tx_id": "abc123..."
+}
+\`\`\`
+
+**Example:**
+
+\`\`\`bash
+# Prepare
+curl -X POST https://acta.build/api/testnet/contracts/vc/issue-linked \\
+  -H "X-ACTA-Key: your_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "owner": "G...",
+    "vcId": "linked-credential-456",
+    "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"]}",
+    "issuer": "G...",
+    "holder": "did:pkh:stellar:testnet:G...",
+    "sourcePublicKey": "G...",
+    "parentOwner": "G...",
+    "parentVcId": "credential-123"
+  }'
+
+# Submit (after signing)
+curl -X POST https://acta.build/api/testnet/contracts/vc/issue-linked \\
+  -H "X-ACTA-Key: your_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "signedXdr": "AAAA..."
+  }'
+\`\`\`
+
 ## Revoke Credential
 
 ### POST /contracts/vc/revoke
@@ -1764,6 +2000,19 @@ Revokes a VC by ID. No authentication required.
 - **issuerDid** (optional): DID of the issuer in format \`did:pkh:stellar:{network}:{address}\`
 - **sourcePublicKey** (required): Transaction source that will sign (must be issuer)
 - **contractId** (optional): Override ACTA contract ID (C...)
+
+### Issue Linked Credential
+
+- **owner** (required): Vault owner address (G...)
+- **vcId** (required): Credential identifier
+- **vcData** (required): Credential data payload (JSON string). Must include \`@context\` with at least \`"https://www.w3.org/ns/credentials/v2"\`
+- **issuer** (required): Issuer address (G...)
+- **holder** (required): DID of the credential holder in format \`did:pkh:stellar:{network}:{address}\`
+- **issuerDid** (optional): DID of the issuer in format \`did:pkh:stellar:{network}:{address}\`
+- **sourcePublicKey** (required): Transaction source that will sign (must be issuer)
+- **contractId** (optional): Override ACTA contract ID (C...)
+- **parentOwner** (required): Parent VC owner address (G...)
+- **parentVcId** (required): Parent VC identifier
 
 ### Revoke Credential
 
@@ -3324,6 +3573,7 @@ const config = await client.getConfig();
       "Tipo de firmante",
       "Valor de retorno",
       "Ejemplo",
+      "issueLinked",
       "revoke",
       "Flujo de transacción",
       "Notas",
@@ -3331,13 +3581,14 @@ const config = await client.getConfig();
     content: `
 # useCredential
 
-Hook para operaciones de credenciales: emitir y revocar.
+Hook para operaciones de credenciales: emitir, emitir vinculada y revocar.
 
 ## Función
 
 \`\`\`ts
 useCredential(): {
   issue: (args: IssueArgs) => Promise<{ txId: string }>;
+  issueLinked: (args: IssueLinkedArgs) => Promise<{ txId: string }>;
   revoke: (args: RevokeArgs) => Promise<{ txId: string }>;
 }
 \`\`\`
@@ -3405,6 +3656,64 @@ const { txId } = await issue({
 });
 \`\`\`
 
+## issueLinked
+
+Emite una credencial vinculada a una VC padre. La VC padre debe existir y estar válida en su bóveda. Esto permite relaciones jerárquicas entre credenciales.
+
+### Argumentos
+
+\`\`\`ts
+{
+  owner: string;                    // Clave pública Stellar del propietario de la bóveda
+  vcId: string;                    // Identificador único de la credencial
+  vcData: string | object;         // Datos de la credencial (JSON string u objeto). @context se agrega automáticamente
+  issuer: string;                  // Clave pública Stellar del emisor
+  holder: string;                  // Dirección de wallet o DID del titular (el DID se construye automáticamente desde la dirección)
+  issuerDid?: string;              // Dirección de wallet o DID del emisor (el DID se construye automáticamente desde la dirección)
+  signTransaction: Signer;         // Función que firma el XDR sin firmar
+  contractId?: string;             // ID de contrato (opcional, usa el configurado por defecto)
+  parentOwner: string;             // Clave pública Stellar del propietario de la VC padre
+  parentVcId: string;              // Identificador de la VC padre
+}
+\`\`\`
+
+### Valor de retorno
+
+- \`Promise<{ txId: string }>\`: ID de la transacción después de enviarse a la red  
+
+### Ejemplo
+
+\`\`\`ts
+import { useCredential } from "@acta-team/acta-sdk";
+
+const { issueLinked } = useCredential();
+
+const { txId } = await issueLinked({
+  owner: "G...",
+  vcId: "linked-credential-456",
+  vcData: JSON.stringify({
+    "@context": [
+      "https://www.w3.org/ns/credentials/v2",
+      "https://www.w3.org/ns/credentials/examples/v2"
+    ],
+    type: ["VerifiableCredential"],
+    credentialSubject: {
+      id: "did:pkh:stellar:testnet:G...",
+      name: "John Doe",
+      certification: "Nivel Avanzado"
+    }
+  }),
+  issuer: "G...",
+  holder: "G...",
+  signTransaction: async (xdr, { networkPassphrase }) => {
+    // Firma el XDR con tu wallet
+    return signedXdr;
+  },
+  parentOwner: "G...",             // Propietario de la VC padre
+  parentVcId: "credential-123"    // ID de la VC padre
+});
+\`\`\`
+
 ## revoke
 
 Revoca una credencial.
@@ -3445,7 +3754,7 @@ const { txId } = await revoke({
 
 ## Flujo de transacción
 
-Ambos métodos siguen el mismo flujo:
+Todos los métodos siguen el mismo flujo:
 
 1. **Preparar**: llama a la API para obtener un XDR sin firmar y el network passphrase  
 2. **Firmar**: usa \`signTransaction\` para firmar el XDR con el passphrase proporcionado  
@@ -3629,13 +3938,14 @@ El hook maneja automáticamente la diferencia entre las respuestas de “prepare
       "Valor de retorno",
       "Ejemplo",
       "getVc",
+      "getVcParent",
       "verifyVc",
       "Notas",
     ],
     content: `
 # useVaultRead
 
-Hook para leer datos de la bóveda: listar IDs de credenciales, obtener credenciales, verificar credenciales.
+Hook para leer datos de la bóveda: listar IDs de credenciales, obtener credenciales, obtener info de VC padre, verificar credenciales.
 
 ## Función
 
@@ -3643,6 +3953,7 @@ Hook para leer datos de la bóveda: listar IDs de credenciales, obtener credenci
 useVaultRead(): {
   listVcIds: (args: ListVcIdsArgs) => Promise<string[]>;
   getVc: (args: GetVcArgs) => Promise<unknown | null>;
+  getVcParent: (args: GetVcParentArgs) => Promise<{ owner: string; vc_id: string } | null>;
   verifyVc: (args: VerifyVcArgs) => Promise<VaultVerifyVcResponse>;
 }
 \`\`\`
@@ -3714,6 +4025,48 @@ if (vc) {
 }
 \`\`\`
 
+## getVcParent
+
+Obtiene la info de la VC padre para una credencial vinculada. Devuelve \`null\` si la credencial no tiene vínculo padre.
+
+### Argumentos
+
+\`\`\`ts
+{
+  owner: string;                   // Clave pública Stellar del propietario
+  vcId: string;                    // Identificador único de la credencial
+  contractId?: string;             // ID de contrato (opcional, usa el configurado por defecto)
+}
+\`\`\`
+
+### Valor de retorno
+
+\`\`\`ts
+Promise<{ owner: string; vc_id: string } | null>
+\`\`\`
+
+- Devuelve un objeto con la dirección \`owner\` de la VC padre y su \`vc_id\`, o \`null\` si la credencial no está vinculada a un padre.
+
+### Ejemplo
+
+\`\`\`ts
+import { useVaultRead } from "@acta-team/acta-sdk";
+
+const { getVcParent } = useVaultRead();
+
+const parent = await getVcParent({
+  owner: "G...",
+  vcId: "linked-credential-456"
+});
+
+if (parent) {
+  console.log("Propietario padre:", parent.owner);
+  console.log("ID de VC padre:", parent.vc_id);
+} else {
+  console.log("Esta credencial no tiene vínculo padre");
+}
+\`\`\`
+
 ## verifyVc
 
 Verifica el estado de una credencial en la bóveda.
@@ -3760,6 +4113,7 @@ if (verification.since) {
 - Todas estas operaciones son **solo lectura** y no requieren firmar transacciones  
 - Los métodos manejan automáticamente distintos formatos de respuesta de la API  
 - \`getVc\` devuelve \`null\` si la credencial no existe en la bóveda  
+- \`getVcParent\` devuelve \`null\` si la credencial no tiene vínculo padre
 - \`verifyVc\` siempre devuelve el estado actual de la credencial  
     `,
   },
@@ -4149,6 +4503,7 @@ curl "https://acta.build/api/testnet/contracts/version?sourcePublicKey=G..."
     tocItems: [
       "Listar IDs de VC",
       "Obtener VC",
+      "Obtener VC Padre",
       "Verificar VC",
       "Cuerpo de solicitud",
       "Respuestas",
@@ -4231,6 +4586,52 @@ curl -X POST https://acta.build/api/testnet/contracts/vault/get-vc \\
   -d '{
     "owner": "G...",
     "vcId": "credential-123"
+  }'
+\`\`\`
+
+## Obtener VC Padre
+
+### POST /contracts/vault/get-vc-parent
+
+Obtiene la info de la VC padre para una credencial vinculada. Devuelve \`null\` si la credencial no tiene vínculo padre. No requiere autenticación.
+
+**Cuerpo de solicitud:**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "vcId": "linked-credential-456",
+  "contractId": "C..."
+}
+\`\`\`
+
+**Respuesta (con padre):**
+
+\`\`\`json
+{
+  "parent": {
+    "owner": "G...",
+    "vc_id": "credential-123"
+  }
+}
+\`\`\`
+
+**Respuesta (sin padre):**
+
+\`\`\`json
+{
+  "parent": null
+}
+\`\`\`
+
+**Ejemplo:**
+
+\`\`\`bash
+curl -X POST https://acta.build/api/testnet/contracts/vault/get-vc-parent \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "owner": "G...",
+    "vcId": "linked-credential-456"
   }'
 \`\`\`
 
@@ -4635,6 +5036,7 @@ Todos los endpoints de escritura siguen el mismo patrón:
     section: "Referencia API",
     tocItems: [
       "Emitir Credencial",
+      "Emitir Credencial Vinculada",
       "Revocar Credencial",
       "Cuerpo de solicitud",
       "Flujo Prepare/Submit",
@@ -4642,7 +5044,7 @@ Todos los endpoints de escritura siguen el mismo patrón:
     content: `
 # Operaciones de Credenciales
 
-Endpoints para emitir y revocar credenciales verificables. Todos soportan flujo prepare/submit. **Solo Emitir Credencial** (\`POST /contracts/vc/issue\`) requiere API key; **Revocar Credencial** no requiere autenticación.
+Endpoints para emitir y revocar credenciales verificables. Todos soportan flujo prepare/submit. **Emitir Credencial** (\`POST /contracts/vc/issue\`) y **Emitir Credencial Vinculada** (\`POST /contracts/vc/issue-linked\`) requieren API key; **Revocar Credencial** no requiere autenticación.
 
 ## Emitir Credencial
 
@@ -4721,6 +5123,87 @@ curl -X POST https://acta.build/api/testnet/contracts/vc/issue \\
   }'
 \`\`\`
 
+## Emitir Credencial Vinculada
+
+### POST /contracts/vc/issue-linked
+
+Emite una VC vinculada a una VC padre: almacena el payload en la bóveda del propietario con una referencia a la credencial padre. La VC padre debe existir y estar válida. **Requiere API key.**
+
+**Headers:**
+
+\`\`\`
+X-ACTA-Key: tu_api_key_aqui
+\`\`\`
+
+**Cuerpo de solicitud (Prepare):**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "vcId": "linked-credential-456",
+  "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:pkh:stellar:testnet:G...\\",\\"name\\":\\"John Doe\\"}}",
+  "issuer": "G...",
+  "holder": "did:pkh:stellar:testnet:G...",
+  "issuerDid": "did:pkh:stellar:testnet:G...",
+  "sourcePublicKey": "G...",
+  "contractId": "C...",
+  "parentOwner": "G...",
+  "parentVcId": "credential-123"
+}
+\`\`\`
+
+**Cuerpo de solicitud (Submit):**
+
+\`\`\`json
+{
+  "signedXdr": "AAAA..."
+}
+\`\`\`
+
+**Respuesta (Prepare):**
+
+\`\`\`json
+{
+  "xdr": "AAAA...",
+  "network": "Test SDF Network ; September 2015"
+}
+\`\`\`
+
+**Respuesta (Submit):**
+
+\`\`\`json
+{
+  "tx_id": "abc123..."
+}
+\`\`\`
+
+**Ejemplo:**
+
+\`\`\`bash
+# Prepare
+curl -X POST https://acta.build/api/testnet/contracts/vc/issue-linked \\
+  -H "X-ACTA-Key: tu_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "owner": "G...",
+    "vcId": "linked-credential-456",
+    "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"]}",
+    "issuer": "G...",
+    "holder": "did:pkh:stellar:testnet:G...",
+    "sourcePublicKey": "G...",
+    "parentOwner": "G...",
+    "parentVcId": "credential-123"
+  }'
+
+# Submit (después de firmar)
+curl -X POST https://acta.build/api/testnet/contracts/vc/issue-linked \\
+  -H "X-ACTA-Key: tu_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "signedXdr": "AAAA..."
+  }'
+\`\`\`
+
 ## Revocar Credencial
 
 ### POST /contracts/vc/revoke
@@ -4775,6 +5258,19 @@ Revoca una VC por ID. No requiere autenticación.
 - **issuerDid** (opcional): DID del emisor en formato \`did:pkh:stellar:{network}:{address}\`
 - **sourcePublicKey** (requerido): Fuente de transacción que firmará (debe ser el emisor)
 - **contractId** (opcional): Sobrescribir ID de contrato ACTA (C...)
+
+### Emitir Credencial Vinculada
+
+- **owner** (requerido): Dirección del propietario de la bóveda (G...)
+- **vcId** (requerido): Identificador de credencial
+- **vcData** (requerido): Payload de datos de credencial (JSON string). Debe incluir \`@context\` con al menos \`"https://www.w3.org/ns/credentials/v2"\`
+- **issuer** (requerido): Dirección del emisor (G...)
+- **holder** (requerido): DID del titular de la credencial en formato \`did:pkh:stellar:{network}:{address}\`
+- **issuerDid** (opcional): DID del emisor en formato \`did:pkh:stellar:{network}:{address}\`
+- **sourcePublicKey** (requerido): Fuente de transacción que firmará (debe ser el emisor)
+- **contractId** (opcional): Sobrescribir ID de contrato ACTA (C...)
+- **parentOwner** (requerido): Dirección del propietario de la VC padre (G...)
+- **parentVcId** (requerido): Identificador de la VC padre
 
 ### Revocar Credencial
 
