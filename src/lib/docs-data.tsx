@@ -3018,9 +3018,9 @@ curl -X POST https://acta.build/api/testnet/contracts/zk-verifier/verify \\
 - **verifierContractId** (optional): Override verifier contract ID
     `,
   },
-  "scf-41": {
-    slug: "scf-41",
-    title: "SCF 41",
+  "scf-42": {
+    slug: "scf-42",
+    title: "SCF 42",
     section: "SCF",
     tocItems: [
       "Overview",
@@ -3034,14 +3034,20 @@ curl -X POST https://acta.build/api/testnet/contracts/zk-verifier/verify \\
       "Soroban contracts",
       "Testnet API/SDK",
       "ZK milestone (Stellar X-Ray)",
-      "Selective disclosure",
-      "BN254 and on-chain verification",
+      "ZK overview",
+      "Circuit & predicates",
+      "Credential & DID binding",
+      "Nullifier & replay protection",
+      "Verifier contract interface",
+      "BN254 host functions",
+      "Trusted setup & artifacts",
+      "Threat model & limitations",
       "Minimal executable PoC",
     ],
     content: `
-# SCF 41
+# SCF 42
 
-Technical architecture for SCF 41: Stellar DID method, resolver tooling, Soroban contracts for credentials and vaults, and testnet API/SDK.
+Technical architecture for SCF 42: Stellar DID method, resolver tooling, Soroban contracts for credentials and vaults, and testnet API/SDK.
 
 ## Overview
 
@@ -3164,53 +3170,184 @@ The testnet API/SDK (issuance and on-chain verification) is hardened into a stab
 
 ## ZK milestone (Stellar X-Ray / Protocol 25)
 
-The ZK work delivers a clear design and integration for **selective disclosure** plus a **minimal executable proof of concept** for privacy-preserving on-chain verification on Stellar using Stellar X-Ray (Protocol 25) BN254 primitives.
+The ZK work delivers a fully specified **selective disclosure** component plus a **minimal executable proof of concept** for privacy‑preserving on‑chain verification on Stellar using Stellar X-Ray (Protocol 25) BN254 primitives. This section expands the Tranche 3 ZK scope for SCF reviewers.
 
-### Selective disclosure design and integration
+### ZK overview
 
-A design document describes how ACTA credentials support selective disclosure: which fields can be revealed, which predicates are proven in zero knowledge (e.g. “age ≥ 18”, “not expired”, “valid status”), and how the holder generates a ZK proof and a shareable link. The design is aligned with Stellar X-Ray (Protocol 25) and BN254-compatible tooling.
+- **Curve**: BN254 (as exposed by Stellar X-Ray / Protocol 25).
+- **Proof system**: Groth16 zk‑SNARK.
+- **Host functions used**:
+  - \`bn254_g1_mul\`
+  - \`bn254_g1_add\`
+  - \`bn254_multi_pairing_check\`
+  - Poseidon hash host functions (for nullifier derivation, where applicable).
+- **On‑chain verifier**: Soroban contract (\`zk_verifier\`) deployed on a Protocol 25+ network (testnet and mainnet for the PoC).
+- **Off‑chain tooling**: BN254‑compatible prover stack (e.g. circom + snarkjs or equivalent) that compiles circuits, generates proving/verification keys, and produces Groth16 proofs compatible with the on‑chain encoding.
 
-### Soroban ZK verifier contract
+### Circuit and predicate specification
 
-A Soroban contract performs **on-chain verification of a single type of ZK proof** using the BN254 primitives of Protocol 25. The contract:
+We implement a concrete, auditable predicate such as:
 
-- Accepts a Groth16 proof (G1/G2 points and public inputs) and a verification key (or a circuit identifier that maps to a fixed key).
-- Uses the BN254 host functions (\`bn254_multi_pairing_check\`, \`bn254_g1_add\`, \`bn254_g1_mul\`) to verify the proof.
-- Optionally uses a **nullifier** (e.g. derived with Poseidon or a hash) to prevent replay and record that the proof was verified.
+- **Predicate A (age check)**: “holder is at least 18 years old”, or
+- **Predicate B (non‑expired credential)**: “credential has not expired at reference time”.
 
-No pairing or curve arithmetic is implemented in contract code; the contract relies solely on Protocol 25 host functions for BN254 (and, where used, Poseidon).
+The chosen predicate is fixed and documented in the PoC.
 
-### How BN254 primitives are used (on-chain Groth16 verification)
+#### Inputs
 
-The credential flow uses ZK proofs compatible with the BN254 curve. The **Groth16 verifier** in the Soroban contract:
+- **Private inputs** (known only to holder/prover):
+  - \`dob\`: date of birth encoded as an integer (e.g. Unix timestamp or YYYYMMDD).
+  - \`salt\`: random salt used in attribute hashing.
+  - \`credential_secret_fields\`: additional secret fields that bind the proof to a specific ACTA credential.
+- **Public inputs**:
+  - \`cred_hash\`: hash of the credential (or selected fields) as stored/referenced in ACTA.
+  - Predicate parameters (e.g. \`age_threshold = 18\`).
+  - \`nullifier\`: public nullifier derived from private and public values (see below).
+  - Optional \`holder_binding\`: representation of the holder’s DID or \`blockchainAccountId\`.
 
-- Receives the proof elements (points A, B, C in G1/G2) and the public inputs.
-- Reconstructs the vk_x term using the verification key and public inputs via \`bn254_g1_mul\` and \`bn254_g1_add\`.
-- Performs the pairing check using \`bn254_multi_pairing_check\` (equation below must hold):
+#### Circuit logic (example “age ≥ 18”)
+
+1. Recompute a **binding hash** from private fields and salt:
+   - \`h_internal = H(dob || salt || credential_secret_fields)\`
+2. Combine with public metadata (issuer, schema, etc.) to recompute \`cred_hash\`:
+   - \`cred_hash' = H(h_internal || public_metadata)\`
+3. Enforce \`cred_hash' == cred_hash\` (binding proof to a specific credential).
+4. Derive age or compare dates to enforce the predicate (e.g. \`age >= 18\` or “dob is at least 18 years before a cut‑off date”).
+5. Optionally derive or validate the **nullifier** inside the circuit to align with on‑chain checks.
+
+The circuit clearly documents private vs public variables, hashing strategy, and predicate semantics. Circuit source (e.g. \`.circom\`) and compiled artifacts are versioned and published.
+
+### Credential and DID binding
+
+ACTA credentials are linked to holders via \`did:stellar:<network>:<accountId>\`. The ZK proof must be:
+
+- **Bound to a specific credential**, so it cannot be reused with a different credential body.
+- **Bound to a specific holder**, to prevent “proof lending”.
+
+We achieve this via:
+
+- **Credential hash** (\`cred_hash\`):
+  - Computed from canonical credential data (issuer DID, holder DID, schema ID, and the private attribute + salt).
+  - The same structure is logically reproduced inside the circuit using field‑friendly hashes.
+- **Holder binding**:
+  - Include a representation of the holder’s DID or \`blockchainAccountId\` (e.g. \`stellar:mainnet:G...\`) in:
+    - Credential hash computation.
+    - Nullifier derivation.
+
+This prevents reusing a proof for a different credential or a different holder without regenerating the proof.
+
+### Nullifier and replay protection
+
+#### Goals
+
+- **Replay protection** — avoid accepting the same proof (or logical use) multiple times where the application requires one‑time usage.
+- **Auditability** — record that a given nullifier has been consumed.
+
+#### Nullifier construction
+
+We derive the nullifier using Poseidon host functions so off‑chain and on‑chain derivations match exactly. Example:
+
+\`\`\`text
+nullifier = Poseidon(
+  cred_hash
+  || predicate_id
+  || holder_binding
+  || context
+)
+\`\`\`
+
+Where:
+
+- \`cred_hash\`: binds to the credential.
+- \`predicate_id\`: distinguishes different circuits/predicates (e.g. \`"isAdult"\` vs \`"notExpired"\`).
+- \`holder_binding\`: binds to the holder (e.g. hash of \`did:stellar:...\` or \`blockchainAccountId\`).
+- \`context\`: optional domain separator (application/use‑case ID).
+
+The design document specifies encoding, field mapping, and whether the nullifier is recomputed in the circuit, in the contract, or both.
+
+#### On‑chain handling
+
+The verifier contract:
+
+- Receives \`nullifier\` as a public input.
+- Before accepting a proof:
+  - Checks if \`nullifier\` is already stored; if so, returns an error (e.g. \`NullifierUsed\`).
+  - Otherwise, proceeds with Groth16 verification.
+- On success:
+  - Stores \`nullifier\` in contract state.
+  - Emits an event including \`nullifier\`, \`predicate_id\`, and the outcome.
+
+### Verifier contract interface
+
+The Soroban verifier exposes a minimal, versioned function, for example:
+
+\`\`\`text
+fn verify_proof(
+  circuit_id: String,      // e.g. "isAdult"
+  proof: Bytes,            // serialized Groth16 proof (A, B, C)
+  public_inputs: Bytes,    // encoded BN254 field elements
+  nullifier: Bytes         // field element used for replay protection
+) -> Result<VerificationResult, VerificationError>
+\`\`\`
+
+- \`circuit_id\` maps to a specific verification key and expected public input layout.
+- \`proof\` encodes G1/G2 points \`A, B, C\` using a documented format compatible with the prover.
+- \`public_inputs\` is a concatenation of field elements in a fixed order (e.g. \`[cred_hash, age_threshold, nullifier, holder_binding]\`).
+- \`nullifier\` is also passed separately for indexing/replay checks.
+
+The contract returns a structured result and emits events so verifications can be indexed on‑chain. Error variants include \`InvalidProof\`, \`NullifierUsed\`, \`InvalidInputs\`, \`UnsupportedCircuit\`.
+
+### BN254 host functions (on‑chain Groth16 verification)
+
+The on‑chain verifier:
+
+- Uses \`bn254_g1_mul\` and \`bn254_g1_add\` to reconstruct \`vk_x\` from the verification key and public inputs.
+- Uses \`bn254_multi_pairing_check\` to evaluate:
 
   > **e(−A,B) · e(α,β) · e(vkₓ,γ) · e(C,δ) = 1**
 
-  Proofs produced off-chain with any BN254-compatible prover can be verified on Stellar.
+No pairing or curve arithmetic is implemented in Rust; all elliptic‑curve operations come from X-Ray host functions. Poseidon host functions are used, where applicable, to derive or check the nullifier.
 
-**Nullifier and replay protection**: Each verification is tied to a unique **nullifier** derived via **Poseidon** (part of X-Ray), using host functions so that the same derivation is applied off-chain and on-chain. The nullifier construction (hash function, parameters, derivation scheme) is documented for clarity and reproducibility.
+### Trusted setup and artifact management
 
-### What is verified on-chain
+Because Groth16 requires a trusted setup, we:
 
-On-chain verification of zk-SNARK proofs runs on networks with Protocol 25 (X-Ray) or higher, using the BN254 host functions in the Soroban environment.
+- Define circuits in a public repository (e.g. \`isAdult.circom\`).
+- Run a documented ceremony (or reuse a compatible multi‑party ceremony) to generate:
+  - Proving key.
+  - Verification key.
+- Publish:
+  - Circuit source and version (e.g. Git commit hash).
+  - Hashes of proving and verification keys.
+  - Exact encoding of verification key constants used on‑chain.
 
-- **ZK proof correctness** — The contract checks that the Groth16 proof is valid for the given verification key and public inputs, using BN254 pairing and curve operations.
-- **Replay protection** — The contract ensures the nullifier has not been used before and records it after a successful verification, so the same proof cannot be accepted again. Documentation states which network and protocol version were used.
+On‑chain, the contract embeds or references the VK for each supported \`circuit_id\` and maps \`circuit_id -> vk_id\` as needed.
+
+### Threat model and limitations
+
+We explicitly state:
+
+- **Protected**:
+  - Private attributes (DOB, expiration) are never revealed on‑chain.
+  - Verifiers only see predicate outcomes and public inputs (e.g. credential hash, nullifier).
+  - Replay is prevented through the nullifier mechanism.
+- **Out of scope**:
+  - Network‑level metadata (IP, timing) and cross‑application correlation.
+  - Malicious issuers embedding PII in public credential fields.
+  - Side‑channel attacks against off‑chain prover environments.
+- **Dependencies**:
+  - Correctness and security of Stellar’s BN254/Poseidon host functions and the chosen Groth16 stack.
+
+We also set upper bounds for circuit size, number of public inputs, and expected verification cost.
 
 ### Minimal executable PoC
 
-The minimal executable PoC demonstrates the following in a reproducible way:
+The minimal PoC demonstrates, reproducibly:
 
-- **Credential and claim** — A user holds a verifiable credential (issued and stored in ACTA) that contains a **private attribute** not revealed (e.g. exact date of birth or expiration timestamp).
-- **Selective disclosure and proof generation** — The user reveals only what is necessary (e.g. “I am over 18” or “this credential has not expired”) and generates a **zero-knowledge proof** with a BN254-compatible circuit (e.g. age ≥ 18 or not expired), producing a Groth16 proof and BN254-compatible public inputs.
-- **On-chain verification** — The PoC sends the proof (with required public inputs and nullifier) to the ZK verifier contract in Soroban. The contract verifies the proof via BN254 primitives, applies nullifier-based replay protection, and records a successful verification on-chain (e.g. via event or state).
-- **Observable outcome** — A third party can verify **on-chain** that a valid proof was verified, **without** the verifier or the chain learning the underlying PII (e.g. exact age or expiration date). The PoC is executable on a public network (e.g. testnet) with step-by-step instructions for reproduction.
-
-The exact predicate (e.g. “age ≥ 18” or “not expired”), circuit/artifact version, and contract interface are documented so the PoC scope is clear and auditable.
+- **Credential and claim** — A holder owns an ACTA credential (issued and stored via ACTA) with a **private attribute** (e.g. exact DOB or expiration timestamp).
+- **Selective disclosure and proof generation** — The holder reveals only what is necessary (e.g. “I am over 18” or “this credential has not expired”) and generates a **ZK proof** using a BN254‑compatible circuit, producing a Groth16 proof and BN254‑compatible public inputs plus a nullifier.
+- **On‑chain verification** — A transaction sends \`circuit_id\`, \`proof\`, \`public_inputs\`, and \`nullifier\` to the Soroban verifier contract. The contract reconstructs \`vk_x\`, calls \`bn254_multi_pairing_check\`, checks/stores the nullifier, and records success via state and events.
+- **Observable outcome** — A third party can verify **on‑chain** that a valid proof was verified, **without** the verifier or the chain learning the underlying PII. Documentation includes network/protocol version, contract ID, and CLI/SDK commands to reproduce the full flow.
     `,
   }
 };
@@ -3247,7 +3384,7 @@ export const navigationItemsEn = {
     { slug: "zk-generation", title: "Proof Generation" },
     { slug: "zk-verification", title: "Proof Verification" },
   ],
-  scf: [{ slug: "scf-41", title: "SCF 41" }],
+  scf: [{ slug: "scf-42", title: "SCF 42" }],
   help: [
     { slug: "faq", title: "FAQ" },
     { slug: "support", title: "Support" },
@@ -6278,9 +6415,9 @@ curl -X POST https://acta.build/api/testnet/contracts/zk-verifier/verify \\
 - **verifierContractId** (opcional): Sobrescribir ID del contrato verificador
     `,
   },
-  "scf-41": {
-    slug: "scf-41",
-    title: "SCF 41",
+  "scf-42": {
+    slug: "scf-42",
+    title: "SCF 42",
     section: "SCF",
     tocItems: [
       "Resumen",
@@ -6294,14 +6431,20 @@ curl -X POST https://acta.build/api/testnet/contracts/zk-verifier/verify \\
       "Contratos Soroban",
       "API/SDK testnet",
       "Hito ZK (Stellar X-Ray)",
-      "Revelación selectiva",
-      "BN254 y verificación on-chain",
+      "Resumen ZK",
+      "Circuitos y predicados",
+      "Binding de credencial y DID",
+      "Nullifier y protección contra replay",
+      "Interfaz del contrato verificador",
+      "Primitivos BN254",
+      "Setup de confianza y artefactos",
+      "Modelo de amenazas y límites",
       "PoC ejecutable mínimo",
     ],
     content: `
-# SCF 41
+# SCF 42
 
-Arquitectura técnica de SCF 41: método DID Stellar, tooling de resolución, contratos Soroban para credenciales y bóvedas, y API/SDK en testnet.
+Arquitectura técnica de SCF 42: método DID Stellar, tooling de resolución, contratos Soroban para credenciales y bóvedas, y API/SDK en testnet.
 
 ## Resumen
 
@@ -6419,53 +6562,184 @@ La API/SDK de testnet (emisión y verificación on-chain) se endurece en una rel
 
 ## Hito ZK (Stellar X-Ray / Protocol 25)
 
-El trabajo ZK incluye un diseño e integración claros para **revelación selectiva** y un **proof of concept ejecutable mínimo** que demuestra verificación on-chain preservando privacidad en Stellar usando los primitivos BN254 de Stellar X-Ray (Protocol 25).
+El trabajo ZK entrega un componente de **revelación selectiva** completamente especificado y un **proof of concept ejecutable mínimo** que demuestra verificación on-chain preservando privacidad en Stellar usando los primitivos BN254 de Stellar X-Ray (Protocol 25). Esta sección amplía el alcance ZK del Tranche 3 para revisores técnicos.
 
-### Diseño e integración de revelación selectiva
+### Resumen ZK
 
-Un documento de diseño describe cómo las credenciales ACTA soportan revelación selectiva: qué campos pueden revelarse, qué predicados se prueban en cero conocimiento (ej. “edad ≥ 18”, “no expirado”, “estado válido”) y cómo el holder genera una prueba ZK y un enlace compartible. El diseño está alineado con Stellar X-Ray (Protocol 25) y con tooling compatible con BN254.
+- **Curva**: BN254 (tal y como la expone Stellar X-Ray / Protocol 25).
+- **Sistema de pruebas**: zk-SNARK Groth16.
+- **Host functions utilizadas**:
+  - \`bn254_g1_mul\`
+  - \`bn254_g1_add\`
+  - \`bn254_multi_pairing_check\`
+  - Funciones Poseidon (para derivación de nullifier, donde aplique).
+- **Verificador on-chain**: contrato Soroban (\`zk_verifier\`) desplegado en una red con Protocolo 25+ (testnet y mainnet para el PoC).
+- **Tooling off-chain**: stack de prover compatible con BN254 (p.ej. circom + snarkjs u otro equivalente) que compila circuitos, genera claves de prueba/verificación y produce pruebas Groth16 compatibles con el encoding on-chain.
 
-### Contrato verificador ZK en Soroban
+### Circuitos y predicados
 
-Un contrato Soroban realiza **verificación on-chain de un único tipo de prueba ZK** usando los primitivos BN254 de Protocol 25. El contrato:
+Se implementa un predicado concreto y auditable, por ejemplo:
 
-- Acepta una prueba Groth16 (puntos G1/G2 e inputs públicos) y una clave de verificación (o un identificador de circuito que mapea a una clave fija).
-- Usa las host functions BN254 (\`bn254_multi_pairing_check\`, \`bn254_g1_add\`, \`bn254_g1_mul\`) para verificar la prueba.
-- Opcionalmente usa un **nullifier** (ej. derivado con Poseidon o un hash) para evitar replay y registrar que la prueba fue verificada.
+- **Predicado A (edad)**: “el holder es al menos mayor de 18 años”, o
+- **Predicado B (no expirado)**: “la credencial no ha expirado en un instante de referencia”.
 
-No se implementa emparejamiento ni aritmética de curvas en el contrato; se usan únicamente las host functions de Protocol 25 para BN254 (y, si aplica, Poseidon).
+El predicado elegido se fija y se documenta explícitamente en el PoC.
 
-### Uso de los primitivos BN254 (verificación Groth16 on-chain)
+#### Inputs
 
-El flujo de credenciales usa pruebas ZK compatibles con la curva BN254. El **verificador Groth16** en el contrato Soroban:
+- **Inputs privados** (solo los conoce el holder / prover):
+  - \`dob\`: fecha de nacimiento codificada como entero (timestamp Unix o YYYYMMDD).
+  - \`salt\`: salt aleatorio usado en el hashing de atributos.
+  - \`credential_secret_fields\`: campos secretos adicionales que ligan la prueba a una credencial ACTA concreta.
+- **Inputs públicos**:
+  - \`cred_hash\`: hash de la credencial (o campos seleccionados) tal como se almacena / referencia en ACTA.
+  - Parámetros del predicado (p.ej. \`age_threshold = 18\`).
+  - \`nullifier\`: nullifier público derivado de valores privados y públicos (ver más abajo).
+  - \`holder_binding\` opcional: representación del DID del holder o de \`blockchainAccountId\`.
 
-- Recibe los elementos de la prueba (puntos A, B, C en G1/G2) y los inputs públicos.
-- Reconstruye el término vk_x usando la clave de verificación y los inputs públicos vía \`bn254_g1_mul\` y \`bn254_g1_add\`.
-- Realiza el chequeo de pairing usando \`bn254_multi_pairing_check\` (la ecuación siguiente debe cumplirse):
+#### Lógica del circuito (ejemplo “edad ≥ 18”)
+
+1. Recalcular un **binding hash** a partir de campos privados y salt:
+   - \`h_internal = H(dob || salt || credential_secret_fields)\`
+2. Combinarlo con metadata pública (issuer, schema, etc.) para recomputar \`cred_hash\`:
+   - \`cred_hash' = H(h_internal || public_metadata)\`
+3. Forzar \`cred_hash' == cred_hash\` (ligando la prueba a una credencial concreta).
+4. Derivar la edad o comparar fechas para hacer cumplir el predicado (p.ej. \`age >= 18\` o “dob es al menos 18 años anterior a una fecha de corte”).
+5. Opcionalmente derivar o comprobar el **nullifier** dentro del circuito para alinear la semántica con las comprobaciones on-chain.
+
+El circuito documenta claramente variables privadas vs públicas, estrategia de hashing y semántica del predicado. El código fuente del circuito (p.ej. \`.circom\`) y los artefactos compilados se versionan y publican.
+
+### Binding de credencial y DID
+
+Las credenciales ACTA están ligadas al holder vía \`did:stellar:<network>:<accountId>\`. La prueba ZK debe quedar:
+
+- **Ligada a una credencial concreta**, para que no pueda reutilizarse con otro cuerpo de credencial.
+- **Ligada a un holder concreto**, para evitar “préstamo de pruebas”.
+
+Esto se consigue mediante:
+
+- **Hash de credencial** (\`cred_hash\`):
+  - Calculado a partir de una forma canónica de la credencial (issuer DID, holder DID, schema ID y el atributo privado + salt).
+  - La misma estructura se reproduce lógicamente dentro del circuito usando hashes “field-friendly”.
+- **Holder binding**:
+  - Se incluye una representación del DID del holder o de \`blockchainAccountId\` (p.ej. \`stellar:mainnet:G...\`) en:
+    - El cómputo de \`cred_hash\`.
+    - La derivación del nullifier.
+
+Así se evita reutilizar una prueba para otra credencial u otro holder sin regenerarla.
+
+### Nullifier y protección contra replay
+
+#### Objetivos
+
+- **Protección contra replay**: evitar aceptar la misma prueba (o el mismo uso lógico) varias veces cuando la aplicación requiera uso único.
+- **Auditabilidad**: registrar que un nullifier concreto ha sido consumido.
+
+#### Construcción del nullifier
+
+El nullifier se deriva con funciones Poseidon de X-Ray para que la derivación sea idéntica off-chain y on-chain. Ejemplo:
+
+\`\`\`text
+nullifier = Poseidon(
+  cred_hash
+  || predicate_id
+  || holder_binding
+  || context
+)
+\`\`\`
+
+Donde:
+
+- \`cred_hash\`: liga al contenido de la credencial.
+- \`predicate_id\`: distingue circuitos/predicados (p.ej. \`"isAdult"\` vs \`"notExpired"\`).
+- \`holder_binding\`: liga al holder (hash de \`did:stellar:...\` o de \`blockchainAccountId\`).
+- \`context\`: separador de dominio opcional (ID de aplicación / caso de uso).
+
+La documentación especifica el encoding, el mapeo a campos y si el nullifier se recalcula en el circuito, en el contrato o en ambos.
+
+#### Manejo on-chain
+
+El contrato verificador:
+
+- Recibe \`nullifier\` como input público.
+- Antes de aceptar una prueba:
+  - Comprueba si \`nullifier\` ya está almacenado; si lo está, devuelve un error (p.ej. \`NullifierUsed\`).
+  - Si no, continúa con la verificación Groth16.
+- Tras una verificación exitosa:
+  - Almacena \`nullifier\` en el estado del contrato.
+  - Emite un evento con \`nullifier\`, \`predicate_id\` y el resultado.
+
+### Interfaz del contrato verificador
+
+El contrato Soroban expone una función mínima y versionada, por ejemplo:
+
+\`\`\`text
+fn verify_proof(
+  circuit_id: String,      // p.ej. "isAdult"
+  proof: Bytes,            // prueba Groth16 serializada (A, B, C)
+  public_inputs: Bytes,    // elementos de campo BN254 codificados
+  nullifier: Bytes         // elemento de campo para protección contra replay
+) -> Result<VerificationResult, VerificationError>
+\`\`\`
+
+- \`circuit_id\` se mapea a una clave de verificación concreta y a un layout de inputs públicos esperado.
+- \`proof\` codifica los puntos G1/G2 \`A, B, C\` con un formato documentado compatible con el prover.
+- \`public_inputs\` es una concatenación de elementos de campo en orden fijo (p.ej. \`[cred_hash, age_threshold, nullifier, holder_binding]\`).
+- \`nullifier\` se pasa también por separado para indexación/comprobación de replay.
+
+El contrato devuelve un resultado estructurado y emite eventos para que las verificaciones puedan indexarse on-chain. Los errores incluyen \`InvalidProof\`, \`NullifierUsed\`, \`InvalidInputs\`, \`UnsupportedCircuit\`.
+
+### Primitivos BN254 (verificación Groth16 on-chain)
+
+El verificador on-chain:
+
+- Usa \`bn254_g1_mul\` y \`bn254_g1_add\` para reconstruir \`vk_x\` a partir de la verification key y de los inputs públicos.
+- Usa \`bn254_multi_pairing_check\` para evaluar:
 
   > **e(−A,B) · e(α,β) · e(vkₓ,γ) · e(C,δ) = 1**
 
-  Las pruebas generadas off-chain con cualquier prover compatible con BN254 pueden verificarse en Stellar.
+No se implementa aritmética de curvas ni pairings en Rust; todas las operaciones de curva provienen de las host functions de X-Ray. Las funciones Poseidon se utilizan, donde aplique, para derivar o comprobar el nullifier.
 
-**Nullifier y protección contra replay**: Cada verificación se asocia a un **nullifier** único derivado vía **Poseidon** (parte de X-Ray), usando host functions para que la misma derivación se aplique off-chain y on-chain. La construcción del nullifier (función hash, parámetros, esquema de derivación) se documenta para claridad y reproducibilidad.
+### Setup de confianza y artefactos
 
-### Qué se verifica on-chain
+Como Groth16 requiere un trusted setup:
 
-La verificación on-chain de pruebas zk-SNARK se ejecuta en redes con Protocol 25 (X-Ray) o superior, usando las host functions BN254 en el entorno Soroban.
+- Se definen los circuitos en un repositorio público (p.ej. \`isAdult.circom\`).
+- Se ejecuta una ceremonia documentada (o se reutiliza una MPC compatible) para generar:
+  - Proving key.
+  - Verification key.
+- Se publican:
+  - Código fuente del circuito y versión (commit hash).
+  - Hashes de las claves de prueba/verificación.
+  - Encoding exacto de las constantes de la verification key usadas on-chain.
 
-- **Corrección de la prueba ZK** — El contrato comprueba que la prueba Groth16 es válida para la clave de verificación e inputs públicos dados, usando operaciones de pairing y curvas BN254.
-- **Protección contra replay** — El contrato garantiza que el nullifier no se ha usado antes y lo registra tras una verificación exitosa, de modo que la misma prueba no pueda aceptarse de nuevo. La documentación indica qué red y versión de protocolo se utilizaron.
+On-chain, el contrato embebe o referencia la VK para cada \`circuit_id\` soportado y mantiene un mapeo \`circuit_id -> vk_id\`.
+
+### Modelo de amenazas y límites
+
+Se explicita:
+
+- **Qué se protege**:
+  - Los atributos privados (DOB, expiración) nunca se revelan on-chain.
+  - Los verificadores sólo ven el resultado del predicado y los inputs públicos (hash de credencial, nullifier, etc.).
+  - La reutilización de pruebas se evita mediante el mecanismo de nullifier.
+- **Qué queda fuera de alcance**:
+  - Metadata de red (IP, timing) y correlación entre aplicaciones.
+  - Issuers maliciosos que metan PII en campos públicos.
+  - Ataques de canal lateral sobre el entorno del prover off-chain.
+- **Dependencias**:
+  - Correctitud y seguridad de las host functions BN254/Poseidon de Stellar y del stack Groth16 elegido.
+
+También se fijan límites superiores razonables para tamaño de circuitos, número de inputs públicos y coste estimado de verificación.
 
 ### PoC ejecutable mínimo
 
-El PoC ejecutable mínimo demuestra de forma reproducible:
+El PoC ejecutable mínimo demuestra, de forma reproducible:
 
-- **Credencial y claim** — Un usuario posee una credencial verificable (emitida y almacenada en ACTA) que contiene un **atributo privado** que no se revela (ej. fecha de nacimiento exacta o timestamp de expiración).
-- **Revelación selectiva y generación de prueba** — El usuario revela solo lo necesario (ej. “soy mayor de 18” o “esta credencial no ha expirado”) y genera una **prueba de conocimiento cero** con un circuito compatible con BN254 (ej. edad ≥ 18 o no expirado), produciendo una prueba Groth16 e inputs públicos compatibles con BN254.
-- **Verificación on-chain** — El PoC envía la prueba (con inputs públicos y nullifier requeridos) al contrato verificador ZK en Soroban. El contrato verifica la prueba vía primitivos BN254, aplica la protección contra replay basada en nullifier y registra una verificación exitosa on-chain (ej. vía evento o estado).
-- **Resultado observable** — Un tercero puede verificar **on-chain** que una prueba válida fue verificada, **sin** que el verificador o la cadena conozcan el PII subyacente (ej. edad exacta o fecha de expiración). El PoC es ejecutable en una red pública (ej. testnet) con instrucciones paso a paso para su reproducción.
-
-El predicado exacto (ej. “edad ≥ 18” o “no expirado”), la versión del circuito/artefacto y la interfaz del contrato se documentan para que el alcance del PoC sea claro y auditable.
+- **Credencial y claim** — Un holder posee una credencial ACTA (emitida y almacenada vía ACTA) con un **atributo privado** (ej. DOB exacta o timestamp de expiración).
+- **Revelación selectiva y generación de prueba** — El holder revela sólo lo necesario (ej. “soy mayor de 18” o “esta credencial no ha expirado”) y genera una **prueba ZK** usando un circuito compatible con BN254, produciendo una prueba Groth16 e inputs públicos compatibles con BN254 más un nullifier.
+- **Verificación on-chain** — Una transacción envía \`circuit_id\`, \`proof\`, \`public_inputs\` y \`nullifier\` al contrato verificador en Soroban. El contrato reconstruye \`vk_x\`, llama a \`bn254_multi_pairing_check\`, comprueba/almacena el nullifier y registra el éxito vía estado y eventos.
+- **Resultado observable** — Un tercero puede verificar **on-chain** que una prueba válida fue verificada, **sin** que el verificador o la cadena conozcan el PII subyacente. La documentación incluye red/versión de protocolo, ID de contrato y comandos CLI/SDK para reproducir el flujo completo.
     `,
   },
 };
@@ -6507,7 +6781,7 @@ export const navigationItemsEs = {
     { slug: "zk-generation", title: "Generación de Pruebas" },
     { slug: "zk-verification", title: "Verificación de Pruebas" },
   ],
-  scf: [{ slug: "scf-41", title: "SCF 41" }],
+  scf: [{ slug: "scf-42", title: "SCF 42" }],
   help: [
     { slug: "faq", title: "Preguntas Frecuentes" },
     { slug: "support", title: "Soporte" },

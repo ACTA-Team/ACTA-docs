@@ -51,7 +51,7 @@ const iconMap: Record<string, React.ReactNode> = {
   "zk-circuits": <Code className="w-3.5 h-3.5" />,
   "zk-generation": <Zap className="w-3.5 h-3.5" />,
   "zk-verification": <ShieldCheck className="w-3.5 h-3.5" />,
-  "scf-41": <FileText className="w-3.5 h-3.5" />,
+  "scf-42": <FileText className="w-3.5 h-3.5" />,
   faq: <HelpCircle className="w-3.5 h-3.5" />,
   support: <Headphones className="w-3.5 h-3.5" />,
 };
