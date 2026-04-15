@@ -9,7 +9,7 @@ import { AISearch } from "@/components/modules/docs/ui/AISearch";
 import { FAQ } from "@/components/modules/docs/ui/FAQ";
 import { Support } from "@/components/modules/docs/ui/Support";
 import { I18nProvider, useI18n } from "@/lib/i18n";
-import { docsDataEn, docsDataEs } from "@/lib/docs-data";
+import { docsDataEn, docsDataEs } from "@/content/docs";
 
 function DocsPageContent() {
   const [currentSlug, setCurrentSlug] = useState("introduction");

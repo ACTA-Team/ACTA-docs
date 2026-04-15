@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useI18n } from "@/lib/i18n";
-import { docsDataEn, docsDataEs } from "@/lib/docs-data";
+import { docsDataEn, docsDataEs } from "@/content/docs";
 
 interface UseAISearchProps {
   onNavigate: (slug: string) => void;

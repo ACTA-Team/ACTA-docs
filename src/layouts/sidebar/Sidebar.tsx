@@ -17,7 +17,7 @@ import {
   Headphones,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { navigationItemsEn, navigationItemsEs } from "@/lib/docs-data";
+import { navigationItemsEn, navigationItemsEs } from "@/content/docs";
 import { useI18n } from "@/lib/i18n";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 
