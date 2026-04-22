@@ -30,7 +30,12 @@ export function AppSidebar({ currentSlug, onNavigate }: AppSidebarProps) {
   return (
     <Sidebar collapsible="icon" variant="inset">
       <SidebarHeader className="h-12 justify-center px-1">
-        <SidebarMenuButton asChild tooltip="ACTA Docs" size="sm" className="h-7 px-1.5">
+        <SidebarMenuButton
+          asChild
+          tooltip="ACTA Docs"
+          size="sm"
+          className="h-7 px-1.5"
+        >
           <button
             type="button"
             onClick={() => onNavigate("introduction")}

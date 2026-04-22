@@ -66,8 +66,7 @@ const translations: Record<Locale, Translations> = {
     support: "Support",
     supportDescription: "Need help? Contact us or explore our resources.",
     supportTitle: "Get Support",
-    supportResponseHint:
-      "We do our best to respond within one business day.",
+    supportResponseHint: "We do our best to respond within one business day.",
     supportEmailLabel: "Email",
     contactUs: "Contact Us",
     sendMessage: "Send Message",
@@ -160,8 +159,7 @@ const translations: Record<Locale, Translations> = {
     supportDescription:
       "¿Necesitas ayuda? Contáctanos o explora nuestros recursos.",
     supportTitle: "Obtener Soporte",
-    supportResponseHint:
-      "Intentamos responderte en un día hábil.",
+    supportResponseHint: "Intentamos responderte en un día hábil.",
     supportEmailLabel: "Correo",
     contactUs: "Contáctanos",
     sendMessage: "Enviar Mensaje",

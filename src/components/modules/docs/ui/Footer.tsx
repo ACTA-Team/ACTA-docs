@@ -107,7 +107,7 @@ export function Footer({ onNavigate }: FooterProps) {
 
           <nav aria-label={t.documentation}>
             <ul className="flex flex-wrap gap-4 font-medium text-muted-foreground text-sm md:gap-6">
-              {navItems.map((item) => (
+              {navItems.map(item => (
                 <li key={item.kind === "internal" ? item.slug : item.href}>
                   {item.kind === "internal" && onNavigate ? (
                     <button

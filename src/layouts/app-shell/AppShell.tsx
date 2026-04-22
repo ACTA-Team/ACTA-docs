@@ -32,7 +32,7 @@ export function AppShell() {
   }, []);
 
   useEffect(() => {
-    document.querySelectorAll("[data-docs-scroll]").forEach((el) => {
+    document.querySelectorAll("[data-docs-scroll]").forEach(el => {
       if (el instanceof HTMLElement) el.scrollTop = 0;
     });
   }, [currentSlug]);

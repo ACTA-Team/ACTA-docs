@@ -65,7 +65,7 @@ export function Support({ onNavigate }: SupportProps) {
     }
 
     if (errors.length > 0) {
-      errors.forEach((errorMessage) => {
+      errors.forEach(errorMessage => {
         toast({
           title: t.validationErrorTitle,
           description: errorMessage,
@@ -207,16 +207,14 @@ export function Support({ onNavigate }: SupportProps) {
         message={formData.message}
         messageSentLabel={t.messageSent}
         name={formData.name}
-        onEmailChange={(value) =>
-          setFormData((prev) => ({ ...prev, email: value }))
+        onEmailChange={value =>
+          setFormData(prev => ({ ...prev, email: value }))
         }
         onInfoNavigate={onNavigate}
-        onMessageChange={(value) =>
-          setFormData((prev) => ({ ...prev, message: value }))
+        onMessageChange={value =>
+          setFormData(prev => ({ ...prev, message: value }))
         }
-        onNameChange={(value) =>
-          setFormData((prev) => ({ ...prev, name: value }))
-        }
+        onNameChange={value => setFormData(prev => ({ ...prev, name: value }))}
         onSubmit={handleSubmit}
         placeholders={{
           name: t.supportPlaceholderName,
@@ -290,9 +288,7 @@ export function Support({ onNavigate }: SupportProps) {
                       <a
                         className={rowClass}
                         href={link.href}
-                        rel={
-                          link.external ? "noopener noreferrer" : undefined
-                        }
+                        rel={link.external ? "noopener noreferrer" : undefined}
                         target={link.external ? "_blank" : undefined}
                       >
                         {inner}

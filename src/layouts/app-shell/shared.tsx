@@ -36,12 +36,7 @@ const sectionIcons: Record<SectionKey, ReactNode> = {
   dapp: <LayoutGrid />,
 };
 
-const SECTION_ORDER: SectionKey[] = [
-  "welcome",
-  "sdk",
-  "api-reference",
-  "dapp",
-];
+const SECTION_ORDER: SectionKey[] = ["welcome", "sdk", "api-reference", "dapp"];
 
 const GROUP_DEFS: Array<{ key: string; sections: SectionKey[] }> = [
   {
@@ -142,7 +137,9 @@ export function findActivePage(
   nav: NavigationItems,
   currentSlug: string
 ): SidebarNavItem | null {
-  for (const key of [...SECTION_ORDER, "help"] as Array<keyof NavigationItems>) {
+  for (const key of [...SECTION_ORDER, "help"] as Array<
+    keyof NavigationItems
+  >) {
     const items = nav[key];
     if (!items) continue;
     const match = items.find(item => item.slug === currentSlug);

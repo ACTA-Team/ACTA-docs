@@ -145,7 +145,7 @@ export function ContactSection({
                     placeholder={placeholders.name}
                     type="text"
                     value={name}
-                    onChange={(e) => onNameChange(e.target.value)}
+                    onChange={e => onNameChange(e.target.value)}
                     required
                     className="border-border/60 bg-background shadow-none"
                   />
@@ -161,7 +161,7 @@ export function ContactSection({
                     placeholder={placeholders.email}
                     type="email"
                     value={email}
-                    onChange={(e) => onEmailChange(e.target.value)}
+                    onChange={e => onEmailChange(e.target.value)}
                     required
                     className="border-border/60 bg-background shadow-none"
                   />
@@ -176,7 +176,7 @@ export function ContactSection({
                     name="message"
                     placeholder={placeholders.message}
                     value={message}
-                    onChange={(e) => onMessageChange(e.target.value)}
+                    onChange={e => onMessageChange(e.target.value)}
                     required
                     className="min-h-[140px] resize-none border-border/60 bg-background shadow-none"
                   />

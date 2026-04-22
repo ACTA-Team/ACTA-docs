@@ -27,7 +27,7 @@ export function FaqsSection() {
         collapsible
         type="single"
       >
-        {questions.map((item) => (
+        {questions.map(item => (
           <AccordionItem
             key={item.id}
             value={item.id}
