@@ -30,6 +30,13 @@ export interface Translations {
 
   // Footer
   poweredBy: string;
+  footerGithub: string;
+  footerSourceCommunity: string;
+
+  // Not found
+  notFoundDescription: string;
+  notFoundGoDocs: string;
+  notFoundVisitWebsite: string;
 
   // Search
   searchPlaceholder: string;
@@ -59,6 +66,8 @@ export interface Translations {
   support: string;
   supportDescription: string;
   supportTitle: string;
+  supportResponseHint: string;
+  supportEmailLabel: string;
   contactUs: string;
   sendMessage: string;
   yourName: string;

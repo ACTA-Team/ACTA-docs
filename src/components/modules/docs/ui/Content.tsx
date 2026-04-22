@@ -15,7 +15,10 @@ export function Content({ page, onNavigate }: ContentProps) {
   const { sectionLabel, copied, handleCopy, t } = useContent({ page });
 
   return (
-    <main className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto">
+    <main
+      className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto"
+      data-docs-scroll
+    >
       <div className="mx-auto w-full max-w-4xl px-4 py-8 md:px-10 md:py-10 xl:max-w-5xl">
         {/* Breadcrumb & Actions */}
         <div className="mb-8 flex flex-wrap items-center justify-between gap-3">

@@ -9,6 +9,7 @@ import { FAQ } from "@/components/modules/docs/ui/FAQ";
 import { Support } from "@/components/modules/docs/ui/Support";
 import { docsDataEn, docsDataEs } from "@/content/docs";
 import { useI18n } from "@/lib/i18n";
+import { Footer } from "@/components/modules/docs/ui/Footer";
 import { AppSidebar } from "./AppSidebar";
 import { AppHeader } from "./AppHeader";
 
@@ -30,6 +31,12 @@ export function AppShell() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  useEffect(() => {
+    document.querySelectorAll("[data-docs-scroll]").forEach((el) => {
+      if (el instanceof HTMLElement) el.scrollTop = 0;
+    });
+  }, [currentSlug]);
+
   const handleNavigate = (slug: string) => {
     setCurrentSlug(slug);
   };
@@ -37,27 +44,36 @@ export function AppShell() {
   return (
     <SidebarProvider>
       <AppSidebar currentSlug={currentSlug} onNavigate={handleNavigate} />
-      <SidebarInset className="min-w-0 overflow-x-hidden md:peer-data-[variant=inset]:m-1.5 md:peer-data-[variant=inset]:rounded-lg md:peer-data-[variant=inset]:shadow-none">
+      <SidebarInset className="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden md:peer-data-[variant=inset]:m-1.5 md:peer-data-[variant=inset]:rounded-lg md:peer-data-[variant=inset]:shadow-none">
         <AppHeader
           currentSlug={currentSlug}
           onSearchOpen={() => setIsSearchOpen(true)}
         />
 
-        <div className="flex min-w-0 flex-1 overflow-x-hidden overflow-y-hidden bg-background">
-          {currentSlug === "faq" ? (
-            <main className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto">
-              <FAQ onNavigate={handleNavigate} />
-            </main>
-          ) : currentSlug === "support" ? (
-            <main className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto">
-              <Support onNavigate={handleNavigate} />
-            </main>
-          ) : (
-            <>
-              <Content page={currentPage} onNavigate={handleNavigate} />
-              <TableOfContents items={currentPage?.tocItems || []} />
-            </>
-          )}
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-background">
+          <div className="flex min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-hidden">
+            {currentSlug === "faq" ? (
+              <main
+                className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto"
+                data-docs-scroll
+              >
+                <FAQ onNavigate={handleNavigate} />
+              </main>
+            ) : currentSlug === "support" ? (
+              <main
+                className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto"
+                data-docs-scroll
+              >
+                <Support onNavigate={handleNavigate} />
+              </main>
+            ) : (
+              <>
+                <Content page={currentPage} onNavigate={handleNavigate} />
+                <TableOfContents items={currentPage?.tocItems || []} />
+              </>
+            )}
+          </div>
+          <Footer onNavigate={handleNavigate} />
         </div>
       </SidebarInset>
 

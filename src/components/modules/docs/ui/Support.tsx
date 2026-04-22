@@ -2,22 +2,24 @@
 
 import React, { useState, type ComponentType } from "react";
 import {
-  Send,
-  CheckCircle,
-  Loader2,
   ArrowUpRight,
-  ChevronRight,
   BookOpen,
   Bug,
+  ChevronRight,
   Lightbulb,
+  Mail,
 } from "lucide-react";
 import { DiscordIcon } from "@/components/ui/discord-icon";
+import {
+  ContactSection,
+  type ContactInfoRow,
+} from "@/components/modules/support/contact-section";
 import { useI18n } from "@/lib/i18n";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+
+const DISCORD_INVITE = "https://discord.gg/DsUSE3aMDZ";
+const ACTA_PUBLIC_EMAIL = "acta.xyz@gmail.com";
 
 interface SupportProps {
   onNavigate?: (slug: string) => void;
@@ -34,7 +36,7 @@ export function Support({ onNavigate }: SupportProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const errors: string[] = [];
@@ -63,7 +65,7 @@ export function Support({ onNavigate }: SupportProps) {
     }
 
     if (errors.length > 0) {
-      errors.forEach(errorMessage => {
+      errors.forEach((errorMessage) => {
         toast({
           title: t.validationErrorTitle,
           description: errorMessage,
@@ -87,10 +89,10 @@ export function Support({ onNavigate }: SupportProps) {
       const data = await response.json().catch(() => null);
 
       if (!response.ok) {
-        const message =
+        const messageText =
           (data && (data.error || data.details)) || t.supportSendFailed;
         throw new Error(
-          typeof message === "string" ? message : t.supportSendFailed
+          typeof messageText === "string" ? messageText : t.supportSendFailed
         );
       }
 
@@ -136,7 +138,7 @@ export function Support({ onNavigate }: SupportProps) {
       icon: DiscordIcon,
       title: t.community,
       description: t.supportCommunityLinkDescription,
-      href: "https://discord.gg/DsUSE3aMDZ",
+      href: DISCORD_INVITE,
       external: true,
     },
     {
@@ -155,129 +157,86 @@ export function Support({ onNavigate }: SupportProps) {
     },
   ];
 
+  const contactInfoRows: ContactInfoRow[] = [
+    {
+      kind: "link",
+      icon: <DiscordIcon className="text-muted-foreground" />,
+      label: t.discord,
+      value: "discord.gg/DsUSE3aMDZ",
+      href: DISCORD_INVITE,
+      external: true,
+    },
+    {
+      kind: "link",
+      icon: <Mail className="text-muted-foreground" />,
+      label: t.supportEmailLabel,
+      value: ACTA_PUBLIC_EMAIL,
+      href: `mailto:${ACTA_PUBLIC_EMAIL}`,
+    },
+    ...(onNavigate
+      ? ([
+          {
+            kind: "nav" as const,
+            icon: <BookOpen className="text-muted-foreground" />,
+            label: t.documentation,
+            value: t.supportDocLinkDescription,
+            slug: "introduction",
+          },
+        ] satisfies ContactInfoRow[])
+      : []),
+  ];
+
   return (
     <div className="mx-auto w-full max-w-4xl space-y-10 px-4 py-8 md:px-10 md:py-10 xl:max-w-5xl">
-      <div className="max-w-xl space-y-3">
-        <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground/70">
-          {t.supportTitle}
-        </p>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
-          {t.support}
-        </h1>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          {t.supportDescription}
-        </p>
-      </div>
+      <ContactSection
+        contactFormSrLabel={t.contactUs}
+        description={t.supportDescription}
+        email={formData.email}
+        eyebrow={t.supportTitle}
+        heading={t.support}
+        infoRows={contactInfoRows}
+        isSubmitted={isSubmitted}
+        isSubmitting={isSubmitting}
+        labels={{
+          name: t.yourName,
+          email: t.yourEmail,
+          message: t.yourMessage,
+          send: t.sendMessage,
+          sending: t.supportSending,
+        }}
+        message={formData.message}
+        messageSentLabel={t.messageSent}
+        name={formData.name}
+        onEmailChange={(value) =>
+          setFormData((prev) => ({ ...prev, email: value }))
+        }
+        onInfoNavigate={onNavigate}
+        onMessageChange={(value) =>
+          setFormData((prev) => ({ ...prev, message: value }))
+        }
+        onNameChange={(value) =>
+          setFormData((prev) => ({ ...prev, name: value }))
+        }
+        onSubmit={handleSubmit}
+        placeholders={{
+          name: t.supportPlaceholderName,
+          email: t.supportPlaceholderEmail,
+          message: t.supportPlaceholderMessage,
+        }}
+        responseHint={t.supportResponseHint}
+      />
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_min(100%,17.5rem)] lg:gap-12 xl:grid-cols-[minmax(0,1fr)_min(100%,19rem)]">
-        <section
-          className="rounded-xl border border-border/60 bg-card/80 p-6 shadow-none backdrop-blur-sm md:p-8"
-          aria-labelledby="support-form-heading"
-        >
-          <h2
-            id="support-form-heading"
-            className="sr-only"
-          >
-            {t.contactUs}
-          </h2>
+      <div className="space-y-10">
+        <div className="rounded-xl border border-border/60 bg-muted/10 p-4 text-sm leading-relaxed">
+          <p className="font-medium text-foreground">
+            {t.supportImmediateHelpTitle}
+          </p>
+          <p className="mt-2 text-muted-foreground">
+            {t.supportImmediateHelpBody}
+          </p>
+        </div>
 
-          {isSubmitted ? (
-            <div className="flex flex-col items-center justify-center px-4 py-14 text-center">
-              <div
-                className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-border/60 bg-muted/20"
-                aria-hidden
-              >
-                <CheckCircle className="h-6 w-6 text-primary" />
-              </div>
-              <p className="text-sm font-medium text-foreground">
-                {t.messageSent}
-              </p>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="space-y-2">
-                <label
-                  htmlFor="support-name"
-                  className="text-xs font-medium text-foreground"
-                >
-                  {t.yourName}
-                </label>
-                <Input
-                  id="support-name"
-                  type="text"
-                  value={formData.name}
-                  onChange={e =>
-                    setFormData(prev => ({ ...prev, name: e.target.value }))
-                  }
-                  required
-                  autoComplete="name"
-                  placeholder={t.supportPlaceholderName}
-                  className="border-border/60 bg-background shadow-none"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label
-                  htmlFor="support-email"
-                  className="text-xs font-medium text-foreground"
-                >
-                  {t.yourEmail}
-                </label>
-                <Input
-                  id="support-email"
-                  type="email"
-                  value={formData.email}
-                  onChange={e =>
-                    setFormData(prev => ({ ...prev, email: e.target.value }))
-                  }
-                  required
-                  autoComplete="email"
-                  placeholder={t.supportPlaceholderEmail}
-                  className="border-border/60 bg-background shadow-none"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label
-                  htmlFor="support-message"
-                  className="text-xs font-medium text-foreground"
-                >
-                  {t.yourMessage}
-                </label>
-                <Textarea
-                  id="support-message"
-                  value={formData.message}
-                  onChange={e =>
-                    setFormData(prev => ({ ...prev, message: e.target.value }))
-                  }
-                  required
-                  placeholder={t.supportPlaceholderMessage}
-                  className="min-h-[140px] resize-none border-border/60 bg-background shadow-none"
-                />
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full shadow-none sm:w-auto"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t.supportSending}
-                  </>
-                ) : (
-                  <>
-                    <Send className="mr-2 h-4 w-4" />
-                    {t.sendMessage}
-                  </>
-                )}
-              </Button>
-            </form>
-          )}
-        </section>
-
-        <aside className="space-y-8 lg:pt-1">
+        <aside className="space-y-8">
           <div>
             <h3 className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground/70">
               {t.quickLinks}
@@ -329,12 +288,12 @@ export function Support({ onNavigate }: SupportProps) {
                       </button>
                     ) : (
                       <a
+                        className={rowClass}
                         href={link.href}
-                        target={link.external ? "_blank" : undefined}
                         rel={
                           link.external ? "noopener noreferrer" : undefined
                         }
-                        className={rowClass}
+                        target={link.external ? "_blank" : undefined}
                       >
                         {inner}
                       </a>
@@ -343,15 +302,6 @@ export function Support({ onNavigate }: SupportProps) {
                 );
               })}
             </ul>
-          </div>
-
-          <div className="rounded-xl border border-border/60 bg-muted/10 p-4 text-sm leading-relaxed">
-            <p className="font-medium text-foreground">
-              {t.supportImmediateHelpTitle}
-            </p>
-            <p className="mt-2 text-muted-foreground">
-              {t.supportImmediateHelpBody}
-            </p>
           </div>
         </aside>
       </div>

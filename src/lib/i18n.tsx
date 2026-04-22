@@ -34,6 +34,12 @@ const translations: Record<Locale, Translations> = {
     copied: "Copied!",
     downloadPdf: "Download PDF",
     poweredBy: "ACTA",
+    footerGithub: "GitHub",
+    footerSourceCommunity: "Source & community",
+    notFoundDescription:
+      "The page you're looking for might have been moved or doesn't exist.",
+    notFoundGoDocs: "Back to documentation",
+    notFoundVisitWebsite: "Visit acta.build",
     searchPlaceholder: "Ask AI anything about ACTA...",
     searchResults: "Search Results",
     noResults: "No results found",
@@ -60,6 +66,9 @@ const translations: Record<Locale, Translations> = {
     support: "Support",
     supportDescription: "Need help? Contact us or explore our resources.",
     supportTitle: "Get Support",
+    supportResponseHint:
+      "We do our best to respond within one business day.",
+    supportEmailLabel: "Email",
     contactUs: "Contact Us",
     sendMessage: "Send Message",
     yourName: "Your Name",
@@ -117,6 +126,12 @@ const translations: Record<Locale, Translations> = {
     copied: "¡Copiado!",
     downloadPdf: "Descargar PDF",
     poweredBy: "ACTA",
+    footerGithub: "GitHub",
+    footerSourceCommunity: "Código y comunidad",
+    notFoundDescription:
+      "La página que buscas pudo haberse movido o no existe.",
+    notFoundGoDocs: "Volver a la documentación",
+    notFoundVisitWebsite: "Ir a acta.build",
     searchPlaceholder: "Pregunta a la IA sobre ACTA...",
     searchResults: "Resultados de búsqueda",
     noResults: "No se encontraron resultados",
@@ -145,6 +160,9 @@ const translations: Record<Locale, Translations> = {
     supportDescription:
       "¿Necesitas ayuda? Contáctanos o explora nuestros recursos.",
     supportTitle: "Obtener Soporte",
+    supportResponseHint:
+      "Intentamos responderte en un día hábil.",
+    supportEmailLabel: "Correo",
     contactUs: "Contáctanos",
     sendMessage: "Enviar Mensaje",
     yourName: "Tu Nombre",

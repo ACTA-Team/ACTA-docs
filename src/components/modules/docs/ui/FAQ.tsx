@@ -1,6 +1,6 @@
 "use client";
 
-import { FaqsSection } from "@/components/faqs-section";
+import { FaqsSection } from "@/components/modules/faq/faqs-section";
 
 interface FAQProps {
   onNavigate: (slug: string) => void;
