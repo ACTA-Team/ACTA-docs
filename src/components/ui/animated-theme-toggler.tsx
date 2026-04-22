@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { flushSync } from "react-dom";
 import { useTheme } from "next-themes";
@@ -16,13 +16,18 @@ export const AnimatedThemeToggler = ({
   ...props
 }: AnimatedThemeTogglerProps) => {
   const { theme, setTheme } = useTheme();
-  const [mounted] = useState(() => typeof window !== "undefined");
+  const [mounted, setMounted] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const isDark =
     theme === "dark" ||
     (!theme &&
       mounted &&
+      typeof window !== "undefined" &&
       window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   const toggleTheme = useCallback(async () => {
@@ -69,34 +74,30 @@ export const AnimatedThemeToggler = ({
     }
   }, [theme, setTheme, mounted, duration]);
 
-  if (!mounted) {
-    return (
-      <button
-        ref={buttonRef}
-        className={cn(
-          "h-8 w-8 md:h-9 md:w-9 flex items-center justify-center",
-          className
-        )}
-        disabled
-        {...props}
-      >
-        <Sun className="w-4 h-4 opacity-50" />
-      </button>
-    );
-  }
+  const buttonClassName = cn(
+    "h-8 w-8 md:h-9 md:w-9 flex items-center justify-center bg-secondary border border-border text-foreground hover:bg-muted rounded-md transition-colors",
+    className
+  );
 
   return (
     <button
       ref={buttonRef}
-      onClick={toggleTheme}
-      className={cn(
-        "h-8 w-8 md:h-9 md:w-9 flex items-center justify-center bg-secondary border border-border text-foreground hover:bg-muted rounded-md transition-colors",
-        className
-      )}
+      type="button"
+      onClick={mounted ? toggleTheme : undefined}
+      disabled={!mounted}
+      className={buttonClassName}
       aria-label="Toggle theme"
       {...props}
     >
-      {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+      {mounted ? (
+        isDark ? (
+          <Sun className="w-4 h-4" />
+        ) : (
+          <Moon className="w-4 h-4" />
+        )
+      ) : (
+        <Sun className="w-4 h-4 opacity-50" aria-hidden />
+      )}
       <span className="sr-only">Toggle theme</span>
     </button>
   );

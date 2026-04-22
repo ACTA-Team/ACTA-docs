@@ -5,7 +5,11 @@ export const navigation: NavigationItems = {
     { slug: "introduction", title: "Introduction" },
     { slug: "architecture", title: "Architecture" },
     { slug: "getting-started", title: "Getting Started" },
-    { slug: "links", title: "Links" },
+    {
+      slug: "links",
+      title: "Links",
+      externalUrl: "https://links.acta.build",
+    },
   ],
   sdk: [
     { slug: "sdk-overview", title: "Overview" },

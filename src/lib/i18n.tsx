@@ -24,7 +24,6 @@ const translations: Record<Locale, Translations> = {
     links: "Links",
     overview: "Overview",
     askOrSearch: "Ask or search...",
-    dApp: "dApp",
     discord: "Discord",
     website: "Website",
     english: "English",
@@ -72,6 +71,20 @@ const translations: Record<Locale, Translations> = {
     community: "Community",
     reportIssue: "Report an Issue",
     featureRequest: "Feature Request",
+    supportSending: "Sending…",
+    supportErrorTitle: "Couldn’t send",
+    supportSendFailed:
+      "We couldn’t send your message. Please try again in a moment.",
+    supportPlaceholderName: "Your name",
+    supportPlaceholderEmail: "you@example.com",
+    supportPlaceholderMessage: "How can we help?",
+    supportDocLinkDescription: "Guides, API reference, and examples.",
+    supportCommunityLinkDescription: "Chat with the team and other builders.",
+    supportIssueLinkDescription: "Open an issue on GitHub.",
+    supportFeatureLinkDescription: "Share ideas and discuss on GitHub.",
+    supportImmediateHelpTitle: "Prefer a faster back-and-forth?",
+    supportImmediateHelpBody:
+      "Join Discord for real-time help from the team and the community.",
     // Support validation
     validationErrorTitle: "Form error",
     validationNameRequired: "Name is required.",
@@ -94,7 +107,6 @@ const translations: Record<Locale, Translations> = {
     links: "Enlaces",
     overview: "Resumen",
     askOrSearch: "Preguntar o buscar...",
-    dApp: "dApp",
     discord: "Discord",
     website: "Sitio Web",
     english: "Inglés",
@@ -144,6 +156,21 @@ const translations: Record<Locale, Translations> = {
     community: "Comunidad",
     reportIssue: "Reportar un Problema",
     featureRequest: "Solicitar Función",
+    supportSending: "Enviando…",
+    supportErrorTitle: "No se pudo enviar",
+    supportSendFailed:
+      "No pudimos enviar tu mensaje. Inténtalo de nuevo en un momento.",
+    supportPlaceholderName: "Tu nombre",
+    supportPlaceholderEmail: "tu@ejemplo.com",
+    supportPlaceholderMessage: "¿En qué podemos ayudarte?",
+    supportDocLinkDescription: "Guías, referencia de API y ejemplos.",
+    supportCommunityLinkDescription:
+      "Habla con el equipo y otros desarrolladores.",
+    supportIssueLinkDescription: "Abre un issue en GitHub.",
+    supportFeatureLinkDescription: "Comparte ideas y debate en GitHub.",
+    supportImmediateHelpTitle: "¿Prefieres respuesta rápida?",
+    supportImmediateHelpBody:
+      "Únete a Discord para ayuda en tiempo real del equipo y la comunidad.",
     // Support validation
     validationErrorTitle: "Error en el formulario",
     validationNameRequired: "El nombre es obligatorio.",

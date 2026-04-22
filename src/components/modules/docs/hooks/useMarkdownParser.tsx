@@ -4,20 +4,25 @@ import { CodeBlock } from "../ui/CodeBlock";
 import { InstallCommandTabs } from "../ui/InstallCommandTabs";
 import { slugifyHeading } from "@/lib/utils";
 
-// Map topic names to slugs
+const ACTA_LINKS_HUB = "https://links.acta.build";
+
+// Map topic names to in-app slugs
 const topicToSlug: Record<string, string> = {
   Architecture: "architecture",
   "Getting Started": "getting-started",
   "React SDK": "sdk-overview",
   "API Reference": "api-overview",
-  Links: "links",
   "Credential Flow": "architecture",
   Arquitectura: "architecture",
   "Primeros Pasos": "getting-started",
-  "React SDK": "sdk-overview",
   "Referencia API": "api-overview",
-  Enlaces: "links",
   "Flujo de Credenciales": "architecture",
+};
+
+// Topics that leave the docs site (no doc page)
+const topicToExternalUrl: Record<string, string> = {
+  Links: ACTA_LINKS_HUB,
+  Enlaces: ACTA_LINKS_HUB,
 };
 
 export function useMarkdownParser(
@@ -260,8 +265,10 @@ export function useMarkdownParser(
                 {cards.map((card, idx) => {
                   // Extract plain text from topic (remove markdown formatting)
                   const topicText = card.topic.replace(/\*\*/g, "").trim();
+                  const externalUrl = topicToExternalUrl[topicText];
                   const slug = topicToSlug[topicText];
-                  const isClickable = slug && onNavigate;
+                  const isExternal = Boolean(externalUrl);
+                  const isInternal = Boolean(slug && onNavigate);
 
                   const cardContent = (
                     <>
@@ -277,12 +284,29 @@ export function useMarkdownParser(
                     </>
                   );
 
-                  if (isClickable) {
+                  const cardClassName =
+                    "rounded-xl border border-border bg-card/40 px-4 py-4 shadow-sm hover:border-primary/60 hover:shadow-md transition-colors text-left w-full";
+
+                  if (isExternal) {
                     return (
                       <button
                         key={idx}
-                        onClick={() => onNavigate(slug)}
-                        className="rounded-xl border border-border bg-card/40 px-4 py-4 shadow-sm hover:border-primary/60 hover:shadow-md transition-colors cursor-pointer text-left w-full"
+                        type="button"
+                        onClick={() => window.location.assign(externalUrl)}
+                        className={`${cardClassName} cursor-pointer`}
+                      >
+                        {cardContent}
+                      </button>
+                    );
+                  }
+
+                  if (isInternal) {
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => onNavigate!(slug)}
+                        className={`${cardClassName} cursor-pointer`}
                       >
                         {cardContent}
                       </button>
@@ -290,10 +314,7 @@ export function useMarkdownParser(
                   }
 
                   return (
-                    <div
-                      key={idx}
-                      className="rounded-xl border border-border bg-card/40 px-4 py-4 shadow-sm hover:border-primary/60 hover:shadow-md transition-colors"
-                    >
+                    <div key={idx} className={cardClassName}>
                       {cardContent}
                     </div>
                   );

@@ -11,6 +11,8 @@ export type Locale = "en" | "es";
 export type NavigationItem = {
   slug: string;
   title: string;
+  /** If set, sidebar opens this URL instead of in-app navigation. */
+  externalUrl?: string;
 };
 
 export type NavigationItems = {

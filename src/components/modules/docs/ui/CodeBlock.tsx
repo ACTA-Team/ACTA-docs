@@ -27,8 +27,8 @@ export function CodeBlock({ code, language = "text" }: CodeBlockProps) {
   };
 
   return (
-    <div className="mb-6 relative group">
-      <div className="bg-[#1e1e1e] border border-border rounded-lg overflow-hidden">
+    <div className="group relative mb-6 max-w-full">
+      <div className="overflow-hidden rounded-lg border border-border bg-[#1e1e1e]">
         <div className="flex items-center justify-between bg-[#252526] border-b border-border px-4 py-2">
           {language && (
             <span className="text-xs text-muted-foreground font-mono">
@@ -57,25 +57,29 @@ export function CodeBlock({ code, language = "text" }: CodeBlockProps) {
             )}
           </button>
         </div>
-        <SyntaxHighlighter
-          language={language}
-          style={vscDarkPlus}
-          customStyle={{
-            margin: 0,
-            padding: "1rem",
-            background: "#1e1e1e",
-            fontSize: "0.875rem",
-            lineHeight: "1.5",
-          }}
-          codeTagProps={{
-            style: {
-              fontFamily:
-                "ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace",
-            },
-          }}
-        >
-          {code}
-        </SyntaxHighlighter>
+        <div className="max-w-full overflow-x-auto">
+          <SyntaxHighlighter
+            language={language}
+            style={vscDarkPlus}
+            customStyle={{
+              margin: 0,
+              padding: "1rem",
+              background: "#1e1e1e",
+              fontSize: "0.875rem",
+              lineHeight: "1.5",
+              minWidth: "100%",
+              width: "max-content",
+            }}
+            codeTagProps={{
+              style: {
+                fontFamily:
+                  "ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace",
+              },
+            }}
+          >
+            {code}
+          </SyntaxHighlighter>
+        </div>
       </div>
     </div>
   );

@@ -16,7 +16,6 @@ export interface Translations {
 
   // Header
   askOrSearch: string;
-  dApp: string;
   discord: string;
   website: string;
   english: string;
@@ -27,6 +26,7 @@ export interface Translations {
   wasThisHelpful: string;
   copy: string;
   copied: string;
+  downloadPdf: string;
 
   // Footer
   poweredBy: string;
@@ -70,6 +70,18 @@ export interface Translations {
   community: string;
   reportIssue: string;
   featureRequest: string;
+  supportSending: string;
+  supportErrorTitle: string;
+  supportSendFailed: string;
+  supportPlaceholderName: string;
+  supportPlaceholderEmail: string;
+  supportPlaceholderMessage: string;
+  supportDocLinkDescription: string;
+  supportCommunityLinkDescription: string;
+  supportIssueLinkDescription: string;
+  supportFeatureLinkDescription: string;
+  supportImmediateHelpTitle: string;
+  supportImmediateHelpBody: string;
   // Support validation
   validationErrorTitle: string;
   validationNameRequired: string;

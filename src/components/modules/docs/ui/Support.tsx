@@ -1,16 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, type ComponentType } from "react";
 import {
-  Headphones,
   Send,
-  BookOpen,
-  MessageCircle,
-  Bug,
-  Lightbulb,
-  ExternalLink,
   CheckCircle,
   Loader2,
+  ArrowUpRight,
+  ChevronRight,
+  BookOpen,
+  Bug,
+  Lightbulb,
 } from "lucide-react";
 import { DiscordIcon } from "@/components/ui/discord-icon";
 import { useI18n } from "@/lib/i18n";
@@ -18,8 +17,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
-export function Support() {
+interface SupportProps {
+  onNavigate?: (slug: string) => void;
+}
+
+export function Support({ onNavigate }: SupportProps) {
   const { t } = useI18n();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
@@ -33,7 +37,6 @@ export function Support() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Client-side validation mirroring API (Zod) rules
     const errors: string[] = [];
     const name = formData.name.trim();
     const email = formData.email.trim();
@@ -85,9 +88,10 @@ export function Support() {
 
       if (!response.ok) {
         const message =
-          (data && (data.error || data.details)) ||
-          "Failed to submit contact form";
-        throw new Error(message);
+          (data && (data.error || data.details)) || t.supportSendFailed;
+        throw new Error(
+          typeof message === "string" ? message : t.supportSendFailed
+        );
       }
 
       setIsSubmitting(false);
@@ -98,193 +102,258 @@ export function Support() {
         title: t.messageSent,
       });
 
-      // Reset success message after 5 seconds
       setTimeout(() => setIsSubmitted(false), 5000);
     } catch (error) {
       console.error("Contact form submit error:", error);
       setIsSubmitting(false);
 
       toast({
-        title: "Error",
+        title: t.supportErrorTitle,
         description:
-          error instanceof Error
-            ? error.message
-            : "We couldn't send your message. Please try again later.",
+          error instanceof Error ? error.message : t.supportSendFailed,
         variant: "destructive",
       });
     }
   };
 
-  const quickLinks = [
+  type QuickItem = {
+    icon: ComponentType<{ className?: string }>;
+    title: string;
+    description: string;
+    external?: boolean;
+    href?: string;
+    slug?: string;
+  };
+
+  const quickLinks: QuickItem[] = [
     {
-      icon: <BookOpen className="w-5 h-5" />,
+      icon: BookOpen,
       title: t.documentation,
-      description: "Browse the complete ACTA documentation",
-      href: "#",
-      internal: true,
+      description: t.supportDocLinkDescription,
+      slug: "introduction",
     },
     {
-      icon: <DiscordIcon className="w-5 h-5" />,
+      icon: DiscordIcon,
       title: t.community,
-      description: "Join our Discord community",
+      description: t.supportCommunityLinkDescription,
       href: "https://discord.gg/DsUSE3aMDZ",
-      internal: false,
+      external: true,
     },
     {
-      icon: <Bug className="w-5 h-5" />,
+      icon: Bug,
       title: t.reportIssue,
-      description: "Report bugs on GitHub",
+      description: t.supportIssueLinkDescription,
       href: "https://github.com/ACTA-Team/issues",
-      internal: false,
+      external: true,
     },
     {
-      icon: <Lightbulb className="w-5 h-5" />,
+      icon: Lightbulb,
       title: t.featureRequest,
-      description: "Suggest new features",
+      description: t.supportFeatureLinkDescription,
       href: "https://github.com/ACTA-Team/discussions",
-      internal: false,
+      external: true,
     },
   ];
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <Headphones className="w-6 h-6 text-primary" />
-          </div>
-          <h1 className="text-2xl font-bold text-foreground">{t.support}</h1>
-        </div>
-        <p className="text-muted-foreground">{t.supportDescription}</p>
+    <div className="mx-auto w-full max-w-4xl space-y-10 px-4 py-8 md:px-10 md:py-10 xl:max-w-5xl">
+      <div className="max-w-xl space-y-3">
+        <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground/70">
+          {t.supportTitle}
+        </p>
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
+          {t.support}
+        </h1>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          {t.supportDescription}
+        </p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* Contact Form */}
-        <div className="bg-card border border-border rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-            <MessageCircle className="w-5 h-5 text-primary" />
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_min(100%,17.5rem)] lg:gap-12 xl:grid-cols-[minmax(0,1fr)_min(100%,19rem)]">
+        <section
+          className="rounded-xl border border-border/60 bg-card/80 p-6 shadow-none backdrop-blur-sm md:p-8"
+          aria-labelledby="support-form-heading"
+        >
+          <h2
+            id="support-form-heading"
+            className="sr-only"
+          >
             {t.contactUs}
           </h2>
 
           {isSubmitted ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mb-4">
-                <CheckCircle className="w-8 h-8 text-green-500" />
+            <div className="flex flex-col items-center justify-center px-4 py-14 text-center">
+              <div
+                className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-border/60 bg-muted/20"
+                aria-hidden
+              >
+                <CheckCircle className="h-6 w-6 text-primary" />
               </div>
-              <p className="text-lg font-medium text-foreground">
+              <p className="text-sm font-medium text-foreground">
                 {t.messageSent}
               </p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-foreground mb-1.5 block">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-2">
+                <label
+                  htmlFor="support-name"
+                  className="text-xs font-medium text-foreground"
+                >
                   {t.yourName}
                 </label>
                 <Input
+                  id="support-name"
                   type="text"
                   value={formData.name}
                   onChange={e =>
                     setFormData(prev => ({ ...prev, name: e.target.value }))
                   }
                   required
-                  className="bg-background"
-                  placeholder="John Doe"
+                  autoComplete="name"
+                  placeholder={t.supportPlaceholderName}
+                  className="border-border/60 bg-background shadow-none"
                 />
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-foreground mb-1.5 block">
+              <div className="space-y-2">
+                <label
+                  htmlFor="support-email"
+                  className="text-xs font-medium text-foreground"
+                >
                   {t.yourEmail}
                 </label>
                 <Input
+                  id="support-email"
                   type="email"
                   value={formData.email}
                   onChange={e =>
                     setFormData(prev => ({ ...prev, email: e.target.value }))
                   }
                   required
-                  className="bg-background"
-                  placeholder="john@example.com"
+                  autoComplete="email"
+                  placeholder={t.supportPlaceholderEmail}
+                  className="border-border/60 bg-background shadow-none"
                 />
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-foreground mb-1.5 block">
+              <div className="space-y-2">
+                <label
+                  htmlFor="support-message"
+                  className="text-xs font-medium text-foreground"
+                >
                   {t.yourMessage}
                 </label>
                 <Textarea
+                  id="support-message"
                   value={formData.message}
                   onChange={e =>
                     setFormData(prev => ({ ...prev, message: e.target.value }))
                   }
                   required
-                  className="bg-background min-h-[120px] resize-none"
-                  placeholder="How can we help you?"
+                  placeholder={t.supportPlaceholderMessage}
+                  className="min-h-[140px] resize-none border-border/60 bg-background shadow-none"
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                className="w-full shadow-none sm:w-auto"
+                disabled={isSubmitting}
+              >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Sending...
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t.supportSending}
                   </>
                 ) : (
                   <>
-                    <Send className="w-4 h-4 mr-2" />
+                    <Send className="mr-2 h-4 w-4" />
                     {t.sendMessage}
                   </>
                 )}
               </Button>
             </form>
           )}
-        </div>
+        </section>
 
-        {/* Quick Links */}
-        <div>
-          <h2 className="text-lg font-semibold text-foreground mb-4">
-            {t.quickLinks}
-          </h2>
-          <div className="space-y-3">
-            {quickLinks.map((link, index) => (
-              <a
-                key={index}
-                href={link.href}
-                target={link.internal ? undefined : "_blank"}
-                rel={link.internal ? undefined : "noopener noreferrer"}
-                className="flex items-start gap-4 p-4 bg-card border border-border rounded-lg hover:bg-secondary/50 hover:border-primary/50 transition-all group"
-              >
-                <div className="p-2 bg-primary/10 rounded-lg text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                  {link.icon}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-foreground">
-                      {link.title}
+        <aside className="space-y-8 lg:pt-1">
+          <div>
+            <h3 className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground/70">
+              {t.quickLinks}
+            </h3>
+            <ul
+              className="mt-4 divide-y divide-border/50 overflow-hidden rounded-xl border border-border/60 bg-card/50"
+              role="list"
+            >
+              {quickLinks.map((link, index) => {
+                const Icon = link.icon;
+                const rowClass = cn(
+                  "flex w-full items-start gap-3 px-4 py-3.5 text-left text-sm transition-colors",
+                  "hover:bg-muted/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                );
+
+                const inner = (
+                  <>
+                    <span
+                      className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border/60 bg-background/80 text-muted-foreground"
+                      aria-hidden
+                    >
+                      <Icon className="h-4 w-4" />
                     </span>
-                    {!link.internal && (
-                      <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-center gap-1.5 font-medium text-foreground">
+                        {link.title}
+                        {link.external ? (
+                          <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                        ) : (
+                          <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                        )}
+                      </span>
+                      <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">
+                        {link.description}
+                      </span>
+                    </span>
+                  </>
+                );
+
+                return (
+                  <li key={index}>
+                    {link.slug && onNavigate ? (
+                      <button
+                        type="button"
+                        className={rowClass}
+                        onClick={() => onNavigate(link.slug!)}
+                      >
+                        {inner}
+                      </button>
+                    ) : (
+                      <a
+                        href={link.href}
+                        target={link.external ? "_blank" : undefined}
+                        rel={
+                          link.external ? "noopener noreferrer" : undefined
+                        }
+                        className={rowClass}
+                      >
+                        {inner}
+                      </a>
                     )}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-0.5">
-                    {link.description}
-                  </p>
-                </div>
-              </a>
-            ))}
+                  </li>
+                );
+              })}
+            </ul>
           </div>
 
-          {/* Additional Info */}
-          <div className="mt-6 p-4 bg-secondary/30 rounded-lg border border-border">
-            <p className="text-sm text-muted-foreground">
-              <strong className="text-foreground">Need immediate help?</strong>{" "}
-              Join our Discord community for real-time support from the team and
-              other developers.
+          <div className="rounded-xl border border-border/60 bg-muted/10 p-4 text-sm leading-relaxed">
+            <p className="font-medium text-foreground">
+              {t.supportImmediateHelpTitle}
+            </p>
+            <p className="mt-2 text-muted-foreground">
+              {t.supportImmediateHelpBody}
             </p>
           </div>
-        </div>
+        </aside>
       </div>
     </div>
   );

@@ -37,7 +37,7 @@ Instructions:
 1. Answer the question based ONLY on the documentation provided above
 2. Be concise and helpful
 3. If the question is not related to ACTA or the documentation, politely redirect to ACTA topics
-4. At the end, suggest 1-3 relevant page slugs from this list that might help: introduction, architecture, getting-started, links, sdk-overview, useCredential, useVault, useVaultRead
+4. At the end, suggest 1-3 relevant page slugs from this list that might help: introduction, architecture, getting-started, sdk-overview, useCredential, useVault, useVaultRead
 
 Format your response as JSON:
 {

@@ -15,18 +15,18 @@ export function Content({ page, onNavigate }: ContentProps) {
   const { sectionLabel, copied, handleCopy, t } = useContent({ page });
 
   return (
-    <main className="flex-1 overflow-y-auto">
-      <div className="max-w-4xl mx-auto px-8 py-8">
+    <main className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto">
+      <div className="mx-auto w-full max-w-4xl px-4 py-8 md:px-10 md:py-10 xl:max-w-5xl">
         {/* Breadcrumb & Actions */}
-        <div className="flex items-center justify-between mb-6">
-          <span className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
+          <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground/70">
             {sectionLabel}
           </span>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
-              className="bg-secondary border-border text-foreground hover:bg-muted"
+              className="h-8 border-border/60 bg-transparent text-foreground shadow-none hover:bg-muted/50"
               onClick={handleCopy}
             >
               {copied ? (
@@ -45,7 +45,7 @@ export function Content({ page, onNavigate }: ContentProps) {
             <Button
               variant="outline"
               size="sm"
-              className="bg-secondary border-border text-foreground hover:bg-muted"
+              className="h-8 border-border/60 bg-transparent text-foreground shadow-none hover:bg-muted/50"
               onClick={() => window.print()}
             >
               <Download className="w-4 h-4 mr-2" />
@@ -55,7 +55,7 @@ export function Content({ page, onNavigate }: ContentProps) {
         </div>
 
         {/* Content */}
-        <div className="prose prose-invert max-w-none">
+        <div className="prose prose-neutral max-w-none wrap-break-word overflow-x-hidden text-[15px] leading-[1.65] md:text-base dark:prose-invert prose-headings:scroll-mt-20 prose-headings:font-semibold prose-headings:tracking-tight prose-p:text-muted-foreground prose-li:text-muted-foreground prose-headings:text-foreground [&_pre]:max-w-full [&_pre]:overflow-x-auto [&_code]:wrap-break-word">
           <MarkdownContent content={page.content} onNavigate={onNavigate} />
         </div>
       </div>

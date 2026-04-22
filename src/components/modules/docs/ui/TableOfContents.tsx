@@ -17,19 +17,19 @@ export function TableOfContents({ items }: TableOfContentsProps) {
   const unselected = "hover:bg-secondary";
 
   return (
-    <aside className="w-64 border-l border-border p-6 hidden xl:block">
-      <nav className="sticky top-6">
-        <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-4">
+    <aside className="hidden w-52 shrink-0 border-l border-border/50 py-8 pl-6 pr-4 2xl:block">
+      <nav className="sticky top-20">
+        <p className="mb-3 text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground/70">
           {t.onThisPage}
         </p>
-        <ul className="space-y-3">
+        <ul className="space-y-2">
           {items.map((item, idx) => (
             <li key={idx}>
               <a
                 href={`#${slugifyHeading(item)}`}
-                className={`text-sm ${
+                className={`block truncate text-[13px] leading-snug transition-colors ${
                   idx === 0
-                    ? "text-primary font-medium"
+                    ? "font-medium text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -40,8 +40,8 @@ export function TableOfContents({ items }: TableOfContentsProps) {
         </ul>
 
         {/* Feedback */}
-        <div className="mt-12 pt-6 border-t border-border">
-          <p className="text-sm text-muted-foreground mb-3">
+        <div className="mt-10 border-t border-border/50 pt-5">
+          <p className="mb-3 text-xs text-muted-foreground">
             {t.wasThisHelpful}
           </p>
           <div className="flex items-center gap-2">
