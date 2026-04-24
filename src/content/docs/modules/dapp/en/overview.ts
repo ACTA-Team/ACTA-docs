@@ -13,7 +13,7 @@ export const overview: DocPage = {
   content: `
 # ACTA dApp Overview
 
-The ACTA dApp is a modern web application that provides a user-friendly interface to issue, manage, share, and authorize verifiable credentials. Built with Next.js 16, React 19, and the ACTA SDK, it offers a complete credential management solution without requiring programming knowledge.
+The ACTA dApp is a modern web application that provides a user-friendly interface to issue, manage, share, and authorize verifiable credentials. Built with Next.js 16, React 19, and the ACTA SDK, it offers a credential management interface without requiring programming knowledge.
 
 ## What is the ACTA dApp?
 
@@ -21,12 +21,12 @@ The ACTA dApp is a decentralized application that allows you to:
 
 - **Issue credentials** to users and manage issuer authorization
 - **Maintain a vault** of credentials with search, share, and revoke actions
-- **Share credentials** with zero-knowledge proofs for privacy
+- **Share credentials** with selective field disclosure
 - **Authorize issuers** to control who can issue credentials to your vault
-- **Verify credentials** on-chain and verify ZK proofs
+- **Verify credentials** on-chain
 - **Manage API keys** for programmatic access
 
-All operations are performed directly on the Stellar blockchain through Soroban smart contracts, ensuring non-custodial credential management.
+Operations are performed through Stellar/Soroban infrastructure using ACTA contracts and APIs.
 
 ## Key Features
 
@@ -44,18 +44,11 @@ All operations are performed directly on the Stellar blockchain through Soroban 
 - Manage authorized issuers list
 - Control who can create credentials for you
 
-### Zero-Knowledge Proofs
-
-- Generate ZK proofs for credential predicates
-- Share credentials with privacy-preserving proofs
-- Verify proofs without revealing private data
-- Support for multiple predicate types (age verification, expiration, status)
-
 ### API Key Management
 
 - Create and manage API keys for testnet and mainnet
 - Standard role keys with 6-month expiration
-- Easy integration with the ACTA API
+- Integrate with the ACTA API
 
 ### Guided Onboarding
 
@@ -67,8 +60,8 @@ All operations are performed directly on the Stellar blockchain through Soroban 
 
 To start using the ACTA dApp:
 
-1. **Connect your wallet** - Link your Stellar wallet (Freighter, etc.)
-2. **Choose network** - Select testnet (for testing) or mainnet
+1. **Connect your wallet** - Link your Stellar wallet
+2. **Choose network** - Select testnet or mainnet
 3. **Create your vault** - Initialize your personal credential vault
 4. **Authorize issuers** - Grant permissions to trusted wallets
 5. **Start issuing** - Create and manage your credentials
@@ -83,6 +76,6 @@ The ACTA dApp is available at:
 https://dapp.acta.build
 \`\`\`
 
-No installation required - simply visit the URL in your web browser and connect your Stellar wallet to get started.
+No installation required - visit the URL in your web browser and connect your Stellar wallet to get started.
     `,
 };

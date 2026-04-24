@@ -31,13 +31,6 @@ export const navigation: NavigationItems = {
     { slug: "dapp-getting-started", title: "Primeros Pasos" },
     { slug: "dapp-features", title: "Funcionalidades" },
   ],
-  "zk-proofs": [
-    { slug: "zk-overview", title: "Resumen" },
-    { slug: "zk-circuits", title: "Circuitos" },
-    { slug: "zk-generation", title: "Generación de Pruebas" },
-    { slug: "zk-verification", title: "Verificación de Pruebas" },
-  ],
-  scf: [{ slug: "scf-42", title: "SCF 42" }],
   help: [
     { slug: "faq", title: "Preguntas Frecuentes" },
     { slug: "support", title: "Soporte" },

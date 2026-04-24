@@ -10,16 +10,15 @@ export const features: DocPage = {
     "Compartir Credenciales",
     "Autorizar Emisores",
     "Gestión de API Keys",
-    "Pruebas de Conocimiento Cero",
   ],
   content: `
 # Funcionalidades del dApp
 
-Vista detallada de todas las funcionalidades disponibles en el dApp de ACTA.
+Vista de las funcionalidades documentadas disponibles en el dApp de ACTA.
 
 ## Emitir Credenciales
 
-Crea y emite credenciales verificables a cualquier dirección de wallet Stellar.
+Crea y emite credenciales verificables a una dirección de wallet Stellar.
 
 ### Cómo Emitir
 
@@ -57,26 +56,16 @@ Tu bóveda es tu almacenamiento personal de credenciales. Cada wallet tiene una 
 
 ## Compartir Credenciales
 
-Comparte credenciales con pruebas de conocimiento cero que preservan la privacidad.
+Comparte credenciales eligiendo qué campos revelar.
 
 ### Flujo de Compartición
 
 1. Ve a tu **Vault** y selecciona una credencial
-2. Haz clic en el botón **Share**
+2. Haz clic en **Share**
 3. Elige qué campos revelar
-4. Selecciona un predicado ZK (opcional):
-   - Edad ≥ 18
-   - No expirado
-   - Estado es válido
-5. Haz clic en **Generate ZK Proof**
-6. Copia el enlace de compartir
+4. Copia el enlace de compartir
 
-El enlace de compartir contiene:
-- Solo los campos seleccionados revelados
-- Prueba ZK para el predicado seleccionado
-- Señales públicas para verificación
-
-Los destinatarios pueden verificar la prueba sin ver tus datos privados.
+El enlace de compartir contiene los campos seleccionados que necesita el destinatario.
 
 ## Autorizar Emisores
 
@@ -121,9 +110,5 @@ X-ACTA-Key: tu_api_key_aqui
 \`\`\`
 
 Consulta la [Referencia API](#api-overview) para todos los endpoints disponibles.
-
-## Pruebas de Conocimiento Cero
-
-El dApp soporta compartir credenciales con pruebas de conocimiento cero para verificación que preserva la privacidad. Consulta la sección [Pruebas de Conocimiento Cero](#zk-overview) para información detallada sobre circuitos ZK, predicados y verificación.
     `,
 };

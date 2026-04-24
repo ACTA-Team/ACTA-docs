@@ -22,7 +22,7 @@ El primer paso es conectar tu wallet Stellar al dApp.
 
 1. Visita [https://dapp.acta.build](https://dapp.acta.build)
 2. Haz clic en el botón de conexión de wallet
-3. Selecciona tu wallet Stellar (Freighter, WalletConnect, etc.)
+3. Selecciona tu wallet Stellar
 4. Aprueba la solicitud de conexión
 5. Elige tu red:
    - **Testnet** - Para pruebas y desarrollo
@@ -61,21 +61,21 @@ Una vez que tengas una bóveda y emisores autorizados, puedes comenzar a emitir 
 1. Navega a la sección **Issue**
 2. Completa el formulario de credencial:
    - **Credential ID** - Identificador único
-   - **Credential Data** - La información real de la credencial (formato JSON)
+   - **Credential Data** - La información real de la credencial en formato JSON
    - **Owner** - La dirección de wallet que recibirá la credencial
    - **Issuer DID** (opcional) - Tu DID de emisor
 3. Haz clic en **Issue Credential**
 4. Firma la transacción con tu wallet
 5. La credencial se almacenará en la bóveda del propietario y se marcará como válida
 
-La credencial ahora está on-chain y puede ser verificada por cualquiera.
+La credencial ahora está on-chain y puede ser verificada.
 
 ## Siguientes pasos
 
 Después de completar la configuración inicial:
 
 - **Ver Credenciales** - Ve a la sección **Vault** o **Credentials** para ver todas tus credenciales
-- **Compartir Credenciales** - Usa la función de compartir para crear enlaces compartibles con pruebas ZK
+- **Compartir Credenciales** - Usa la función de compartir para crear enlaces con campos seleccionados de la credencial
 - **Gestionar API Keys** - Crea API keys para acceso programático en la sección **API Keys**
 - **Explorar Tutoriales** - Revisa la sección **Tutorials** para guías paso a paso
 
