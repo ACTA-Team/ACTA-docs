@@ -46,7 +46,6 @@ export function NavGroup({ label, items, onNavigate }: NavGroupProps) {
               key={item.slug ?? item.title}
               asChild
               className="group/collapsible"
-              open={isWelcomeSection ? true : undefined}
               defaultOpen={defaultOpen}
             >
               <SidebarMenuItem>
