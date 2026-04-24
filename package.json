@@ -2,10 +2,19 @@
   "name": "acta-docs",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "packages/docs-mcp"
+  ],
   "scripts": {
     "build": "next build",
     "dev": "next dev -p 8080 -H 127.0.0.1",
     "lint": "eslint .",
+    "mcp": "npm run mcp -w @acta-team/docs-mcp",
+    "mcp:generate-docs": "npm run generate-docs -w @acta-team/docs-mcp",
+    "mcp:build": "npm run build -w @acta-team/docs-mcp",
+    "mcp:test": "npm run test -w @acta-team/docs-mcp",
+    "mcp:pack": "npm run mcp:build && npm pack -w @acta-team/docs-mcp",
+    "mcp:publish": "npm run mcp:build && npm publish --access public -w @acta-team/docs-mcp",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "start": "next start"
