@@ -6,14 +6,15 @@ import {
 } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import docsData from "./generated/docs-data.json" with { type: "json" };
+import bundledDocsData from "./generated/docs-data.json" with { type: "json" };
 import type { DocPage, DocsByLocale, Locale, SearchResult } from "./types.js";
 
-const docsByLocale = docsData as DocsByLocale;
-
 const DOCS_BASE_URL = "https://docs.acta.build";
+const DEFAULT_DOCS_DATA_URL = `${DOCS_BASE_URL}/api/mcp/docs-data`;
 const DEFAULT_LOCALE: Locale = "en";
 const LOCALES = ["en", "es"] as const;
+
+const docsByLocale = await loadDocsData();
 
 const localeSchema = z.enum(LOCALES).default(DEFAULT_LOCALE);
 
@@ -21,6 +22,73 @@ const server = new McpServer({
   name: "acta-docs",
   version: "0.1.0",
 });
+
+function isDocPage(value: unknown): value is DocPage {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const page = value as Record<string, unknown>;
+  return (
+    typeof page.title === "string" &&
+    typeof page.section === "string" &&
+    typeof page.slug === "string" &&
+    typeof page.content === "string" &&
+    Array.isArray(page.tocItems) &&
+    page.tocItems.every(item => typeof item === "string")
+  );
+}
+
+function isDocsByLocale(value: unknown): value is DocsByLocale {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const byLocale = value as Record<string, unknown>;
+  return LOCALES.every(locale => {
+    const pages = byLocale[locale];
+    return (
+      pages &&
+      typeof pages === "object" &&
+      Object.values(pages).every(isDocPage)
+    );
+  });
+}
+
+async function loadDocsData(): Promise<DocsByLocale> {
+  const bundledDocs = bundledDocsData as DocsByLocale;
+
+  if (process.env.ACTA_DOCS_MCP_OFFLINE === "1") {
+    return bundledDocs;
+  }
+
+  const docsDataUrl =
+    process.env.ACTA_DOCS_MCP_DATA_URL ?? DEFAULT_DOCS_DATA_URL;
+
+  try {
+    const response = await fetch(docsDataUrl, {
+      headers: { Accept: "application/json" },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const remoteDocsData: unknown = await response.json();
+    if (!isDocsByLocale(remoteDocsData)) {
+      throw new Error("Invalid docs data shape");
+    }
+
+    console.error(`Loaded ACTA docs from ${docsDataUrl}`);
+    return remoteDocsData;
+  } catch (error) {
+    console.error(
+      `Unable to load remote ACTA docs from ${docsDataUrl}; using bundled docs.`,
+      error
+    );
+    return bundledDocs;
+  }
+}
 
 function isLocale(value: string): value is Locale {
   return LOCALES.includes(value as Locale);
