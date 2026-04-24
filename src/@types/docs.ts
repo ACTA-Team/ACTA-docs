@@ -19,6 +19,7 @@ export type NavigationItems = {
   welcome: NavigationItem[];
   sdk: NavigationItem[];
   "api-reference": NavigationItem[];
+  mcp?: NavigationItem[];
   dapp: NavigationItem[];
   "zk-proofs"?: NavigationItem[];
   scf?: NavigationItem[];
