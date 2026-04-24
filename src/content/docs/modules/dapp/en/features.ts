@@ -10,16 +10,15 @@ export const features: DocPage = {
     "Share Credentials",
     "Authorize Issuers",
     "API Key Management",
-    "Zero-Knowledge Proofs",
   ],
   content: `
 # dApp Features
 
-Detailed overview of all features available in the ACTA dApp.
+Detailed overview of the documented features available in the ACTA dApp.
 
 ## Issue Credentials
 
-Create and issue verifiable credentials to any Stellar wallet address.
+Create and issue verifiable credentials to a Stellar wallet address.
 
 ### How to Issue
 
@@ -57,26 +56,16 @@ Your vault is your personal credential storage. Each wallet has an isolated vaul
 
 ## Share Credentials
 
-Share credentials with privacy-preserving zero-knowledge proofs.
+Share credentials by choosing which fields to reveal.
 
 ### Sharing Flow
 
 1. Go to your **Vault** and select a credential
-2. Click **Share** button
+2. Click **Share**
 3. Choose which fields to reveal
-4. Select a ZK predicate (optional):
-   - Age ≥ 18
-   - Not expired
-   - Status is valid
-5. Click **Generate ZK Proof**
-6. Copy the share link
+4. Copy the share link
 
-The share link contains:
-- Only the selected revealed fields
-- ZK proof for the selected predicate
-- Public signals for verification
-
-Recipients can verify the proof without seeing your private data.
+The share link contains the selected revealed fields needed by the recipient.
 
 ## Authorize Issuers
 
@@ -105,7 +94,7 @@ Create and manage API keys for programmatic access to the ACTA API.
 2. Choose network (Testnet or Mainnet)
 3. Enter a name for your API key (optional)
 4. Click **Create API Key**
-5. **Save the key immediately** - it won't be shown again
+5. **Save the key immediately** - it will not be shown again
 
 API keys have:
 - **Standard role** - Access to public endpoints
@@ -121,9 +110,5 @@ X-ACTA-Key: your_api_key_here
 \`\`\`
 
 See the [API Reference](#api-overview) for all available endpoints.
-
-## Zero-Knowledge Proofs
-
-The dApp supports sharing credentials with zero-knowledge proofs for privacy-preserving verification. See the [Zero-Knowledge Proofs](#zk-overview) section for detailed information about ZK circuits, predicates, and verification.
     `,
 };

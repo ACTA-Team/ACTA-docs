@@ -5,6 +5,7 @@ import {
   Headphones,
   HelpCircle,
   LayoutGrid,
+  Plug,
   Server,
   Sparkles,
 } from "lucide-react";
@@ -27,21 +28,28 @@ export type SidebarNavGroup = {
   items: SidebarNavItem[];
 };
 
-type SectionKey = "welcome" | "sdk" | "api-reference" | "dapp";
+type SectionKey = "welcome" | "sdk" | "api-reference" | "mcp" | "dapp";
 
 const sectionIcons: Record<SectionKey, ReactNode> = {
   welcome: <Sparkles />,
   sdk: <Code />,
   "api-reference": <Server />,
+  mcp: <Plug />,
   dapp: <LayoutGrid />,
 };
 
-const SECTION_ORDER: SectionKey[] = ["welcome", "sdk", "api-reference", "dapp"];
+const SECTION_ORDER: SectionKey[] = [
+  "welcome",
+  "sdk",
+  "api-reference",
+  "mcp",
+  "dapp",
+];
 
 const GROUP_DEFS: Array<{ key: string; sections: SectionKey[] }> = [
   {
     key: "docs",
-    sections: ["welcome", "sdk", "api-reference", "dapp"],
+    sections: ["welcome", "sdk", "api-reference", "mcp", "dapp"],
   },
 ];
 
@@ -53,6 +61,8 @@ function getSectionLabel(key: SectionKey, t: Translations): string {
       return t.reactSdk;
     case "api-reference":
       return t.apiReference;
+    case "mcp":
+      return "MCP";
     case "dapp":
       return t.dApp;
   }

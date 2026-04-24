@@ -19,6 +19,8 @@
 
 # production
 /build
+/packages/docs-mcp/dist/
+*.tgz
 
 # misc
 .DS_Store

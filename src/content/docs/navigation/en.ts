@@ -25,18 +25,12 @@ export const navigation: NavigationItems = {
     { slug: "api-vault-write", title: "Vault Operations (Write)" },
     { slug: "api-credentials", title: "Credential Operations" },
   ],
+  mcp: [{ slug: "mcp", title: "ACTA Docs MCP" }],
   dapp: [
     { slug: "dapp-overview", title: "Overview" },
     { slug: "dapp-getting-started", title: "Getting Started" },
     { slug: "dapp-features", title: "Features" },
   ],
-  "zk-proofs": [
-    { slug: "zk-overview", title: "Overview" },
-    { slug: "zk-circuits", title: "Circuits" },
-    { slug: "zk-generation", title: "Proof Generation" },
-    { slug: "zk-verification", title: "Proof Verification" },
-  ],
-  scf: [{ slug: "scf-42", title: "SCF 42" }],
   help: [
     { slug: "faq", title: "FAQ" },
     { slug: "support", title: "Support" },
