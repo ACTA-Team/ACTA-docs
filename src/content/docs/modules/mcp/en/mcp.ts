@@ -17,9 +17,9 @@ export const mcp: DocPage = {
   content: `
 # ACTA Docs MCP
 
-ACTA Docs MCP is a read-only MCP server that lets MCP-compatible AI clients query the official ACTA documentation.
+**ACTA Docs MCP** is a read-only [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server. MCP-compatible clients—for example Claude, Cursor, or other assistants that support MCP—can query the **official ACTA documentation** through it.
 
-Use it when you want an assistant such as Claude, Cursor, or another MCP-compatible client to answer questions about ACTA using public, official, and up-to-date documentation.
+Use it when you want an assistant to answer questions about ACTA using **public, official, and up-to-date** documentation, not guesses from general training data alone.
 
 ## What it is
 
@@ -72,22 +72,22 @@ When it starts, the server loads the latest documentation from:
 https://docs.acta.build/api/mcp/docs-data
 \`\`\`
 
-If ACTA documentation changes, users do not need to update the npm package. Restarting or reloading the MCP client is enough for the server process to load the updated documentation.
+If ACTA documentation changes, users **do not** need to update the npm package. Restarting or reloading the MCP client is enough for the server process to load the updated documentation.
 
-New npm versions are only needed when the MCP server code changes. If the remote endpoint fails, the server uses the documentation copy bundled in the npm package.
+New npm versions are **only** needed when the MCP server **code** changes. If the remote endpoint fails, the server uses the documentation copy **bundled** in the npm package.
 
 ## Advanced configuration
 
-- \`ACTA_DOCS_MCP_OFFLINE=1\`: skip the remote fetch and use bundled documentation only.
-- \`ACTA_DOCS_MCP_DATA_URL\`: use a different remote docs JSON URL.
+- **\`ACTA_DOCS_MCP_OFFLINE=1\`:** skip the remote fetch and use bundled documentation only.
+- **\`ACTA_DOCS_MCP_DATA_URL\`:** use a different remote docs JSON URL.
 
 Use \`ACTA_DOCS_MCP_DATA_URL\` only if you completely trust the configured source. The AI client will use that content as context to answer questions about ACTA.
 
 ## Available tools
 
-- \`list_acta_docs\`: lists the available documentation pages.
-- \`read_acta_doc\`: reads a specific page using its \`slug\` and locale.
-- \`search_acta_docs\`: searches content inside the ACTA documentation.
+- **\`list_acta_docs\`:** lists the available documentation pages.
+- **\`read_acta_doc\`:** reads a specific page using its \`slug\` and locale.
+- **\`search_acta_docs\`:** searches content inside the ACTA documentation.
 
 ## Available resources
 

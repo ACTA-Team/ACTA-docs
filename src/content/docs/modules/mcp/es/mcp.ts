@@ -17,9 +17,9 @@ export const mcp: DocPage = {
   content: `
 # ACTA Docs MCP
 
-ACTA Docs MCP es un servidor MCP de solo lectura que permite a clientes de IA compatibles con MCP consultar la documentación oficial de ACTA.
+**ACTA Docs MCP** es un servidor [Model Context Protocol (MCP)](https://modelcontextprotocol.io) de solo lectura. Los clientes compatibles con MCP—por ejemplo Claude, Cursor u otros asistentes con soporte MCP—pueden consultar la **documentación oficial de ACTA** a través de él.
 
-Úsalo cuando quieras que un asistente como Claude, Cursor u otro cliente compatible con MCP responda preguntas sobre ACTA usando documentación pública, oficial y actualizada.
+Úsalo cuando quieras que un asistente responda sobre ACTA apoyándose en documentación **pública, oficial y actualizada**, y no solo en conocimiento genérico del modelo.
 
 ## Qué es
 
@@ -72,22 +72,22 @@ Al iniciar, el servidor carga la documentación más reciente desde:
 https://docs.acta.build/api/mcp/docs-data
 \`\`\`
 
-Si cambia la documentación de ACTA, no hace falta actualizar el paquete npm. Basta con reiniciar o recargar el cliente MCP para que el proceso del servidor cargue la documentación actualizada.
+Si cambia la documentación de ACTA, normalmente **no** hace falta actualizar el paquete npm. Basta con **reiniciar o recargar** el cliente MCP para que el proceso del servidor cargue la documentación actualizada.
 
-Las nuevas versiones npm solo son necesarias cuando cambia el código del servidor MCP. Si el endpoint remoto falla, el servidor usa la copia de documentación incluida en el paquete npm.
+Las **nuevas versiones npm** solo son necesarias cuando cambia el **código** del servidor MCP. Si el endpoint remoto falla, el servidor usa la copia de documentación **incluida** en el paquete npm.
 
 ## Configuración avanzada
 
-- \`ACTA_DOCS_MCP_OFFLINE=1\`: omite la descarga remota y usa solo la documentación incluida en el paquete.
-- \`ACTA_DOCS_MCP_DATA_URL\`: usa otra URL remota para el JSON de documentación.
+- **\`ACTA_DOCS_MCP_OFFLINE=1\`:** omite la descarga remota y usa solo la documentación incluida en el paquete.
+- **\`ACTA_DOCS_MCP_DATA_URL\`:** usa otra URL remota para el JSON de documentación.
 
 Usa \`ACTA_DOCS_MCP_DATA_URL\` solo si confías completamente en la fuente configurada. El cliente de IA usará ese contenido como contexto para responder preguntas sobre ACTA.
 
 ## Herramientas disponibles
 
-- \`list_acta_docs\`: lista las páginas de documentación disponibles.
-- \`read_acta_doc\`: lee una página específica usando su \`slug\` e idioma.
-- \`search_acta_docs\`: busca contenido dentro de la documentación de ACTA.
+- **\`list_acta_docs\`:** lista las páginas de documentación disponibles.
+- **\`read_acta_doc\`:** lee una página específica usando su \`slug\` e idioma.
+- **\`search_acta_docs\`:** busca contenido dentro de la documentación de ACTA.
 
 ## Recursos disponibles
 
