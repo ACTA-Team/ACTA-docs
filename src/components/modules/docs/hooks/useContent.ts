@@ -18,6 +18,9 @@ export function useContent({ page }: UseContentProps) {
         return t.reactSdk;
       case "API Reference":
         return t.apiReference;
+      case "Contracts":
+      case "Contratos":
+        return t.contracts;
       case "dApp":
         return t.dApp;
       default:

@@ -25,6 +25,7 @@ export const navigation: NavigationItems = {
     { slug: "api-vault-write", title: "Operaciones de Bóveda (Escritura)" },
     { slug: "api-credentials", title: "Operaciones de Credenciales" },
   ],
+  contracts: [{ slug: "contract-errors", title: "Errores de contrato" }],
   mcp: [{ slug: "mcp", title: "ACTA Docs MCP" }],
   dapp: [
     { slug: "dapp-overview", title: "Resumen" },
