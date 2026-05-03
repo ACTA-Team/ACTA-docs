@@ -1,11 +1,11 @@
 import type { DocPage } from "@/@types/docs";
 
-export const actaClientSponsoredVault: DocPage = {
-  slug: "actaClientSponsoredVault",
-  title: "ActaClient: sponsored vault",
+export const sponsoredVault: DocPage = {
+  slug: "sponsoredVault",
+  title: "sponsoredVault",
   section: "React SDK",
   tocItems: [
-    "Overview",
+    "Client",
     "sponsoredVaultCreate",
     "getSponsoredVaultOpenToAll",
     "sponsoredVaultSetOpenToAll",
@@ -14,13 +14,13 @@ export const actaClientSponsoredVault: DocPage = {
     "Prepare and submit",
   ],
   content: `
-# ActaClient: sponsored vault
+# sponsoredVault
 
-\`ActaClient\` (from \`@acta-team/acta-sdk\`) wraps the REST routes under \`/contracts/sponsored-vault/*\`. Obtain an instance with \`useActaClient()\` inside an \`ActaConfig\` tree.
+\`ActaClient\` methods for \`/contracts/sponsored-vault/*\`, accessed with \`useActaClient()\` inside \`ActaConfig\`.
 
-Domain concepts, Soroban entrypoints, and HTTP request/response shapes are documented under **API Reference → Sponsored Vault** (\`api-sponsored-vault\`). This page covers **TypeScript usage only**.
+HTTP paths, Soroban semantics, and request JSON are documented under **API Reference → Sponsored Vault** (\`api-sponsored-vault\`). This page documents **TypeScript usage** of the client.
 
-## Overview
+## Client
 
 \`\`\`ts
 import { useActaClient } from "@acta-team/acta-sdk";
@@ -39,7 +39,7 @@ const client = useActaClient();
 ## sponsoredVaultCreate
 
 \`\`\`ts
-sponsoredVaultCreate(
+client.sponsoredVaultCreate(
   payload:
     | {
         sponsor: string;
@@ -52,36 +52,36 @@ sponsoredVaultCreate(
 ): Promise<SponsoredVaultCreateResponse>
 \`\`\`
 
-- **Prepare:** first object → resolves to \`{ xdr, network }\`.
-- **Submit:** \`{ signedXdr }\` → resolves to \`{ tx_id }\` (shape may match other write responses in your SDK version).
+- **Prepare:** first object → \`{ xdr, network }\`.
+- **Submit:** \`{ signedXdr }\` → \`{ tx_id }\`.
 
 ## getSponsoredVaultOpenToAll
 
 \`\`\`ts
-getSponsoredVaultOpenToAll(args?: {
+client.getSponsoredVaultOpenToAll(args?: {
   contractId?: string;
   sourcePublicKey?: string;
 }): Promise<{ open: boolean }>
 \`\`\`
 
-Read-only; sends optional query params \`contractId\` and \`sourcePublicKey\` when provided.
+Optional args are sent as query parameters when present.
 
 ## sponsoredVaultSetOpenToAll
 
 \`\`\`ts
-sponsoredVaultSetOpenToAll(
+client.sponsoredVaultSetOpenToAll(
   payload:
     | { open: boolean; sourcePublicKey: string; contractId?: string }
     | { signedXdr: string }
 ): Promise<SponsoredVaultSetOpenToAllResponse>
 \`\`\`
 
-Contract admin must sign the prepared transaction (\`sourcePublicKey\` in prepare mode).
+The contract admin must sign the prepared transaction.
 
 ## sponsoredVaultAddSponsor
 
 \`\`\`ts
-sponsoredVaultAddSponsor(
+client.sponsoredVaultAddSponsor(
   payload:
     | { sponsor: string; sourcePublicKey: string; contractId?: string }
     | { signedXdr: string }
@@ -91,7 +91,7 @@ sponsoredVaultAddSponsor(
 ## sponsoredVaultRemoveSponsor
 
 \`\`\`ts
-sponsoredVaultRemoveSponsor(
+client.sponsoredVaultRemoveSponsor(
   payload:
     | { sponsor: string; sourcePublicKey: string; contractId?: string }
     | { signedXdr: string }
@@ -100,6 +100,6 @@ sponsoredVaultRemoveSponsor(
 
 ## Prepare and submit
 
-For each \`POST\` method, the SDK accepts either the **prepare** fields (no \`signedXdr\`) or \`{ signedXdr }\` after you sign the returned XDR with a Stellar signer. The client uses the same \`baseURL\` and API key wiring as the rest of \`ActaClient\`.
+Each \`POST\` method accepts either prepare fields (no \`signedXdr\`) or \`{ signedXdr }\` after signing. Uses the same \`baseURL\` and API key as the rest of \`ActaClient\`.
     `,
 };
