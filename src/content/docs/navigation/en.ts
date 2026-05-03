@@ -16,6 +16,7 @@ export const navigation: NavigationItems = {
     { slug: "useCredential", title: "useCredential" },
     { slug: "useVault", title: "useVault" },
     { slug: "useVaultRead", title: "useVaultRead" },
+    { slug: "actaClientSponsoredVault", title: "ActaClient: sponsored vault" },
   ],
   "api-reference": [
     { slug: "api-overview", title: "Overview" },

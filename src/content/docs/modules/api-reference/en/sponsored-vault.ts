@@ -9,7 +9,6 @@ export const sponsoredVault: DocPage = {
     "On-chain contract (vc-vault)",
     "HTTP API",
     "Prepare / submit",
-    "TypeScript SDK",
     "Operational notes",
   ],
   content: `
@@ -138,19 +137,9 @@ Write endpoints follow the standard two-step flow:
 2. **Sign** — Stellar wallet signs the XDR (sponsor or admin as required).
 3. **Submit** — POST the same path with \`{ "signedXdr" }\` → \`tx_id\`.
 
-## TypeScript SDK (\`ActaClient\`)
-
-| HTTP | Client method |
-|------|----------------|
-| POST .../create | \`sponsoredVaultCreate(payload)\` |
-| GET .../open-to-all | \`getSponsoredVaultOpenToAll(args?)\` |
-| POST .../open-to-all | \`sponsoredVaultSetOpenToAll(payload)\` |
-| POST .../add-sponsor | \`sponsoredVaultAddSponsor(payload)\` |
-| POST .../remove-sponsor | \`sponsoredVaultRemoveSponsor(payload)\` |
-
 ## Operational notes
 
-- Before sponsoring in **restricted** mode, read \`open\` via GET or SDK; if \`false\`, ensure the sponsor is the contract admin or has been added with **add-sponsor** (on-chain admin tx).
+- Before sponsoring in **restricted** mode, call **GET** \`/contracts/sponsored-vault/open-to-all\` and inspect \`open\`; if \`false\`, ensure the sponsor is the contract admin or has been added with **add-sponsor** (on-chain admin tx).
 - Avoid calling **create** when the owner already has a vault; prefer an on-chain or API read of vault existence first (see vault read operations).
 - Backoffice or internal tools may wrap these endpoints for governance; the canonical REST surface is under \`/contracts/sponsored-vault/*\` as implemented in the ACTA API.
     `,

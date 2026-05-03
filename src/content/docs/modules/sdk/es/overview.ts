@@ -9,6 +9,7 @@ export const overview: DocPage = {
     "Configuración del provider",
     "Acceder al cliente",
     "Resumen de hooks",
+    "ActaClient: bóveda patrocinada",
   ],
   content: `
 # Resumen del React SDK
@@ -17,8 +18,9 @@ Librería React que expone un provider, acceso al cliente y hooks para la API de
 
 ## Exports
 
-- Provider \`ActaConfig\` y accessor de contexto \`useActaClient\`  
+- Provider \`ActaConfig\` y accessor de contexto \`useActaClient\` (\`ActaClient\`)  
 - Hooks: \`useVault\`, \`useCredential\`, \`useVaultRead\`  
+- Métodos \`ActaClient\` para sponsored vault: \`sponsoredVaultCreate\`, \`getSponsoredVaultOpenToAll\`, etc. (ver **ActaClient: bóveda patrocinada** en esta sección)  
 - URLs base: \`mainNet\` y \`testNet\`  
 
 ## Configuración del provider
@@ -65,6 +67,10 @@ const config = await client.getConfig();
 - \`useVaultRead\`: Operaciones de lectura de bóveda - listar IDs, obtener VC, verificar VC
   - \`listVcIds\`: Listar los IDs de credenciales propiedad de un propietario
   - \`getVc\`: Obtener una credencial de la bóveda
-  - \`verifyVc\`: Verificar el estado de una credencial en la bóveda  
+  - \`verifyVc\`: Verificar el estado de una credencial en la bóveda
+
+## ActaClient: bóveda patrocinada
+
+\`ActaClient\` también envuelve \`/contracts/sponsored-vault/*\` para prepare/submit y la lectura de \`open-to-all\`. Úsalo cuando una cuenta **sponsor** pague o firme la creación de bóveda para un **owner**. Las firmas de métodos y tipos de payload están en la página **ActaClient: bóveda patrocinada** (\`actaClientSponsoredVault\`).
     `,
 };

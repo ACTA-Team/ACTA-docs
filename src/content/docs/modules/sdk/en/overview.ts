@@ -9,6 +9,7 @@ export const overview: DocPage = {
     "Provider Setup",
     "Accessing the Client",
     "Hooks Summary",
+    "ActaClient: sponsored vault",
   ],
   content: `
 # React SDK Overview
@@ -17,8 +18,9 @@ React library exposing a provider, client access, and hooks for ACTA API and Sor
 
 ## Exports
 
-- \`ActaConfig\` provider and \`useActaClient\` context accessor
+- \`ActaConfig\` provider and \`useActaClient\` context accessor (\`ActaClient\`)
 - Hooks: \`useVault\`, \`useCredential\`, \`useVaultRead\`
+- \`ActaClient\` sponsored-vault methods: \`sponsoredVaultCreate\`, \`getSponsoredVaultOpenToAll\`, etc. (see **ActaClient: sponsored vault** in this section)
 - Base URLs: \`mainNet\` and \`testNet\`
 
 ## Provider Setup
@@ -67,5 +69,9 @@ const config = await client.getConfig();
   - \`getVc\`: Get a credential from the vault
   - \`getVcParent\`: Get parent VC info for a linked credential
   - \`verifyVc\`: Verify the status of a credential in the vault
+
+## ActaClient: sponsored vault
+
+\`ActaClient\` also wraps \`/contracts/sponsored-vault/*\` for prepare/submit and the open-to-all read. Use this when a **sponsor** account pays or signs vault creation for an **owner**. Full method signatures and payload types are on the **ActaClient: sponsored vault** page (\`actaClientSponsoredVault\`).
     `,
 };
