@@ -7,24 +7,46 @@ export const contractErrors: DocPage = {
   tocItems: [
     "How errors appear",
     "vc-vault",
+    "vc-vault enum (Rust)",
     "vc-issuer-registry",
     "Source",
   ],
   content: `
 # Contract errors
 
-Soroban reports failed invocations as \`Error(Contract, #<code>)\`. The numeric **code** matches the \`#[repr(u32)]\` discriminant of each contract’s \`ContractError\` enum in **contracts-acta**.
+Soroban reports failed invocations as \`Error(Contract, #<code>)\`. The numeric **code** is the \`#[repr(u32)]\` discriminant of the contract’s \`ContractError\` enum (see \`contracts-acta\`).
 
-Codes are **per contract**: the same number can mean different variants on different WASM binaries. Always map codes using the contract ID (vc-vault vs vc-issuer-registry) you invoked.
+Codes are **per WASM contract**: the same number can mean a different variant on another binary. Map errors using the **contract id** you invoked (vc-vault vs vc-issuer-registry) and the **\`error.rs\` revision** shipped with that WASM.
 
 ## How errors appear
 
-- **Simulation / submission:** Horizon or RPC returns a result with \`tx_failed\` and contract error details including the code.
-- **API prepare/submit:** A rejected Soroban invoke surfaces the same underlying contract error after submission; prepare may succeed and only fail once the signed transaction hits the network.
+- **Simulation / submission:** Horizon or RPC returns \`tx_failed\` with contract error details including the code.
+- **API prepare/submit:** Prepare can return unsigned XDR successfully; the contract error appears after **submit** when the signed transaction executes on-chain.
 
 ## vc-vault
 
 Crate: \`contracts-acta/contracts/vc-vault\` — \`src/error.rs\`.
+
+### vc-vault enum (Rust)
+
+The on-chain error set is a single Soroban \`#[contracterror]\` enum. The module documents the Horizon/RPC shape:
+
+\`\`\`rust
+//! Contract error codes. Exposed as Error(Contract, #code) by Soroban.
+
+use soroban_sdk::contracterror;
+
+#[contracterror]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+#[repr(u32)]
+pub enum ContractError {
+    // variants …
+}
+\`\`\`
+
+Each variant’s assigned \`u32\` (1, 2, …) is what you see as \`#code\` in \`Error(Contract, #code)\`.
+
+### vc-vault error table
 
 | Code | Variant | Meaning |
 |------|---------|---------|
@@ -43,9 +65,13 @@ Crate: \`contracts-acta/contracts/vc-vault\` — \`src/error.rs\`.
 | 13 | \`NoPendingAdmin\` | \`accept_contract_admin\` called but no admin nomination is pending. |
 | 14 | \`ParentVCInvalid\` | Parent VC does not exist or has been revoked (linked issuance). |
 
+If your checkout or deployment only defines variants through \`InvalidVaultContract\` (code **10**), your binary does not yet include sponsored-vault / linked-issuance / admin-handoff variants (**11–14**). Compare with the \`error.rs\` in your tree before mapping codes in support tooling.
+
 ## vc-issuer-registry
 
 Crate: \`contracts-acta/contracts/vc-issuer-registry\` — \`src/error.rs\`.
+
+Uses the same \`#[contracterror]\` / \`#[repr(u32)]\` pattern; codes below are **issuer-registry only** (not interchangeable with vc-vault).
 
 | Code | Variant | Meaning |
 |------|---------|---------|
