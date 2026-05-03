@@ -23,6 +23,7 @@ export const navigation: NavigationItems = {
     { slug: "api-contract-info", title: "Información del Contrato" },
     { slug: "api-vault-read", title: "Operaciones de Bóveda (Lectura)" },
     { slug: "api-vault-write", title: "Operaciones de Bóveda (Escritura)" },
+    { slug: "api-sponsored-vault", title: "Bóveda patrocinada" },
     { slug: "api-credentials", title: "Operaciones de Credenciales" },
   ],
   mcp: [{ slug: "mcp", title: "ACTA Docs MCP" }],

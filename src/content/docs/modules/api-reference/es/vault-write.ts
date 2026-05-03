@@ -12,13 +12,13 @@ export const vaultWrite: DocPage = {
     "Revocar Bóveda",
     "Establecer nuevo propietario",
     "Migrate",
-    "Crear Bóveda Patrocinada",
+    "Bóveda patrocinada",
     "Flujo Prepare/Submit",
   ],
   content: `
 # Operaciones de Bóveda (Escritura)
 
-Operaciones de escritura para gestión de bóvedas. Todos los endpoints soportan flujo prepare/submit. No requiere autenticación.
+Operaciones de escritura para gestión de bóvedas. Todos los endpoints soportan flujo prepare/submit. **Autenticación:** igual que otros \`/contracts/*\` — \`X-ACTA-Key\` válida (ver Resumen de la API).
 
 ## Crear Bóveda
 
@@ -272,55 +272,11 @@ Migra los datos heredados de la bóveda de un propietario al formato actual.
 }
 \`\`\`
 
-## Crear Bóveda Patrocinada
+## Bóveda patrocinada
 
-### POST /contracts/sponsored-vault/create
+Creación de bóveda en la que un **sponsor** firma \`create_sponsored_vault\` en el contrato vc-vault en lugar de que el propietario firme \`create_vault\`. Incluye ajustes solo-admin (\`open-to-all\`, lista de sponsors) y cinco rutas HTTP bajo \`/contracts/sponsored-vault/*\`.
 
-Crea una bóveda patrocinada para un propietario. Un patrocinador paga la creación de la bóveda en nombre del propietario. No requiere autenticación.
-
-**Cuerpo de solicitud (Prepare):**
-
-\`\`\`json
-{
-  "sponsor": "G...",
-  "owner": "G...",
-  "didUri": "did:pkh:stellar:testnet:G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
-}
-\`\`\`
-
-**Cuerpo de solicitud (Submit):**
-
-\`\`\`json
-{
-  "signedXdr": "AAAA..."
-}
-\`\`\`
-
-**Respuesta (Prepare):**
-
-\`\`\`json
-{
-  "xdr": "AAAA...",
-  "network": "Test SDF Network ; September 2015"
-}
-\`\`\`
-
-**Respuesta (Submit):**
-
-\`\`\`json
-{
-  "tx_id": "abc123..."
-}
-\`\`\`
-
-**Parámetros:**
-- **sponsor** (requerido): Dirección del patrocinador que paga la creación de la bóveda (G...)
-- **owner** (requerido): Dirección del propietario de la bóveda (G...)
-- **didUri** (requerido): DID URI del propietario de la bóveda
-- **sourcePublicKey** (requerido): Fuente de transacción que firmará (debe ser el patrocinador)
-- **contractId** (opcional): Sobrescribir ID de contrato ACTA (C...)
+Consulta la página **Bóveda patrocinada (Sponsored Vault)** (\`api-sponsored-vault\`) en esta referencia para semántica del contrato, todos los endpoints, métodos del SDK y códigos de error.
 
 ## Flujo Prepare/Submit
 

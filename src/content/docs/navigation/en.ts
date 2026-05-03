@@ -23,6 +23,7 @@ export const navigation: NavigationItems = {
     { slug: "api-contract-info", title: "Contract Info" },
     { slug: "api-vault-read", title: "Vault Operations (Read)" },
     { slug: "api-vault-write", title: "Vault Operations (Write)" },
+    { slug: "api-sponsored-vault", title: "Sponsored Vault" },
     { slug: "api-credentials", title: "Credential Operations" },
   ],
   mcp: [{ slug: "mcp", title: "ACTA Docs MCP" }],

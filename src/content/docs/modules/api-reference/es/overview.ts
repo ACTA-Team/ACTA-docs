@@ -35,9 +35,7 @@ https://acta.build/api/mainnet
 
 ## Autenticación
 
-Solo la **emisión de credenciales** (\`POST /contracts/vc/issue\`) y los **endpoints de administración** requieren API key. Las operaciones de bóveda (crear, leer, autorizar, revocar, set-new-owner), la versión del contrato (\`GET /contracts/version\`) y la revocación de credenciales (\`POST /contracts/vc/revoke\`) no requieren autenticación.
-
-Cuando sea necesario, envía la API key en el header de la solicitud:
+Las rutas de **contrato** (\`/contracts/*\` — bóveda lectura/escritura, bóveda patrocinada, operaciones VC, versión del contrato, etc.) requieren una API key válida en cada solicitud. Envíala en el header:
 
 \`\`\`
 X-ACTA-Key: tu_api_key_aqui

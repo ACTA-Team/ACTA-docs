@@ -35,9 +35,7 @@ https://acta.build/api/mainnet
 
 ## Authentication
 
-Only **credential issuance** (\`POST /contracts/vc/issue\`), **linked credential issuance** (\`POST /contracts/vc/issue-linked\`), and **admin endpoints** require an API key. Vault operations (create, read, authorize, revoke, set-new-owner), contract version (\`GET /contracts/version\`), and credential revocation (\`POST /contracts/vc/revoke\`) do not require authentication.
-
-When required, send the API key in the request header:
+**Contract routes** (\`/contracts/*\` — vault read/write, sponsored vault, VC operations, contract version, etc.) require a valid API key on every request. Send it in the request header:
 
 \`\`\`
 X-ACTA-Key: your_api_key_here
