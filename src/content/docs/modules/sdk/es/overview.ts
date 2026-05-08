@@ -24,7 +24,7 @@ Librería React que expone un provider, acceso al cliente y hooks para la API de
 ## Configuración del provider
 
 \`\`\`tsx
-import { ActaConfig, mainNet } from "@acta-team/acta-sdk";
+import { ActaConfig, mainNet } from "@acta-team/credentials";
 
 export function App() {
   return (
@@ -44,7 +44,7 @@ La API key se lee automáticamente desde variables de entorno:
 ## Acceder al cliente
 
 \`\`\`ts
-import { useActaClient } from "@acta-team/acta-sdk";
+import { useActaClient } from "@acta-team/credentials";
 
 const client = useActaClient();
 const config = await client.getConfig();

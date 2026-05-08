@@ -34,7 +34,7 @@ Para aplicaciones React/Next.js:
 1. **Instalar SDK**:
 
 \`\`\`bash
-npm install @acta-team/acta-sdk
+npm install @acta-team/credentials
 \`\`\`
 
 2. **Configurar provider**: Envuelve tu app con \`ActaConfig\`  

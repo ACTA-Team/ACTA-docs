@@ -24,7 +24,7 @@ React library exposing a provider, client access, and hooks for ACTA API and Sor
 ## Provider Setup
 
 \`\`\`tsx
-import { ActaConfig, mainNet } from "@acta-team/acta-sdk";
+import { ActaConfig, mainNet } from "@acta-team/credentials";
 
 export function App() {
   return (
@@ -43,7 +43,7 @@ The API key is automatically read from environment variables:
 ## Accessing the Client
 
 \`\`\`ts
-import { useActaClient } from "@acta-team/acta-sdk";
+import { useActaClient } from "@acta-team/credentials";
 
 const client = useActaClient();
 const config = await client.getConfig();

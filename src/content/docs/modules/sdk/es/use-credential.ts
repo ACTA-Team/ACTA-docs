@@ -66,7 +66,7 @@ type Signer = (
 ### Ejemplo
 
 \`\`\`ts
-import { useCredential } from "@acta-team/acta-sdk";
+import { useCredential } from "@acta-team/credentials";
 
 const { issue } = useCredential();
 
@@ -122,7 +122,7 @@ Emite una credencial vinculada a una VC padre. La VC padre debe existir y estar 
 ### Ejemplo
 
 \`\`\`ts
-import { useCredential } from "@acta-team/acta-sdk";
+import { useCredential } from "@acta-team/credentials";
 
 const { issueLinked } = useCredential();
 
@@ -175,7 +175,7 @@ Revoca una credencial.
 ### Ejemplo
 
 \`\`\`ts
-import { useCredential } from "@acta-team/acta-sdk";
+import { useCredential } from "@acta-team/credentials";
 
 const { revoke } = useCredential();
 

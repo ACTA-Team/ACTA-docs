@@ -51,7 +51,7 @@ Lista los IDs de credenciales de un propietario.
 ### Ejemplo
 
 \`\`\`ts
-import { useVaultRead } from "@acta-team/acta-sdk";
+import { useVaultRead } from "@acta-team/credentials";
 
 const { listVcIds } = useVaultRead();
 
@@ -82,7 +82,7 @@ Obtiene una credencial desde la bóveda.
 ### Ejemplo
 
 \`\`\`ts
-import { useVaultRead } from "@acta-team/acta-sdk";
+import { useVaultRead } from "@acta-team/credentials";
 
 const { getVc } = useVaultRead();
 
@@ -123,7 +123,7 @@ Promise<{ owner: string; vc_id: string } | null>
 ### Ejemplo
 
 \`\`\`ts
-import { useVaultRead } from "@acta-team/acta-sdk";
+import { useVaultRead } from "@acta-team/credentials";
 
 const { getVcParent } = useVaultRead();
 
@@ -166,7 +166,7 @@ Promise<{
 ### Ejemplo
 
 \`\`\`ts
-import { useVaultRead } from "@acta-team/acta-sdk";
+import { useVaultRead } from "@acta-team/credentials";
 
 const { verifyVc } = useVaultRead();
 

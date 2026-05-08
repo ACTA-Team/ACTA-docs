@@ -61,7 +61,7 @@ type Signer = (
 ### Example
 
 \`\`\`ts
-import { useVault } from "@acta-team/acta-sdk";
+import { useVault } from "@acta-team/credentials";
 
 const { createVault } = useVault();
 
@@ -97,7 +97,7 @@ Authorizes an issuer in a vault.
 ### Example
 
 \`\`\`ts
-import { useVault } from "@acta-team/acta-sdk";
+import { useVault } from "@acta-team/credentials";
 
 const { authorizeIssuer } = useVault();
 
@@ -133,7 +133,7 @@ Revokes (removes) an authorized issuer from a vault.
 ### Example
 
 \`\`\`ts
-import { useVault } from "@acta-team/acta-sdk";
+import { useVault } from "@acta-team/credentials";
 
 const { revokeIssuer } = useVault();
 

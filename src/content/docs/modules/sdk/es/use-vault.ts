@@ -61,7 +61,7 @@ type Signer = (
 ### Ejemplo
 
 \`\`\`ts
-import { useVault } from "@acta-team/acta-sdk";
+import { useVault } from "@acta-team/credentials";
 
 const { createVault } = useVault();
 
@@ -97,7 +97,7 @@ Autoriza un emisor en una bóveda.
 ### Ejemplo
 
 \`\`\`ts
-import { useVault } from "@acta-team/acta-sdk";
+import { useVault } from "@acta-team/credentials";
 
 const { authorizeIssuer } = useVault();
 
@@ -133,7 +133,7 @@ Revoca (elimina) un emisor autorizado de una bóveda.
 ### Ejemplo
 
 \`\`\`ts
-import { useVault } from "@acta-team/acta-sdk";
+import { useVault } from "@acta-team/credentials";
 
 const { revokeIssuer } = useVault();
 
