@@ -3,7 +3,7 @@ import type { DocPage } from "@/@types/docs";
 export const useCredential: DocPage = {
   slug: "useCredential",
   title: "useCredential",
-  section: "React SDK",
+  section: "Credentials SDK",
   tocItems: [
     "Function",
     "issue",
@@ -39,13 +39,13 @@ Issues a credential (stores it in the vault and marks it as valid).
 
 \`\`\`ts
 {
-  owner: string;                    // Stellar public key of the credential owner (vault owner)
+  owner: string;                    // Vault owner: G-account or C smart-wallet contract id
   vcId: string;                    // Unique credential identifier
-  vcData: string | object;         // Credential data (JSON string or object). @context is added automatically
+  vcData: string | object;         // Credential data (JSON string or object). @context is added automatically when missing
   issuer: string;                  // Stellar public key of the issuer
-  holder: string;                  // Wallet address or DID of the holder (DID is built automatically from address)
-  issuerDid?: string;              // Wallet address or DID of the issuer (DID is built automatically from address)
-  signTransaction: Signer;         // Function that signs the unsigned XDR
+  issuerDid?: string;              // Issuer DID; otherwise derived from issuer address when applicable
+  signTransaction: Signer;         // Function that signs the unsigned XDR returned by ACTA prepare
+  sourcePublicKey?: string;        // G-account signer (omit for defaults; omit for relayer-signed C-owner flows per API)
   contractId?: string;             // Contract ID (optional, uses the configured default)
 }
 \`\`\`
@@ -85,8 +85,7 @@ const { txId } = await issue({
     }
   }),
   issuer: "G...",
-  holder: "G...",        // wallet address — DID is built automatically
-  issuerDid: "G...",     // wallet address — DID is built automatically
+  issuerDid: "G...",     // wallet address — DID derived when omitted
   signTransaction: async (xdr, { networkPassphrase }) => {
     // Sign the XDR with your wallet
     return signedXdr;
@@ -102,13 +101,13 @@ Issues a credential linked to a parent VC. The parent VC must exist and be valid
 
 \`\`\`ts
 {
-  owner: string;                    // Stellar public key of the credential owner (vault owner)
+  owner: string;                    // Vault owner: G-account or C smart-wallet contract id
   vcId: string;                    // Unique credential identifier
-  vcData: string | object;         // Credential data (JSON string or object). @context is added automatically
+  vcData: string | object;         // Credential data (JSON string or object). @context is added automatically when missing
   issuer: string;                  // Stellar public key of the issuer
-  holder: string;                  // Wallet address or DID of the holder (DID is built automatically from address)
-  issuerDid?: string;              // Wallet address or DID of the issuer (DID is built automatically from address)
-  signTransaction: Signer;         // Function that signs the unsigned XDR
+  issuerDid?: string;              // Issuer DID; otherwise derived from issuer address when applicable
+  signTransaction: Signer;         // Function that signs the unsigned XDR returned by ACTA prepare
+  sourcePublicKey?: string;        // G-account signer (optional; omit for relayer-signed C-owner flows per API)
   contractId?: string;             // Contract ID (optional, uses the configured default)
   parentOwner: string;             // Stellar public key of the parent VC owner
   parentVcId: string;              // Identifier of the parent VC
@@ -142,7 +141,6 @@ const { txId } = await issueLinked({
     }
   }),
   issuer: "G...",
-  holder: "G...",
   signTransaction: async (xdr, { networkPassphrase }) => {
     // Sign the XDR with your wallet
     return signedXdr;
@@ -160,10 +158,11 @@ Revokes a credential.
 
 \`\`\`ts
 {
-  owner: string;                   // Stellar public key of the credential owner
+  owner: string;                   // Vault owner (G-account or C smart-wallet)
   vcId: string;                    // Unique identifier of the credential to revoke
-  signTransaction: Signer;         // Function that signs the unsigned XDR
-  date?: string;                   // Revocation date in ISO format (optional, uses current date by default)
+  signTransaction: Signer;         // Function that signs the unsigned XDR returned by ACTA prepare
+  date?: string;                   // Revocation date in ISO format (optional)
+  sourcePublicKey?: string;        // Explicit G signer (omit for defaults / relayer flows)
   contractId?: string;             // Contract ID (optional, uses the configured default)
 }
 \`\`\`

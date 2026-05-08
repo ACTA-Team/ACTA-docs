@@ -13,7 +13,7 @@ export type { Locale, Translations };
 const translations: Record<Locale, Translations> = {
   en: {
     welcome: "Welcome",
-    reactSdk: "React SDK",
+    reactSdk: "Credentials SDK",
     apiReference: "API Reference",
     contracts: "Contracts",
     zkProofs: "Zero-Knowledge Proofs",
@@ -60,7 +60,7 @@ const translations: Record<Locale, Translations> = {
     faqQuestion3: "What are verifiable credentials and how do they work?",
     faqQuestion4: "How does the vault system work?",
     faqQuestion5: "What blockchain does ACTA use?",
-    faqQuestion6: "How do I get started with the React SDK?",
+    faqQuestion6: "How do I get started with the Credentials SDK?",
     clickToAnswer: "Click to get AI answer",
     loadingAnswer: "Getting answer...",
     // Support
@@ -105,7 +105,7 @@ const translations: Record<Locale, Translations> = {
   },
   es: {
     welcome: "Bienvenida",
-    reactSdk: "React SDK",
+    reactSdk: "SDK de credenciales",
     apiReference: "Referencia API",
     contracts: "Contratos",
     zkProofs: "Pruebas de Conocimiento Cero",
@@ -153,7 +153,7 @@ const translations: Record<Locale, Translations> = {
     faqQuestion3: "¿Qué son las credenciales verificables y cómo funcionan?",
     faqQuestion4: "¿Cómo funciona el sistema de bóvedas?",
     faqQuestion5: "¿Qué blockchain usa ACTA?",
-    faqQuestion6: "¿Cómo empiezo con el React SDK?",
+    faqQuestion6: "¿Cómo empiezo con el SDK de credenciales?",
     clickToAnswer: "Clic para obtener respuesta de IA",
     loadingAnswer: "Obteniendo respuesta...",
     // Support

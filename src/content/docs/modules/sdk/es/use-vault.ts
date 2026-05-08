@@ -3,7 +3,7 @@ import type { DocPage } from "@/@types/docs";
 export const useVault: DocPage = {
   slug: "useVault",
   title: "useVault",
-  section: "React SDK",
+  section: "Credentials SDK",
   tocItems: [
     "Función",
     "createVault",
@@ -38,10 +38,11 @@ Crea (inicializa) una bóveda para un propietario.
 
 \`\`\`ts
 {
-  owner: string;                    // Clave pública Stellar del propietario (G...)
-  ownerDid: string;                 // DID asociado al propietario
-  signTransaction: Signer;          // Función que firma el XDR sin firmar
-  contractId?: string;              // ID de contrato (opcional, usa el configurado por defecto)
+  owner: string;                    // Vault: cuenta G... o wallet contrato C...
+  ownerDid: string;                 // DID del propietario
+  signTransaction: Signer;
+  sourcePublicKey?: string;         // Opcional — firma cuenta G explícita
+  contractId?: string;
 }
 \`\`\`
 
@@ -83,10 +84,11 @@ Autoriza un emisor en una bóveda.
 
 \`\`\`ts
 {
-  owner: string;                    // Clave pública Stellar del propietario de la bóveda
-  issuer: string;                   // Clave pública Stellar del emisor a autorizar
-  signTransaction: Signer;          // Función que firma el XDR sin firmar
-  contractId?: string;              // ID de contrato (opcional, usa el configurado por defecto)
+  owner: string;
+  issuer: string;
+  signTransaction: Signer;
+  sourcePublicKey?: string;
+  contractId?: string;
 }
 \`\`\`
 
@@ -119,10 +121,11 @@ Revoca (elimina) un emisor autorizado de una bóveda.
 
 \`\`\`ts
 {
-  owner: string;                    // Clave pública Stellar del propietario
-  issuer: string;                   // Clave pública Stellar del emisor a revocar
-  signTransaction: Signer;          // Función que firma el XDR sin firmar
-  contractId?: string;              // ID de contrato (opcional, usa el configurado por defecto)
+  owner: string;
+  issuer: string;
+  signTransaction: Signer;
+  sourcePublicKey?: string;
+  contractId?: string;
 }
 \`\`\`
 

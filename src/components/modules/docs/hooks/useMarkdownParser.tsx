@@ -10,11 +10,13 @@ const ACTA_LINKS_HUB = "https://links.acta.build";
 const topicToSlug: Record<string, string> = {
   Architecture: "architecture",
   "Getting Started": "getting-started",
+  "Credentials SDK": "sdk-overview",
   "React SDK": "sdk-overview",
   "API Reference": "api-overview",
   "Credential Flow": "architecture",
   Arquitectura: "architecture",
   "Primeros Pasos": "getting-started",
+  "SDK de credenciales": "sdk-overview",
   "Referencia API": "api-overview",
   "Flujo de Credenciales": "architecture",
 };

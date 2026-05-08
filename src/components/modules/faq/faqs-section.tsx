@@ -57,7 +57,7 @@ const questionsEn = [
     id: "item-2",
     title: "How do I integrate ACTA with my application?",
     content:
-      "You can integrate ACTA through React SDK hooks on the frontend or by using REST API endpoints on the backend for credential issuance, verification, and vault operations.",
+      "You can integrate ACTA via `npm install @acta-team/credentials` hooks on the frontend or REST API endpoints on the backend for issuance, verification, and vault flows.",
   },
   {
     id: "item-3",
@@ -79,9 +79,9 @@ const questionsEn = [
   },
   {
     id: "item-6",
-    title: "How do I get started with the React SDK?",
+    title: "How do I get started with @acta-team/credentials?",
     content:
-      "Install the SDK package, initialize the provider, and use hooks like useCredential/useVault. Follow Getting Started and SDK Overview docs for full flow implementation.",
+      "Run `npm install @acta-team/credentials`, wrap your app with `ActaConfig` (pick `mainNet` or `testNet`), then use hooks like `useCredential` / `useVault`. Follow Getting Started and the Credentials SDK overview for wiring details.",
   },
 ];
 
@@ -96,7 +96,7 @@ const questionsEs = [
     id: "item-2",
     title: "Como integro ACTA con mi aplicacion?",
     content:
-      "Puedes integrar ACTA con hooks del React SDK en frontend o con endpoints REST en backend para emision, verificacion y operaciones de vault.",
+      "Puedes usar `npm install @acta-team/credentials` y los hooks React en frontend, o los endpoints REST en backend para emitir, verificar y gestionar vaults.",
   },
   {
     id: "item-3",
@@ -118,8 +118,8 @@ const questionsEs = [
   },
   {
     id: "item-6",
-    title: "Como empiezo con el React SDK?",
+    title: "¿Cómo empiezo con @acta-team/credentials?",
     content:
-      "Instala el paquete SDK, inicializa el provider y usa hooks como useCredential/useVault. Sigue las guias de Getting Started y SDK Overview para el flujo completo.",
+      "Ejecuta `npm install @acta-team/credentials`, envuelve tu app con `ActaConfig` (`mainNet`/`testNet`) y usa hooks como useCredential/useVault. Revisa Primeros pasos y el resumen del SDK de credenciales.",
   },
 ];

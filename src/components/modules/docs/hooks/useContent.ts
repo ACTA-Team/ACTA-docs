@@ -14,7 +14,7 @@ export function useContent({ page }: UseContentProps) {
     switch (page.section) {
       case "Welcome":
         return t.welcome;
-      case "React SDK":
+      case "Credentials SDK":
         return t.reactSdk;
       case "API Reference":
         return t.apiReference;

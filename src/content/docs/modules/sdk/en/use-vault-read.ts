@@ -3,7 +3,7 @@ import type { DocPage } from "@/@types/docs";
 export const useVaultRead: DocPage = {
   slug: "useVaultRead",
   title: "useVaultRead",
-  section: "React SDK",
+  section: "Credentials SDK",
   tocItems: [
     "Function",
     "listVcIds",

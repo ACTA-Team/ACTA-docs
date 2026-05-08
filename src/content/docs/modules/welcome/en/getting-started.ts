@@ -6,7 +6,7 @@ export const gettingStarted: DocPage = {
   section: "Welcome",
   tocItems: [
     "API Integration",
-    "React SDK Integration",
+    "Credentials SDK Integration",
     "Wallet Integration",
     "Testnet Setup",
     "Next Steps",
@@ -27,20 +27,20 @@ Start using the ACTA API to issue and verify credentials:
 
 See API Developer Quickstart for detailed steps.
 
-## React SDK Integration
+## Credentials SDK Integration
 
-For React/Next.js applications:
+For React / Next.js applications:
 
-1. **Install SDK**:
+1. **Install**:
 
 \`\`\`bash
 npm install @acta-team/credentials
 \`\`\`
 
-2. **Configure Provider**: Wrap app with \`ActaConfig\`
-3. **Use Hooks**: \`useCredential\`, \`useVault\`, \`useVaultRead\`, etc.
+2. **Provider**: Wrap your tree with **\`ActaConfig\`** (pass \`baseURL\`, optional \`apiKey\`; see Credentials SDK Overview).
+3. **Hooks**: \`useCredential\`, \`useVault\`, \`useVaultRead\`, and **\`useActaClient\`** when you need the HTTP client directly.
 
-See React SDK Documentation for hooks and examples.
+See the Credentials SDK pages for hooks and examples.
 
 ## Wallet Integration
 
@@ -66,7 +66,7 @@ See Testnet Tokens for faucet links.
 
 - Review API Reference for all available endpoints
 - Check Schema Documentation for data structures
-- Explore React SDK Hooks for React integration
+- Explore \`@acta-team/credentials\` hooks for React integration
 - Read Troubleshooting Guide for common issues
     `,
 };

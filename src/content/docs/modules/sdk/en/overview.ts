@@ -3,25 +3,34 @@ import type { DocPage } from "@/@types/docs";
 export const overview: DocPage = {
   slug: "sdk-overview",
   title: "Overview",
-  section: "React SDK",
+  section: "Credentials SDK",
   tocItems: [
+    "Install",
     "Exports",
-    "Provider Setup",
-    "Accessing the Client",
-    "Hooks Summary",
+    "Provider (ActaConfig)",
+    "Environment variables",
+    "Accessing the client",
+    "Hooks summary",
   ],
   content: `
-# React SDK Overview
+# Credentials SDK Overview
 
-React library exposing a provider, client access, and hooks for ACTA API and Soroban transactions. The network is inferred from the \`baseURL\`.
+Production package: **\`@acta-team/credentials\`** (install with npm / pnpm / yarn). Older references to **\`@acta-team/acta-sdk\`** point at the same surface: React **\`ActaConfig\`** mounts an **\`ActaClient\`** in context, exposed through **\`useActaClient()\`**, plus hooks for vault reads/writes and credential issuance/revocation. The network comes from **\`baseURL\`** (\`mainNet\` vs \`testNet\`).
+
+## Install
+
+\`\`\`bash
+npm install @acta-team/credentials
+\`\`\`
 
 ## Exports
 
-- \`ActaConfig\` provider and \`useActaClient\` context accessor
-- Hooks: \`useVault\`, \`useCredential\`, \`useVaultRead\`
-- Base URLs: \`mainNet\` and \`testNet\`
+- **\`ActaConfig\`**: Provider — required \`baseURL\`; optional explicit \`apiKey\`.
+- **\`useActaClient\`**: Returns the contextual \`ActaClient\` (must be rendered under \`ActaConfig\`).
+- **Hooks**: \`useVault\`, \`useCredential\`, \`useVaultRead\`.
+- **URLs**: \`mainNet\`, \`testNet\` (string constants typed as the \`baseURL\` literal union for the two API hosts).
 
-## Provider Setup
+## Provider (\`ActaConfig\`)
 
 \`\`\`tsx
 import { ActaConfig, mainNet } from "@acta-team/credentials";
@@ -35,12 +44,18 @@ export function App() {
 }
 \`\`\`
 
-The API key is automatically read from environment variables:
-- \`ACTA_API_KEY_MAINNET\` (for mainnet)
-- \`ACTA_API_KEY_TESTNET\` (for testnet)
-- \`ACTA_API_KEY\` (fallback for both networks)
+Pass **\`apiKey\`** to the provider if you do not want to rely on env-based resolution.
 
-## Accessing the Client
+## Environment variables
+
+The library resolves an API key in this order unless you pass \`apiKey\` on \`ActaConfig\`:
+
+- Network-specific: \`ACTA_API_KEY_MAINNET\`, \`ACTA_API_KEY_TESTNET\`
+- Fallback for either network: \`ACTA_API_KEY\`
+
+The key is attached as header **\`X-ACTA-Key\`** on outbound requests.
+
+## Accessing the client
 
 \`\`\`ts
 import { useActaClient } from "@acta-team/credentials";
@@ -50,22 +65,12 @@ const config = await client.getConfig();
 // config: { rpcUrl, networkPassphrase, actaContractId }
 \`\`\`
 
-## Hooks Summary
+## Hooks summary
 
-- \`useVault\`: Vault operations - create vault, authorize issuer, revoke issuer
-  - \`createVault\`: Initialize a vault for an owner
-  - \`authorizeIssuer\`: Authorize an issuer in the vault
-  - \`revokeIssuer\`: Revoke an authorized issuer from the vault
+- **\`useVault\`** — \`createVault\`, \`authorizeIssuer\`, \`revokeIssuer\`.
+- **\`useCredential\`** — \`issue\`, \`issueLinked\`, \`revoke\`.
+- **\`useVaultRead\`** — \`listVcIds\`, \`getVc\`, \`getVcParent\`, \`verifyVc\`.
 
-- \`useCredential\`: Credential operations - issue, issueLinked, and revoke
-  - \`issue\`: Issue a credential (stores in vault and marks as valid)
-  - \`issueLinked\`: Issue a credential linked to a parent VC
-  - \`revoke\`: Revoke a credential
-
-- \`useVaultRead\`: Vault read operations - list IDs, get VC, get VC parent, verify VC
-  - \`listVcIds\`: List credential IDs owned by an owner
-  - \`getVc\`: Get a credential from the vault
-  - \`getVcParent\`: Get parent VC info for a linked credential
-  - \`verifyVc\`: Verify the status of a credential in the vault
+Owners can be ordinary Stellar accounts (\`G...\`) or smart-wallet contract IDs (\`C...\`): when signing is delegated to ACTA infra, omit or follow the signatures described on each hook page.
     `,
 };
