@@ -57,7 +57,7 @@ export function AppShell() {
                 className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto"
                 data-docs-scroll
               >
-                <FAQ onNavigate={handleNavigate} />
+                <FAQ />
               </main>
             ) : currentSlug === "support" ? (
               <main
