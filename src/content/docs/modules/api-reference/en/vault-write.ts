@@ -274,9 +274,9 @@ Migrates legacy vault data for an owner to the current format.
 
 ## Sponsored vault
 
-Vault creation where a **sponsor** signs \`create_sponsored_vault\` on the vc-vault contract instead of the owner signing \`create_vault\`. Includes admin-only settings (\`open-to-all\`, sponsor allowlist) and five HTTP routes under \`/contracts/sponsored-vault/*\`.
+Vault creation where a **sponsor** signs \`create_sponsored_vault\` on the vc-vault contract instead of the owner signing \`create_vault\`. On-chain, the contract also has admin-only settings (\`open-to-all\`, sponsor allowlist). The **public** HTTP surface is only **\`POST /contracts/sponsored-vault/create\`** (same \`X-ACTA-Key\` middleware as other public \`/contracts/*\` writes—not admin-key routes).
 
-See the dedicated page **Sponsored Vault** (\`api-sponsored-vault\`) in this API Reference for contract semantics, all endpoints, SDK methods, and error codes.
+See **Sponsored Vault** (\`api-sponsored-vault\`) for contract semantics, the create endpoint, and \`sponsoredVaultCreate\` in the Credentials SDK.
 
 ## Prepare/Submit Flow
 

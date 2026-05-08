@@ -6,7 +6,7 @@ export const gettingStarted: DocPage = {
   section: "Bienvenida",
   tocItems: [
     "Integración API",
-    "Integración React SDK",
+    "Integración SDK de credenciales",
     "Integración de wallet",
     "Configuración Testnet",
     "Siguientes pasos",
@@ -27,20 +27,20 @@ Comienza a usar la API de ACTA para emitir y verificar credenciales:
 
 Consulta el Developer Quickstart de API para pasos detallados.
 
-## Integración React SDK
+## Integración SDK de credenciales
 
-Para aplicaciones React/Next.js:
+Para aplicaciones React / Next.js:
 
-1. **Instalar SDK**:
+1. **Instalar**:
 
 \`\`\`bash
-npm install @acta-team/acta-sdk
+npm install @acta-team/credentials
 \`\`\`
 
-2. **Configurar provider**: Envuelve tu app con \`ActaConfig\`  
-3. **Usar hooks**: \`useCredential\`, \`useVault\`, \`useVaultRead\`, etc.  
+2. **Provider**: Envuelve tu árbol con **\`ActaConfig\`** (\`baseURL\`, \`apiKey\` opcional; ver Resumen del SDK de credenciales).
+3. **Hooks**: \`useCredential\`, \`useVault\`, \`useVaultRead\`, y **\`useActaClient\`** si necesitas el cliente HTTP directamente.
 
-Revisa la documentación del React SDK para hooks y ejemplos.
+Revisa las páginas del SDK de credenciales para hooks y ejemplos.
 
 ## Integración de wallet
 
@@ -66,7 +66,7 @@ Revisa la sección de Testnet Tokens para enlaces a faucets.
 
 - Revisa la referencia de API para todos los endpoints disponibles  
 - Consulta la documentación de esquemas para estructuras de datos  
-- Explora los hooks del React SDK para integración con React  
+- Explora los hooks de \`@acta-team/credentials\` para integración con React  
 - Lee la guía de troubleshooting para problemas comunes  
     `,
 };

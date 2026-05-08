@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import {
   BookOpen,
   Code,
+  FileWarning,
   Headphones,
   HelpCircle,
   LayoutGrid,
@@ -28,12 +29,19 @@ export type SidebarNavGroup = {
   items: SidebarNavItem[];
 };
 
-type SectionKey = "welcome" | "sdk" | "api-reference" | "mcp" | "dapp";
+type SectionKey =
+  | "welcome"
+  | "sdk"
+  | "api-reference"
+  | "contracts"
+  | "mcp"
+  | "dapp";
 
 const sectionIcons: Record<SectionKey, ReactNode> = {
   welcome: <Sparkles />,
   sdk: <Code />,
   "api-reference": <Server />,
+  contracts: <FileWarning />,
   mcp: <Plug />,
   dapp: <LayoutGrid />,
 };
@@ -42,6 +50,7 @@ const SECTION_ORDER: SectionKey[] = [
   "welcome",
   "sdk",
   "api-reference",
+  "contracts",
   "mcp",
   "dapp",
 ];
@@ -49,7 +58,7 @@ const SECTION_ORDER: SectionKey[] = [
 const GROUP_DEFS: Array<{ key: string; sections: SectionKey[] }> = [
   {
     key: "docs",
-    sections: ["welcome", "sdk", "api-reference", "mcp", "dapp"],
+    sections: ["welcome", "sdk", "api-reference", "contracts", "mcp", "dapp"],
   },
 ];
 
@@ -61,6 +70,8 @@ function getSectionLabel(key: SectionKey, t: Translations): string {
       return t.reactSdk;
     case "api-reference":
       return t.apiReference;
+    case "contracts":
+      return t.contracts;
     case "mcp":
       return "MCP";
     case "dapp":

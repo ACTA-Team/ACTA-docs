@@ -27,6 +27,7 @@ export const navigation: NavigationItems = {
     { slug: "api-sponsored-vault", title: "Bóveda patrocinada" },
     { slug: "api-credentials", title: "Operaciones de Credenciales" },
   ],
+  contracts: [{ slug: "contract-errors", title: "Errores de contrato" }],
   mcp: [{ slug: "mcp", title: "ACTA Docs MCP" }],
   dapp: [
     { slug: "dapp-overview", title: "Resumen" },

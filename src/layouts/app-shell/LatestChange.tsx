@@ -11,7 +11,7 @@ interface LatestChangeProps {
 
 const latestChange = {
   badge: "NEW",
-  title: "React SDK v1",
+  title: "@acta-team/credentials",
   description: "Build with verifiable credentials.",
   readMore: { slug: "sdk-overview", label: "Read more" },
 } as const;

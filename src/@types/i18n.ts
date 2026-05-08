@@ -5,6 +5,7 @@ export interface Translations {
   welcome: string;
   reactSdk: string;
   apiReference: string;
+  contracts: string;
   zkProofs: string;
   scf: string;
   dApp: string;

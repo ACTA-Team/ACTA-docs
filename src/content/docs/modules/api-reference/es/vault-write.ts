@@ -274,9 +274,9 @@ Migra los datos heredados de la bóveda de un propietario al formato actual.
 
 ## Bóveda patrocinada
 
-Creación de bóveda en la que un **sponsor** firma \`create_sponsored_vault\` en el contrato vc-vault en lugar de que el propietario firme \`create_vault\`. Incluye ajustes solo-admin (\`open-to-all\`, lista de sponsors) y cinco rutas HTTP bajo \`/contracts/sponsored-vault/*\`.
+Creación de bóveda en la que un **sponsor** firma \`create_sponsored_vault\` en el contrato vc-vault en lugar de que el propietario firme \`create_vault\`. On-chain el contrato también tiene ajustes solo-admin (\`open-to-all\`, lista de sponsors). La superficie HTTP **pública** es solo **\`POST /contracts/sponsored-vault/create\`** (mismo middleware \`X-ACTA-Key\` que otros escritos públicos \`/contracts/*\`, no rutas de API key admin).
 
-Consulta la página **Bóveda patrocinada (Sponsored Vault)** (\`api-sponsored-vault\`) en esta referencia para semántica del contrato, todos los endpoints, métodos del SDK y códigos de error.
+Consulta **Bóveda patrocinada (Sponsored Vault)** (\`api-sponsored-vault\`) para semántica del contrato, el endpoint create y \`sponsoredVaultCreate\` en el SDK de credenciales.
 
 ## Flujo Prepare/Submit
 

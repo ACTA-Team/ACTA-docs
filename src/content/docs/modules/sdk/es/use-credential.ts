@@ -3,7 +3,7 @@ import type { DocPage } from "@/@types/docs";
 export const useCredential: DocPage = {
   slug: "useCredential",
   title: "useCredential",
-  section: "React SDK",
+  section: "Credentials SDK",
   tocItems: [
     "Función",
     "issue",
@@ -39,13 +39,13 @@ Emite una credencial (la guarda en la bóveda y la marca como válida).
 
 \`\`\`ts
 {
-  owner: string;                    // Clave pública Stellar del propietario de la bóveda
+  owner: string;                    // Propietario del vault: cuenta G o contrato C (smart wallet)
   vcId: string;                    // Identificador único de la credencial
-  vcData: string | object;         // Datos de la credencial (JSON string u objeto). @context se agrega automáticamente
+  vcData: string | object;         // Datos de credencial (string JSON u objeto). @context si falta se agrega
   issuer: string;                  // Clave pública Stellar del emisor
-  holder: string;                  // Dirección de wallet o DID del titular (el DID se construye automáticamente desde la dirección)
-  issuerDid?: string;              // Dirección de wallet o DID del emisor (el DID se construye automáticamente desde la dirección)
-  signTransaction: Signer;         // Función que firma el XDR sin firmar
+  issuerDid?: string;              // DID del emisor; si omites puede derivarse de la dirección
+  signTransaction: Signer;         // Firma del XDR devuelto por el prepare en ACTA
+  sourcePublicKey?: string;        // Cuenta G que firma (opcional; omitir cuando el relay firma vaults C)
   contractId?: string;             // ID de contrato (opcional, usa el configurado por defecto)
 }
 \`\`\`
@@ -66,7 +66,7 @@ type Signer = (
 ### Ejemplo
 
 \`\`\`ts
-import { useCredential } from "@acta-team/acta-sdk";
+import { useCredential } from "@acta-team/credentials";
 
 const { issue } = useCredential();
 
@@ -85,8 +85,7 @@ const { txId } = await issue({
     }
   }),
   issuer: "G...",
-  holder: "G...",        // dirección de wallet — el DID se construye automáticamente
-  issuerDid: "G...",     // dirección de wallet — el DID se construye automáticamente
+  issuerDid: "G...",
   signTransaction: async (xdr, { networkPassphrase }) => {
     // Firma el XDR con tu wallet
     return signedXdr;
@@ -102,15 +101,15 @@ Emite una credencial vinculada a una VC padre. La VC padre debe existir y estar 
 
 \`\`\`ts
 {
-  owner: string;                    // Clave pública Stellar del propietario de la bóveda
+  owner: string;                    // Propietario del vault: cuenta G o contrato C (smart wallet)
   vcId: string;                    // Identificador único de la credencial
-  vcData: string | object;         // Datos de la credencial (JSON string u objeto). @context se agrega automáticamente
-  issuer: string;                  // Clave pública Stellar del emisor
-  holder: string;                  // Dirección de wallet o DID del titular (el DID se construye automáticamente desde la dirección)
-  issuerDid?: string;              // Dirección de wallet o DID del emisor (el DID se construye automáticamente desde la dirección)
-  signTransaction: Signer;         // Función que firma el XDR sin firmar
-  contractId?: string;             // ID de contrato (opcional, usa el configurado por defecto)
-  parentOwner: string;             // Clave pública Stellar del propietario de la VC padre
+  vcData: string | object;         // Datos de credencial; @context opcional automático
+  issuer: string;                  // Clave pública del emisor
+  issuerDid?: string;              // DID del emisor
+  signTransaction: Signer;         // Firma del XDR de prepare ACTA
+  sourcePublicKey?: string;        // G firmante (opcional; vaults C con relay pueden omitir)
+  contractId?: string;             // ID de contrato (opcional, usa el default)
+  parentOwner: string;             // Owner de la VC padre
   parentVcId: string;              // Identificador de la VC padre
 }
 \`\`\`
@@ -122,7 +121,7 @@ Emite una credencial vinculada a una VC padre. La VC padre debe existir y estar 
 ### Ejemplo
 
 \`\`\`ts
-import { useCredential } from "@acta-team/acta-sdk";
+import { useCredential } from "@acta-team/credentials";
 
 const { issueLinked } = useCredential();
 
@@ -142,7 +141,6 @@ const { txId } = await issueLinked({
     }
   }),
   issuer: "G...",
-  holder: "G...",
   signTransaction: async (xdr, { networkPassphrase }) => {
     // Firma el XDR con tu wallet
     return signedXdr;
@@ -160,11 +158,12 @@ Revoca una credencial.
 
 \`\`\`ts
 {
-  owner: string;                   // Clave pública Stellar del titular
-  vcId: string;                    // Identificador único de la credencial a revocar
-  signTransaction: Signer;         // Función que firma el XDR sin firmar
-  date?: string;                   // Fecha de revocación en ISO (opcional, usa la fecha actual por defecto)
-  contractId?: string;             // ID de contrato (opcional, usa el configurado por defecto)
+  owner: string;                   // Vault owner (G o C smart wallet)
+  vcId: string;                    // ID de credencial a revocar
+  signTransaction: Signer;         // Firma del XDR de prepare
+  date?: string;                   // Fecha ISO (opcional)
+  sourcePublicKey?: string;        // Firmante G explícito (opcional / relay)
+  contractId?: string;             // ID de contrato (opcional)
 }
 \`\`\`
 
@@ -175,7 +174,7 @@ Revoca una credencial.
 ### Ejemplo
 
 \`\`\`ts
-import { useCredential } from "@acta-team/acta-sdk";
+import { useCredential } from "@acta-team/credentials";
 
 const { revoke } = useCredential();
 

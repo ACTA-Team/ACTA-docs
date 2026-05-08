@@ -6,8 +6,8 @@
     "packages/docs-mcp"
   ],
   "scripts": {
-    "build": "next build",
-    "dev": "next dev -p 8080 -H 127.0.0.1",
+    "build": "npm run mcp:generate-docs && node --disable-warning=DEP0060 ./node_modules/next/dist/bin/next build",
+    "dev": "node --disable-warning=DEP0060 ./node_modules/next/dist/bin/next dev",
     "lint": "eslint .",
     "mcp": "npm run mcp -w @acta-team/docs-mcp",
     "mcp:generate-docs": "npm run generate-docs -w @acta-team/docs-mcp",
@@ -17,7 +17,7 @@
     "mcp:publish": "npm run mcp:build && npm publish --access public -w @acta-team/docs-mcp",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "start": "next start"
+    "start": "node --disable-warning=DEP0060 ./node_modules/next/dist/bin/next start"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

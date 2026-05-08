@@ -10,11 +10,13 @@ const ACTA_LINKS_HUB = "https://links.acta.build";
 const topicToSlug: Record<string, string> = {
   Architecture: "architecture",
   "Getting Started": "getting-started",
+  "Credentials SDK": "sdk-overview",
   "React SDK": "sdk-overview",
   "API Reference": "api-overview",
   "Credential Flow": "architecture",
   Arquitectura: "architecture",
   "Primeros Pasos": "getting-started",
+  "SDK de credenciales": "sdk-overview",
   "Referencia API": "api-overview",
   "Flujo de Credenciales": "architecture",
 };
@@ -260,7 +262,7 @@ export function useMarkdownParser(
 
         if (cards.length > 0) {
           elements.push(
-            <section key={elements.length} className="mt-6">
+            <section key={elements.length} className="mt-6 mb-8">
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {cards.map((card, idx) => {
                   // Extract plain text from topic (remove markdown formatting)

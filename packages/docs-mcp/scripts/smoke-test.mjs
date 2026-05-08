@@ -9,6 +9,10 @@ const transport = new StdioClientTransport({
   command: "node",
   args: ["dist/server.js"],
   cwd: packageDir,
+  env: {
+    ...process.env,
+    ACTA_DOCS_MCP_OFFLINE: "1",
+  },
 });
 
 const client = new Client({
@@ -49,7 +53,7 @@ const read = await client.callTool({
   arguments: { slug: "sdk-overview", locale: "en" },
 });
 const readText = read.content?.[0]?.text ?? "";
-if (!readText.includes("React SDK Overview")) {
+if (!readText.includes("Credentials SDK Overview")) {
   throw new Error("Expected read_acta_doc to return sdk-overview content.");
 }
 

@@ -16,7 +16,7 @@ export const sponsoredVault: DocPage = {
 
 A **sponsored vault** is a normal ACTA vault (same storage as \`create_vault\`) created through \`create_sponsored_vault\` on the **vc-vault** Soroban contract. The **sponsor** invokes the contract and must satisfy Soroban auth (\`sponsor.require_auth()\`); the **owner** is the vault admin and does not sign this transaction. Use this when an organization pays fees or orchestrates onboarding while the end user only receives the vault.
 
-For comparison, \`POST /contracts/vault/create\` prepares \`create_vault\`, where the **owner** typically signs. Sponsored flow uses \`POST /contracts/sponsored-vault/create\` and the **sponsor** must match \`sourcePublicKey\` on prepare/submit.
+For comparison, \`POST /contracts/vault/create\` prepares \`create_vault\`, where the **owner** typically signs. The sponsored flow uses \`POST /contracts/sponsored-vault/create\`; the invoke must satisfy on-chain auth for **sponsor**—in practice the prepared XDR is usually signed by the sponsor account (see **sourcePublicKey** below).
 
 ## Concept
 
@@ -24,7 +24,7 @@ For comparison, \`POST /contracts/vault/create\` prepares \`create_vault\`, wher
 |------|----------------|
 | **Sponsor** | Signs the transaction; must be allowed (see below). Pays network/fees like any invoke. |
 | **Owner** | Receives the vault; address stored as vault admin; \`didUri\` stored for the vault. |
-| **Contract admin** | Soroban “contract admin” (not HTTP admin): can always sponsor; can toggle open mode and manage the sponsor allowlist. |
+| **Contract admin** | Soroban “contract admin” (not HTTP): can always sponsor; can toggle open mode and manage the sponsor allowlist on-chain. |
 
 **Authorization modes** (on-chain flag \`sponsored_vault_open_to_all\`, default \`false\`):
 
@@ -41,7 +41,7 @@ On success the contract emits **\`SponsoredVaultCreated\`** with \`sponsor\`, \`
 
 ## On-chain contract (vc-vault)
 
-Soroban entrypoints used by the HTTP API (all live on the same vc-vault contract as standard vault ops):
+Relevant Soroban entrypoints on the same **vc-vault** contract as standard vault ops:
 
 | Function | Auth | Description |
 |----------|------|-------------|
@@ -53,9 +53,11 @@ Soroban entrypoints used by the HTTP API (all live on the same vc-vault contract
 
 Persistent keys include \`SponsoredVaultOpenToAll\` and per-address \`SponsoredVaultSponsor(Address)\` entries.
 
+**Public HTTP:** the ACTA API documents only **\`POST /contracts/sponsored-vault/create\`** (prepare/submit for \`create_sponsored_vault\`). Admin and read helpers for the flag and sponsor list are **not** part of the public REST surface; contract admins use on-chain invocation (or internal tooling), not these docs.
+
 ## HTTP API
 
-These routes use the same middleware as other \`/contracts/*\` user routes: **\`X-ACTA-Key\`** header, valid API key, and rate limits. Prefix paths with your network base URL (e.g. \`https://acta.build/api/testnet\`).
+This route uses the same middleware as other public \`/contracts/*\` write routes: **\`X-ACTA-Key\`** header, valid API key, and rate limits. Prefix paths with your network base URL (e.g. \`https://acta.build/api/testnet\`).
 
 ### POST /contracts/sponsored-vault/create
 
@@ -73,74 +75,27 @@ Prepares or submits \`create_sponsored_vault\`.
 }
 \`\`\`
 
-- **sponsor** (required): Stellar address of the sponsor (must match the signer / \`sourcePublicKey\`).
+- **sponsor** (required): Stellar address passed to the contract as the sponsor (must satisfy \`sponsor.require_auth()\` when the transaction is signed and submitted).
 - **owner** (required): Vault owner (\`G...\`).
 - **didUri** (required): DID URI for the vault.
-- **sourcePublicKey** (required): Account that will sign the transaction (must be the sponsor).
+- **sourcePublicKey** (required): Stellar account used as the **transaction source** when the API prepares the XDR. The signed invoke must still authorize **sponsor** on the contract; typically the sponsor account is both \`sponsor\` and the signing/source account.
 - **contractId** (optional): vc-vault contract id (\`C...\`); otherwise configured default.
 
 **Submit body:** \`{ "signedXdr": "AAAA..." }\`
 
 **Responses:** Prepare → \`{ "xdr", "network" }\`; Submit → \`{ "tx_id" }\`.
 
-### GET /contracts/sponsored-vault/open-to-all
-
-Simulates \`get_sponsored_vault_open_to_all\`. **Query parameters:**
-
-- **contractId** (optional)
-- **sourcePublicKey** (optional): Account used for simulation; falls back to server config when omitted.
-
-**Response:**
-
-\`\`\`json
-{ "open": false }
-\`\`\`
-
-### POST /contracts/sponsored-vault/open-to-all
-
-Prepares/submits \`set_sponsored_vault_open_to_all\`. **Prepare body:**
-
-\`\`\`json
-{
-  "open": true,
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
-}
-\`\`\`
-
-- **open** (required): boolean.
-- **sourcePublicKey** (required): Must be the **contract admin** for the vault contract.
-
-### POST /contracts/sponsored-vault/add-sponsor
-
-Prepares/submits \`add_sponsored_vault_sponsor\`. **Prepare body:**
-
-\`\`\`json
-{
-  "sponsor": "G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
-}
-\`\`\`
-
-\`sourcePublicKey\` must be the contract admin.
-
-### POST /contracts/sponsored-vault/remove-sponsor
-
-Prepares/submits \`remove_sponsored_vault_sponsor\`. Same shape as add-sponsor (\`sponsor\`, \`sourcePublicKey\`, optional \`contractId\`).
-
 ## Prepare / submit
 
-Write endpoints follow the standard two-step flow:
+This write endpoint follows the standard two-step flow:
 
 1. **Prepare** — JSON with operation fields (no \`signedXdr\`) → \`xdr\` + \`network\` passphrase.
-2. **Sign** — Stellar wallet signs the XDR (sponsor or admin as required).
+2. **Sign** — Stellar wallet signs the XDR so the sponsor’s auth requirements are met.
 3. **Submit** — POST the same path with \`{ "signedXdr" }\` → \`tx_id\`.
 
 ## Operational notes
 
-- Before sponsoring in **restricted** mode, call **GET** \`/contracts/sponsored-vault/open-to-all\` and inspect \`open\`; if \`false\`, ensure the sponsor is the contract admin or has been added with **add-sponsor** (on-chain admin tx).
+- In **restricted** mode, confirm out-of-band or via Soroban simulation that your **sponsor** is the contract admin or on the authorized sponsor list before calling **create**; there is no public HTTP helper for the open-to-all flag or allowlist in this reference.
 - Avoid calling **create** when the owner already has a vault; prefer an on-chain or API read of vault existence first (see vault read operations).
-- Backoffice or internal tools may wrap these endpoints for governance; the canonical REST surface is under \`/contracts/sponsored-vault/*\` as implemented in the ACTA API.
     `,
 };

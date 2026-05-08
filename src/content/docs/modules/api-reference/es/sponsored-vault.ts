@@ -16,7 +16,7 @@ export const sponsoredVault: DocPage = {
 
 Una **bóveda patrocinada** es una bóveda ACTA normal (mismo almacenamiento que \`create_vault\`) creada mediante \`create_sponsored_vault\` en el contrato Soroban **vc-vault**. El **patrocinador (sponsor)** invoca el contrato y debe cumplir la autenticación Soroban (\`sponsor.require_auth()\`); el **propietario (owner)** es el administrador de la bóveda y no firma esta transacción. Sirve cuando una organización paga fees u orquesta el alta mientras el usuario final solo recibe la bóveda.
 
-En comparación, \`POST /contracts/vault/create\` prepara \`create_vault\`, donde suele firmar el **propietario**. El flujo patrocinado usa \`POST /contracts/sponsored-vault/create\` y el **sponsor** debe coincidir con \`sourcePublicKey\` en prepare/submit.
+En comparación, \`POST /contracts/vault/create\` prepara \`create_vault\`, donde suele firmar el **propietario**. El flujo patrocinado usa \`POST /contracts/sponsored-vault/create\`; la invocación debe cumplir la auth on-chain del **sponsor**—en la práctica el XDR preparado suele firmarlo la cuenta sponsor (ver **sourcePublicKey** abajo).
 
 ## Concepto
 
@@ -24,7 +24,7 @@ En comparación, \`POST /contracts/vault/create\` prepara \`create_vault\`, dond
 |-----|-----------------|
 | **Sponsor** | Firma la transacción; debe estar permitido (ver abajo). Paga red/fees como en cualquier invocación. |
 | **Owner** | Recibe la bóveda; su dirección queda como admin de bóveda; se guarda \`didUri\`. |
-| **Admin del contrato** | Admin Soroban del contrato (no confundir con “admin HTTP”): siempre puede patrocinar; puede activar modo abierto y gestionar la lista de sponsors autorizados. |
+| **Admin del contrato** | Admin Soroban del contrato (no “admin HTTP”): siempre puede patrocinar; puede activar modo abierto y gestionar la lista de sponsors on-chain. |
 
 **Modos de autorización** (flag on-chain \`sponsored_vault_open_to_all\`, por defecto \`false\`):
 
@@ -41,7 +41,7 @@ Si tiene éxito, el contrato emite **\`SponsoredVaultCreated\`** con \`sponsor\`
 
 ## Contrato on-chain (vc-vault)
 
-Entrypoints Soroban usados por la API HTTP (mismo contrato vc-vault que el resto de operaciones de bóveda):
+Entrypoints Soroban relevantes en el mismo contrato **vc-vault** que el resto de operaciones de bóveda:
 
 | Función | Auth | Descripción |
 |---------|------|-------------|
@@ -53,9 +53,11 @@ Entrypoints Soroban usados por la API HTTP (mismo contrato vc-vault que el resto
 
 En almacenamiento persistente aparecen \`SponsoredVaultOpenToAll\` y entradas \`SponsoredVaultSponsor(Address)\` por dirección.
 
+**HTTP público:** la API ACTA documenta aquí solo **\`POST /contracts/sponsored-vault/create\`** (prepare/submit de \`create_sponsored_vault\`). Lecturas y ajustes admin del flag y de la lista de sponsors **no** forman parte de la superficie REST pública; los admins del contrato invocan on-chain (o herramientas internas), no estas rutas en esta referencia.
+
 ## API HTTP
 
-Estas rutas usan el mismo middleware que otros \`/contracts/*\` de usuario: cabecera **\`X-ACTA-Key\`**, API key válida y límites de tasa. Antepón la URL base de red (p. ej. \`https://acta.build/api/testnet\`).
+Esta ruta usa el mismo middleware que otros \`/contracts/*\` de escritura públicos: cabecera **\`X-ACTA-Key\`**, API key válida y límites de tasa. Antepón la URL base de red (p. ej. \`https://acta.build/api/testnet\`).
 
 ### POST /contracts/sponsored-vault/create
 
@@ -73,74 +75,27 @@ Prepara o envía \`create_sponsored_vault\`.
 }
 \`\`\`
 
-- **sponsor** (requerido): Cuenta Stellar del sponsor (debe coincidir con el firmante / \`sourcePublicKey\`).
+- **sponsor** (requerido): Dirección Stellar que el contrato recibe como sponsor (debe cumplir \`sponsor.require_auth()\` al firmar y enviar la transacción).
 - **owner** (requerido): Propietario de la bóveda (\`G...\`).
 - **didUri** (requerido): DID URI de la bóveda.
-- **sourcePublicKey** (requerido): Cuenta que firmará la transacción (debe ser el sponsor).
+- **sourcePublicKey** (requerido): Cuenta Stellar usada como **fuente (source)** de la transacción al preparar el XDR. La invocación firmada debe autorizar igualmente al **sponsor** en el contrato; lo habitual es que la cuenta sponsor sea a la vez \`sponsor\` y cuenta source/firmante.
 - **contractId** (opcional): id del contrato vc-vault (\`C...\`); si no, el valor por defecto del servidor.
 
 **Cuerpo (submit):** \`{ "signedXdr": "AAAA..." }\`
 
 **Respuestas:** Prepare → \`{ "xdr", "network" }\`; Submit → \`{ "tx_id" }\`.
 
-### GET /contracts/sponsored-vault/open-to-all
-
-Simula \`get_sponsored_vault_open_to_all\`. **Query:**
-
-- **contractId** (opcional)
-- **sourcePublicKey** (opcional): Cuenta para simulación; si se omite, usa configuración del servidor.
-
-**Respuesta:**
-
-\`\`\`json
-{ "open": false }
-\`\`\`
-
-### POST /contracts/sponsored-vault/open-to-all
-
-Prepare/submit de \`set_sponsored_vault_open_to_all\`. **Prepare:**
-
-\`\`\`json
-{
-  "open": true,
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
-}
-\`\`\`
-
-- **open** (requerido): booleano.
-- **sourcePublicKey** (requerido): Debe ser el **admin del contrato** del vc-vault.
-
-### POST /contracts/sponsored-vault/add-sponsor
-
-Prepare/submit de \`add_sponsored_vault_sponsor\`. **Prepare:**
-
-\`\`\`json
-{
-  "sponsor": "G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
-}
-\`\`\`
-
-\`sourcePublicKey\` debe ser el admin del contrato.
-
-### POST /contracts/sponsored-vault/remove-sponsor
-
-Prepare/submit de \`remove_sponsored_vault_sponsor\`. Misma forma que add-sponsor (\`sponsor\`, \`sourcePublicKey\`, \`contractId\` opcional).
-
 ## Prepare / submit
 
-Los endpoints de escritura siguen el flujo estándar en dos pasos:
+Este endpoint de escritura sigue el flujo estándar en dos pasos:
 
 1. **Prepare** — JSON con campos de operación (sin \`signedXdr\`) → \`xdr\` + \`network\`.
-2. **Firmar** — Wallet Stellar firma el XDR (sponsor o admin según corresponda).
+2. **Firmar** — Wallet Stellar firma el XDR de forma que se cumplan los requisitos de auth del sponsor.
 3. **Submit** — POST al mismo path con \`{ "signedXdr" }\` → \`tx_id\`.
 
 ## Notas operativas
 
-- Antes de patrocinar en modo **restringido**, llama **GET** \`/contracts/sponsored-vault/open-to-all\` y revisa \`open\`; si es \`false\`, el sponsor debe ser admin del contrato o estar añadido con **add-sponsor** (tx admin on-chain).
+- En modo **restringido**, confirma por otros medios o vía simulación Soroban que tu **sponsor** es admin del contrato o está en la lista autorizada antes de llamar a **create**; no hay helper HTTP público para el flag open-to-all ni la allowlist en esta referencia.
 - Evita llamar **create** si el owner ya tiene bóveda; mejor comprobar existencia vía lectura de bóveda (API u on-chain).
-- Herramientas internas o backoffice pueden envolver estos endpoints; la superficie REST canónica es \`/contracts/sponsored-vault/*\` en la API ACTA.
     `,
 };

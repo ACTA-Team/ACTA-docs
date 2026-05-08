@@ -21,7 +21,7 @@ ACTA is **Verifiable Credentials Infrastructure** for **Stellar blockchain**. Bu
 |-------|-------------|
       | **Architecture** | System components, contracts, and data flow |
       | **Getting Started** | Quick integration guide for API and SDK |
-      | **React SDK** | Hooks for credential and vault operations |
+      | **Credentials SDK** | \`npm i @acta-team/credentials\` — hooks for credential and vault operations |
       | **API Reference** | Complete documentation of public API endpoints |
       | **Links** | Official links, resources, and community |
       | **Credential Flow** | Understanding issuance, verification, and storage flows |

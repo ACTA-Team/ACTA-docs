@@ -3,7 +3,7 @@ import type { DocPage } from "@/@types/docs";
 export const useVault: DocPage = {
   slug: "useVault",
   title: "useVault",
-  section: "React SDK",
+  section: "Credentials SDK",
   tocItems: [
     "Function",
     "createVault",
@@ -38,9 +38,10 @@ Creates (initializes) a vault for an owner.
 
 \`\`\`ts
 {
-  owner: string;                    // Stellar public key of the owner (G...)
+  owner: string;                    // Vault owner: classic account (G...) or smart-wallet contract (C...)
   ownerDid: string;                  // DID URI associated with the owner
-  signTransaction: Signer;          // Function that signs the unsigned XDR
+  signTransaction: Signer;          // Function that signs prepare XDR payloads
+  sourcePublicKey?: string;          // Explicit G signer; defaults to owner for G vaults when omitted (C vaults rely on relay per API rules)
   contractId?: string;              // Contract ID (optional, uses the configured default)
 }
 \`\`\`
@@ -61,7 +62,7 @@ type Signer = (
 ### Example
 
 \`\`\`ts
-import { useVault } from "@acta-team/acta-sdk";
+import { useVault } from "@acta-team/credentials";
 
 const { createVault } = useVault();
 
@@ -83,10 +84,11 @@ Authorizes an issuer in a vault.
 
 \`\`\`ts
 {
-  owner: string;                    // Stellar public key of the vault owner
-  issuer: string;                   // Stellar public key of the issuer to authorize
-  signTransaction: Signer;          // Function that signs the unsigned XDR
-  contractId?: string;              // Contract ID (optional, uses the configured default)
+  owner: string;                    // Vault owner (G or C)
+  issuer: string;                   // Issuer account to authorize
+  signTransaction: Signer;
+  sourcePublicKey?: string;
+  contractId?: string;
 }
 \`\`\`
 
@@ -97,7 +99,7 @@ Authorizes an issuer in a vault.
 ### Example
 
 \`\`\`ts
-import { useVault } from "@acta-team/acta-sdk";
+import { useVault } from "@acta-team/credentials";
 
 const { authorizeIssuer } = useVault();
 
@@ -119,10 +121,11 @@ Revokes (removes) an authorized issuer from a vault.
 
 \`\`\`ts
 {
-  owner: string;                    // Stellar public key of the vault owner
-  issuer: string;                   // Stellar public key of the issuer to revoke
-  signTransaction: Signer;          // Function that signs the unsigned XDR
-  contractId?: string;              // Contract ID (optional, uses the configured default)
+  owner: string;                    // Vault owner (G or C)
+  issuer: string;                   // Issuer to revoke
+  signTransaction: Signer;
+  sourcePublicKey?: string;
+  contractId?: string;
 }
 \`\`\`
 
@@ -133,7 +136,7 @@ Revokes (removes) an authorized issuer from a vault.
 ### Example
 
 \`\`\`ts
-import { useVault } from "@acta-team/acta-sdk";
+import { useVault } from "@acta-team/credentials";
 
 const { revokeIssuer } = useVault();
 
