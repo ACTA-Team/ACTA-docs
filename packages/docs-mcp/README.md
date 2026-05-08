@@ -8,9 +8,9 @@
 
 ## What it is
 
-| Topic | Details |
-| --- | --- |
-| **Package** | `@acta-team/docs-mcp` |
+| Topic              | Details                               |
+| ------------------ | ------------------------------------- |
+| **Package**        | `@acta-team/docs-mcp`                 |
 | **Authentication** | None required (read-only public docs) |
 
 This MCP server:
@@ -72,10 +72,10 @@ https://docs.acta.build/api/mcp/docs-data
 
 ## Advanced configuration
 
-| Variable | Purpose |
-| --- | --- |
+| Variable                  | Purpose                                                   |
+| ------------------------- | --------------------------------------------------------- |
 | `ACTA_DOCS_MCP_OFFLINE=1` | Skip the remote fetch and use bundled documentation only. |
-| `ACTA_DOCS_MCP_DATA_URL` | Use a different remote docs JSON URL. |
+| `ACTA_DOCS_MCP_DATA_URL`  | Use a different remote docs JSON URL.                     |
 
 Use `ACTA_DOCS_MCP_DATA_URL` only if you completely trust the configured source. The AI client will use that content as context to answer questions about ACTA.
 
@@ -83,11 +83,11 @@ Use `ACTA_DOCS_MCP_DATA_URL` only if you completely trust the configured source.
 
 ## Available tools
 
-| Tool | What it does |
-| --- | --- |
-| `list_acta_docs` | Lists the available documentation pages. |
-| `read_acta_doc` | Reads a specific page using its `slug` and locale. |
-| `search_acta_docs` | Searches content inside the ACTA documentation. |
+| Tool               | What it does                                       |
+| ------------------ | -------------------------------------------------- |
+| `list_acta_docs`   | Lists the available documentation pages.           |
+| `read_acta_doc`    | Reads a specific page using its `slug` and locale. |
+| `search_acta_docs` | Searches content inside the ACTA documentation.    |
 
 ---
 
@@ -130,9 +130,9 @@ This MCP is designed for documentation and technical support. It does not replac
 
 ## Qué es
 
-| Tema | Detalle |
-| --- | --- |
-| **Paquete** | `@acta-team/docs-mcp` |
+| Tema              | Detalle                                           |
+| ----------------- | ------------------------------------------------- |
+| **Paquete**       | `@acta-team/docs-mcp`                             |
 | **Autenticación** | No requiere API key (solo lectura, docs públicas) |
 
 Este servidor MCP:
@@ -194,10 +194,10 @@ https://docs.acta.build/api/mcp/docs-data
 
 ## Configuración avanzada
 
-| Variable | Para qué sirve |
-| --- | --- |
+| Variable                  | Para qué sirve                                                               |
+| ------------------------- | ---------------------------------------------------------------------------- |
 | `ACTA_DOCS_MCP_OFFLINE=1` | Omite la descarga remota y usa solo la documentación incluida en el paquete. |
-| `ACTA_DOCS_MCP_DATA_URL` | Usa otra URL remota para el JSON de documentación. |
+| `ACTA_DOCS_MCP_DATA_URL`  | Usa otra URL remota para el JSON de documentación.                           |
 
 Usa `ACTA_DOCS_MCP_DATA_URL` solo si confías completamente en la fuente configurada. El cliente de IA usará ese contenido como contexto para responder preguntas sobre ACTA.
 
@@ -205,11 +205,11 @@ Usa `ACTA_DOCS_MCP_DATA_URL` solo si confías completamente en la fuente configu
 
 ## Herramientas disponibles
 
-| Herramienta | Qué hace |
-| --- | --- |
-| `list_acta_docs` | Lista las páginas de documentación disponibles. |
-| `read_acta_doc` | Lee una página específica usando su `slug` e idioma. |
-| `search_acta_docs` | Busca contenido dentro de la documentación de ACTA. |
+| Herramienta        | Qué hace                                             |
+| ------------------ | ---------------------------------------------------- |
+| `list_acta_docs`   | Lista las páginas de documentación disponibles.      |
+| `read_acta_doc`    | Lee una página específica usando su `slug` e idioma. |
+| `search_acta_docs` | Busca contenido dentro de la documentación de ACTA.  |
 
 ---
 
