@@ -17,7 +17,8 @@
     "mcp:publish": "npm run mcp:build && npm publish --access public -w @acta-team/docs-mcp",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "start": "node --disable-warning=DEP0060 ./node_modules/next/dist/bin/next start"
+    "start": "node --disable-warning=DEP0060 ./node_modules/next/dist/bin/next start",
+    "prepare": "husky"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -83,6 +84,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9.39.2",
     "eslint-config-next": "^16.1.6",
+    "husky": "^9.1.7",
     "postcss": "^8.5",
     "prettier": "^3.8.1",
     "tailwindcss": "^4.1.9",
