@@ -6,7 +6,7 @@
     "packages/docs-mcp"
   ],
   "scripts": {
-    "build": "next build",
+    "build": "npm run mcp:generate-docs && next build",
     "dev": "next dev -p 8080 -H 127.0.0.1",
     "lint": "eslint .",
     "mcp": "npm run mcp -w @acta-team/docs-mcp",
