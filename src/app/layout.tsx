@@ -36,7 +36,8 @@ export default function RootLayout({
       className={`${geist.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
-      <body className="font-sans antialiased">
+      {/* suppressHydrationWarning: next-themes + extensions that inject attrs on <body> (e.g. bis_*) */}
+      <body className="font-sans antialiased" suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <PostHogProvider>
             {children}
