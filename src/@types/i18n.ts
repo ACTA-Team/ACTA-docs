@@ -6,6 +6,8 @@ export interface Translations {
   reactSdk: string;
   apiReference: string;
   contracts: string;
+  /** Sidebar / breadcrumb label for the AI category (IA / AI). */
+  aiCategory: string;
   zkProofs: string;
   scf: string;
   dApp: string;
@@ -24,10 +26,18 @@ export interface Translations {
 
   // Content
   onThisPage: string;
-  wasThisHelpful: string;
   copy: string;
   copied: string;
   downloadPdf: string;
+  /** Primary pill CTA linking to the ACTA dApp (docs markdown directive). */
+  dappOpenCtaButton: string;
+  /** Welcome page "Try it now" CTA row (titles + short hints). */
+  welcomeTryItDapp: string;
+  welcomeTryItDappHint: string;
+  welcomeTryItGithub: string;
+  welcomeTryItGithubHint: string;
+  welcomeTryItDiscord: string;
+  welcomeTryItDiscordHint: string;
 
   // Footer
   poweredBy: string;

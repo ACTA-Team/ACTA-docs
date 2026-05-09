@@ -70,12 +70,8 @@ See the [Getting Started Guide](#dapp-getting-started) for detailed instructions
 
 ## Access the dApp
 
-The ACTA dApp is available at:
+The ACTA dApp is available at the link below. **No installation required** — open it in your web browser and connect your Stellar wallet to get started.
 
-\`\`\`
-https://dapp.acta.build
-\`\`\`
-
-No installation required - visit the URL in your web browser and connect your Stellar wallet to get started.
+:::dapp-open-cta:::
     `,
 };

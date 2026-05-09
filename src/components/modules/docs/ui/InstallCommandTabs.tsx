@@ -36,8 +36,8 @@ export function InstallCommandTabs({ packageName }: InstallCommandTabsProps) {
   };
 
   return (
-    <div className="mb-6">
-      <div className="bg-[#1e1e1e] border border-border rounded-lg overflow-hidden">
+    <div className="mb-8">
+      <div className="overflow-hidden rounded-2xl border border-border/60 bg-[#1e1e1e] shadow-sm">
         {/* Tabs */}
         <div className="flex items-center justify-between bg-[#252526] border-b border-border">
           <div className="flex">

@@ -20,11 +20,10 @@ export type NavigationItems = {
   sdk: NavigationItem[];
   "api-reference": NavigationItem[];
   contracts?: NavigationItem[];
-  mcp?: NavigationItem[];
+  /** AI-related docs (e.g. MCP). */
+  ia?: NavigationItem[];
   dapp: NavigationItem[];
   "zk-proofs"?: NavigationItem[];
   scf?: NavigationItem[];
   help?: NavigationItem[];
 };
-
-export type FeedbackType = "up" | "neutral" | "down" | null;

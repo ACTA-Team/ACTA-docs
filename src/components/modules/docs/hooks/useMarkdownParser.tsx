@@ -1,6 +1,8 @@
 import React from "react";
 import Image from "next/image";
 import { CodeBlock } from "../ui/CodeBlock";
+import { DappOpenCta } from "../ui/DappOpenCta";
+import { WelcomeTryItLinks } from "../ui/WelcomeTryItLinks";
 import { InstallCommandTabs } from "../ui/InstallCommandTabs";
 import { slugifyHeading } from "@/lib/utils";
 
@@ -40,6 +42,8 @@ export function useMarkdownParser(
     let listItems: Array<{ content: string; indent: number }> = [];
     let inList = false;
     let listType: "ul" | "ol" = "ul";
+    let inDappCtaFence = false;
+    let inWelcomeTryCtaFence = false;
 
     const processInlineFormatting = (line: string): React.ReactNode => {
       // Process inline code, bold, links
@@ -54,7 +58,7 @@ export function useMarkdownParser(
           parts.push(
             <code
               key={key++}
-              className="px-1.5 py-0.5 bg-secondary rounded text-sm font-mono text-primary"
+              className="rounded-md border border-border/60 bg-muted/50 px-2 py-0.5 font-mono text-[0.88em] text-foreground/90"
             >
               {codeMatch[1]}
             </code>
@@ -69,10 +73,10 @@ export function useMarkdownParser(
         );
         if (boldLinkMatch) {
           parts.push(
-            <strong key={key++} className="font-semibold text-foreground">
+            <strong key={key++} className="font-medium text-foreground">
               <a
                 href={boldLinkMatch[2]}
-                className="text-primary hover:underline"
+                className="text-primary underline decoration-primary/30 underline-offset-[3px] transition-colors hover:decoration-primary"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -91,7 +95,7 @@ export function useMarkdownParser(
             <a
               key={key++}
               href={linkMatch[2]}
-              className="text-primary hover:underline"
+              className="text-primary underline decoration-primary/30 underline-offset-[3px] transition-colors hover:decoration-primary"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -106,7 +110,7 @@ export function useMarkdownParser(
         const boldMatch = remaining.match(/^\*\*([^*]+)\*\*/);
         if (boldMatch) {
           parts.push(
-            <strong key={key++} className="font-semibold text-foreground">
+            <strong key={key++} className="font-medium text-foreground">
               {boldMatch[1]}
             </strong>
           );
@@ -224,7 +228,7 @@ export function useMarkdownParser(
         elements.push(
           <ListTag
             key={elements.length}
-            className={`${listType === "ul" ? "list-none" : "list-decimal"} text-foreground/80 space-y-2 mb-6 ml-4`}
+            className={`${listType === "ul" ? "list-none" : "list-decimal"} mb-10 ml-1 space-y-3 text-muted-foreground marker:text-muted-foreground/70`}
           >
             {renderNestedList(listItems)}
           </ListTag>
@@ -262,8 +266,8 @@ export function useMarkdownParser(
 
         if (cards.length > 0) {
           elements.push(
-            <section key={elements.length} className="mt-6 mb-8">
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <section key={elements.length} className="mb-12 mt-8">
+              <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                 {cards.map((card, idx) => {
                   // Extract plain text from topic (remove markdown formatting)
                   const topicText = card.topic.replace(/\*\*/g, "").trim();
@@ -274,20 +278,20 @@ export function useMarkdownParser(
 
                   const cardContent = (
                     <>
-                      <p className="text-xs uppercase tracking-wide text-muted-foreground mb-1">
+                      <p className="mb-2 text-[11px] font-medium uppercase tracking-widest text-muted-foreground/80">
                         {headerCells[0]}
                       </p>
-                      <div className="text-sm font-semibold text-foreground mb-1">
+                      <div className="mb-2 text-[15px] font-medium leading-snug text-foreground md:text-base">
                         {processInlineFormatting(card.topic)}
                       </div>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm leading-relaxed text-muted-foreground">
                         {processInlineFormatting(card.description)}
                       </p>
                     </>
                   );
 
                   const cardClassName =
-                    "rounded-xl border border-border bg-card/40 px-4 py-4 shadow-sm hover:border-primary/60 hover:shadow-md transition-colors text-left w-full";
+                    "w-full rounded-2xl border border-border/70 bg-card/30 px-5 py-5 text-left shadow-none transition-colors hover:border-primary/40 hover:bg-card/50";
 
                   if (isExternal) {
                     return (
@@ -381,6 +385,53 @@ export function useMarkdownParser(
         continue;
       }
 
+      if (inDappCtaFence) {
+        if (line.trim() === ":::") {
+          flushTable();
+          flushList();
+          elements.push(<DappOpenCta key={elements.length} />);
+          inDappCtaFence = false;
+        }
+        continue;
+      }
+
+      if (inWelcomeTryCtaFence) {
+        if (line.trim() === ":::") {
+          flushTable();
+          flushList();
+          elements.push(<WelcomeTryItLinks key={elements.length} />);
+          inWelcomeTryCtaFence = false;
+        }
+        continue;
+      }
+
+      const ctaLine = line.trim();
+      if (ctaLine === ":::dapp-open-cta:::") {
+        flushTable();
+        flushList();
+        elements.push(<DappOpenCta key={elements.length} />);
+        continue;
+      }
+      if (ctaLine === ":::dapp-open-cta") {
+        flushTable();
+        flushList();
+        inDappCtaFence = true;
+        continue;
+      }
+
+      if (ctaLine === ":::welcome-try-cta:::") {
+        flushTable();
+        flushList();
+        elements.push(<WelcomeTryItLinks key={elements.length} />);
+        continue;
+      }
+      if (ctaLine === ":::welcome-try-cta") {
+        flushTable();
+        flushList();
+        inWelcomeTryCtaFence = true;
+        continue;
+      }
+
       // Empty line
       if (line.trim() === "") {
         flushTable();
@@ -411,7 +462,7 @@ export function useMarkdownParser(
           <h1
             key={elements.length}
             id={slugifyHeading(text)}
-            className="text-3xl font-bold text-foreground mb-6 mt-2"
+            className="mb-8 mt-0 scroll-mt-24 text-3xl font-medium tracking-tight text-foreground md:text-4xl md:leading-tight"
           >
             {text}
           </h1>
@@ -427,7 +478,7 @@ export function useMarkdownParser(
           <h2
             key={elements.length}
             id={slugifyHeading(text)}
-            className="text-2xl font-semibold text-foreground mt-10 mb-4"
+            className="mb-5 mt-16 scroll-mt-24 text-xl font-medium tracking-tight text-foreground md:text-2xl [&+h3]:mt-8"
           >
             {text}
           </h2>
@@ -443,7 +494,7 @@ export function useMarkdownParser(
           <h3
             key={elements.length}
             id={slugifyHeading(text)}
-            className="text-xl font-semibold text-foreground mt-8 mb-3"
+            className="mb-3 mt-10 scroll-mt-24 text-lg font-medium tracking-tight text-foreground md:text-xl"
           >
             {text}
           </h3>
@@ -459,7 +510,7 @@ export function useMarkdownParser(
           <h4
             key={elements.length}
             id={slugifyHeading(text)}
-            className="text-lg font-semibold text-foreground mt-6 mb-2"
+            className="mb-2 mt-8 scroll-mt-24 text-base font-medium tracking-tight text-foreground"
           >
             {text}
           </h4>
@@ -504,13 +555,13 @@ export function useMarkdownParser(
         flushList();
         const [, alt, src] = imageMatch;
         elements.push(
-          <div key={elements.length} className="my-6 flex justify-center">
+          <div key={elements.length} className="my-10 flex justify-center">
             <Image
               src={src}
               alt={alt || ""}
               width={1024}
               height={576}
-              className="max-w-2xl w-full h-auto rounded-lg border border-border"
+              className="h-auto w-full max-w-2xl rounded-2xl border border-border/60"
             />
           </div>
         );
@@ -523,7 +574,7 @@ export function useMarkdownParser(
       elements.push(
         <p
           key={elements.length}
-          className="text-foreground/80 leading-relaxed mb-4"
+          className="mb-5 max-w-[65ch] text-[17px] leading-[1.75] text-muted-foreground md:text-lg md:leading-[1.8]"
         >
           {processInlineFormatting(line)}
         </p>

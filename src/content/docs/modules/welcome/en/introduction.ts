@@ -46,8 +46,6 @@ ACTA is **Verifiable Credentials Infrastructure** for **Stellar blockchain**. Bu
 
 ## Try it now
 
-- [Open dApp](https://dapp.acta.build/) - Explore the ACTA dApp
-- [View GitHub](https://github.com/ACTA-Team) - Check the source code
-- [Join Discord](https://discord.gg/DsUSE3aMDZ) - Connect with the community
+:::welcome-try-cta:::
     `,
 };

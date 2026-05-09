@@ -28,7 +28,7 @@ export const navigation: NavigationItems = {
     { slug: "api-credentials", title: "Operaciones de Credenciales" },
   ],
   contracts: [{ slug: "contract-errors", title: "Errores de contrato" }],
-  mcp: [{ slug: "mcp", title: "ACTA Docs MCP" }],
+  ia: [{ slug: "mcp", title: "MCP" }],
   dapp: [
     { slug: "dapp-overview", title: "Resumen" },
     { slug: "dapp-getting-started", title: "Primeros Pasos" },

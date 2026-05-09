@@ -11,5 +11,9 @@ interface MarkdownContentProps {
 export function MarkdownContent({ content, onNavigate }: MarkdownContentProps) {
   const parsedContent = useMarkdownParser(content, onNavigate);
 
-  return <div className="prose-custom">{parsedContent}</div>;
+  return (
+    <div className="docs-markdown space-y-0 [&>*:last-child]:mb-0">
+      {parsedContent}
+    </div>
+  );
 }

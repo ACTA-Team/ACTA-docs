@@ -2,7 +2,7 @@ import type { DocPage } from "@/@types/docs";
 
 export const mcp: DocPage = {
   slug: "mcp",
-  title: "ACTA Docs MCP",
+  title: "MCP",
   section: "MCP",
   tocItems: [
     "Qué es",
@@ -15,9 +15,9 @@ export const mcp: DocPage = {
     "Cuándo usar este MCP",
   ],
   content: `
-# ACTA Docs MCP
+# MCP
 
-**ACTA Docs MCP** es un servidor [Model Context Protocol (MCP)](https://modelcontextprotocol.io) de solo lectura. Los clientes compatibles con MCP—por ejemplo Claude, Cursor u otros asistentes con soporte MCP—pueden consultar la **documentación oficial de ACTA** a través de él.
+**MCP** (paquete npm \`@acta-team/docs-mcp\`) es un servidor [Model Context Protocol (MCP)](https://modelcontextprotocol.io) de solo lectura. Los clientes compatibles con MCP—por ejemplo Claude, Cursor u otros asistentes con soporte MCP—pueden consultar la **documentación oficial de ACTA** a través de él.
 
 Úsalo cuando quieras que un asistente responda sobre ACTA apoyándose en documentación **pública, oficial y actualizada**, y no solo en conocimiento genérico del modelo.
 

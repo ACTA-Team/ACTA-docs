@@ -11,6 +11,9 @@ export function useContent({ page }: UseContentProps) {
   const [copied, setCopied] = useState(false);
 
   const sectionLabel = (() => {
+    if (page.slug === "mcp") {
+      return t.aiCategory;
+    }
     switch (page.section) {
       case "Welcome":
         return t.welcome;
