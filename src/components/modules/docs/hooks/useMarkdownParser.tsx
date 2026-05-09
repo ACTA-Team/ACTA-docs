@@ -3,6 +3,7 @@ import Image from "next/image";
 import { CodeBlock } from "../ui/CodeBlock";
 import { DappOpenCta } from "../ui/DappOpenCta";
 import { WelcomeTryItLinks } from "../ui/WelcomeTryItLinks";
+import { HealthTryLive } from "../ui/HealthTryLive";
 import { InstallCommandTabs } from "../ui/InstallCommandTabs";
 import { slugifyHeading } from "@/lib/utils";
 
@@ -44,6 +45,7 @@ export function useMarkdownParser(
     let listType: "ul" | "ol" = "ul";
     let inDappCtaFence = false;
     let inWelcomeTryCtaFence = false;
+    let inHealthTryFence = false;
 
     const processInlineFormatting = (line: string): React.ReactNode => {
       // Process inline code, bold, links
@@ -91,17 +93,44 @@ export function useMarkdownParser(
         // Check for links [text](url) - before bold to avoid conflicts
         const linkMatch = remaining.match(/^\[([^\]]+)\]\(([^)]+)\)/);
         if (linkMatch) {
-          parts.push(
-            <a
-              key={key++}
-              href={linkMatch[2]}
-              className="text-primary underline decoration-primary/30 underline-offset-[3px] transition-colors hover:decoration-primary"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {linkMatch[1]}
-            </a>
-          );
+          const href = linkMatch[2];
+          const label = linkMatch[1];
+          if (href.startsWith("doc:")) {
+            const slug = href.slice(4);
+            if (onNavigate) {
+              parts.push(
+                <button
+                  type="button"
+                  key={key++}
+                  onClick={() => onNavigate(slug)}
+                  className="cursor-pointer border-0 bg-transparent p-0 font-inherit text-primary underline decoration-primary/30 underline-offset-[3px] transition-colors hover:decoration-primary"
+                >
+                  {label}
+                </button>
+              );
+            } else {
+              parts.push(
+                <span
+                  key={key++}
+                  className="font-medium text-foreground underline decoration-border underline-offset-[3px]"
+                >
+                  {label}
+                </span>
+              );
+            }
+          } else {
+            parts.push(
+              <a
+                key={key++}
+                href={href}
+                className="text-primary underline decoration-primary/30 underline-offset-[3px] transition-colors hover:decoration-primary"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {label}
+              </a>
+            );
+          }
           remaining = remaining.slice(linkMatch[0].length);
           continue;
         }
@@ -405,6 +434,16 @@ export function useMarkdownParser(
         continue;
       }
 
+      if (inHealthTryFence) {
+        if (line.trim() === ":::") {
+          flushTable();
+          flushList();
+          elements.push(<HealthTryLive key={elements.length} />);
+          inHealthTryFence = false;
+        }
+        continue;
+      }
+
       const ctaLine = line.trim();
       if (ctaLine === ":::dapp-open-cta:::") {
         flushTable();
@@ -429,6 +468,19 @@ export function useMarkdownParser(
         flushTable();
         flushList();
         inWelcomeTryCtaFence = true;
+        continue;
+      }
+
+      if (ctaLine === ":::health-try:::") {
+        flushTable();
+        flushList();
+        elements.push(<HealthTryLive key={elements.length} />);
+        continue;
+      }
+      if (ctaLine === ":::health-try") {
+        flushTable();
+        flushList();
+        inHealthTryFence = true;
         continue;
       }
 

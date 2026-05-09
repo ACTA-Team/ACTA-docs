@@ -8,8 +8,6 @@ export interface Translations {
   contracts: string;
   /** Sidebar / breadcrumb label for the AI category (IA / AI). */
   aiCategory: string;
-  zkProofs: string;
-  scf: string;
   dApp: string;
   introduction: string;
   architecture: string;
@@ -38,6 +36,14 @@ export interface Translations {
   welcomeTryItGithubHint: string;
   welcomeTryItDiscord: string;
   welcomeTryItDiscordHint: string;
+
+  /** Live GET /health demo on the Health & Status doc page. */
+  healthTryBadge: string;
+  healthTryDescription: string;
+  healthTryButton: string;
+  healthTryLoading: string;
+  healthTryHttpLabel: string;
+  healthTryUnexpectedError: string;
 
   // Footer
   poweredBy: string;

@@ -20,6 +20,7 @@ export const navigation: NavigationItems = {
   ],
   "api-reference": [
     { slug: "api-overview", title: "Overview" },
+    { slug: "api-health-status", title: "Health & Status" },
     { slug: "api-keys", title: "API Keys" },
     { slug: "api-contract-info", title: "Contract Info" },
     { slug: "api-vault-read", title: "Vault Operations (Read)" },

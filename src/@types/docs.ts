@@ -23,7 +23,5 @@ export type NavigationItems = {
   /** AI-related docs (e.g. MCP). */
   ia?: NavigationItem[];
   dapp: NavigationItem[];
-  "zk-proofs"?: NavigationItem[];
-  scf?: NavigationItem[];
   help?: NavigationItem[];
 };

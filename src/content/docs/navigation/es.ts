@@ -20,6 +20,7 @@ export const navigation: NavigationItems = {
   ],
   "api-reference": [
     { slug: "api-overview", title: "Resumen" },
+    { slug: "api-health-status", title: "Salud y estado" },
     { slug: "api-keys", title: "API Keys" },
     { slug: "api-contract-info", title: "Información del Contrato" },
     { slug: "api-vault-read", title: "Operaciones de Bóveda (Lectura)" },

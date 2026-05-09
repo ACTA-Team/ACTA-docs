@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
+  Activity,
   AlertTriangle,
   BookOpen,
   Bot,
@@ -69,6 +70,7 @@ const NAV_SUB_ITEM_ICONS: Partial<Record<string, LucideIcon>> = {
   useVaultRead: Eye,
   sponsoredVault: Gift,
   "api-overview": FileText,
+  "api-health-status": Activity,
   "api-keys": Key,
   "api-contract-info": FileCode,
   "api-vault-read": Database,
