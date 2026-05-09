@@ -11,6 +11,7 @@ export const overview: DocPage = {
     "Variables de entorno",
     "Acceso al cliente",
     "Resumen de hooks",
+    "sponsoredVault",
   ],
   content: `
 # SDK de credenciales — Resumen
@@ -28,6 +29,7 @@ npm install @acta-team/credentials
 - **\`ActaConfig\`**: provider — \`baseURL\` obligatorio; \`apiKey\` opcional.
 - **\`useActaClient\`**: devuelve el \`ActaClient\` del contexto (hijo de \`ActaConfig\`).
 - **Hooks**: \`useVault\`, \`useCredential\`, \`useVaultRead\`.
+- **\`ActaClient\`**: \`sponsoredVaultCreate\` para el flujo público **create** de bóveda patrocinada (prepare/submit); ver **sponsoredVault**.
 - **URLs**: \`mainNet\`, \`testNet\`.
 
 ## Provider (\`ActaConfig\`)
@@ -70,6 +72,10 @@ const config = await client.getConfig();
 - **\`useVault\`** — \`createVault\`, \`authorizeIssuer\`, \`revokeIssuer\`.
 - **\`useCredential\`** — \`issue\`, \`issueLinked\`, \`revoke\`.
 - **\`useVaultRead\`** — \`listVcIds\`, \`getVc\`, \`getVcParent\`, \`verifyVc\`.
+
+## sponsoredVault
+
+\`ActaClient.sponsoredVaultCreate\` prepara/envía \`create_sponsored_vault\` cuando una cuenta **sponsor** paga o firma la creación de bóveda para un **owner**. Consulta **sponsoredVault** para firmas y payloads.
 
 El titular de la bóveda puede ser cuenta clásica (\`G...\`) o smart wallet (\`C...\`); cuando la firma la delega la infraestructura de ACTA, los campos de firmante/signing se comportan como en cada página del hook.
     `,

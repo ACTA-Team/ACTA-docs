@@ -12,7 +12,7 @@ export const overview: DocPage = {
     "Prepare/Submit Flow",
     "Error Handling",
     "Rate Limiting",
-    "Try it in Postman",
+    "Try it in Swagger",
   ],
   content: `
 # API Reference Overview
@@ -35,9 +35,7 @@ https://acta.build/api/mainnet
 
 ## Authentication
 
-Only **credential issuance** (\`POST /contracts/vc/issue\`), **linked credential issuance** (\`POST /contracts/vc/issue-linked\`), and **admin endpoints** require an API key. Vault operations (create, read, authorize, revoke, set-new-owner), contract version (\`GET /contracts/version\`), and credential revocation (\`POST /contracts/vc/revoke\`) do not require authentication.
-
-When required, send the API key in the request header:
+**Contract routes** (\`/contracts/*\` — vault read/write, sponsored vault, VC operations, contract version, etc.) require a valid API key on every request. Send it in the request header:
 
 \`\`\`
 X-ACTA-Key: your_api_key_here
@@ -142,15 +140,14 @@ Common HTTP status codes:
   - \`X-RateLimit-Remaining\`: Remaining requests in window
   - \`X-RateLimit-Reset\`: Unix timestamp when limit resets
 
-## Try it in Postman
+## Try it in Swagger
 
-Want to test the ACTA API right away? We have a public Postman collection with all the endpoints pre-configured and ready to use.
+Use **[Swagger UI (testnet)](https://api.testnet.acta.build/docs)** to browse the OpenAPI spec, inspect request and response schemas, and run **Try it out** requests in the browser for endpoints that allow it.
 
-1. Open the [ACTA Postman Collection](https://www.postman.com/acta-xyz-1193247/workspace/acta-team/collection/52380013-1a09da17-4bee-4267-b469-610c46969235?action=share&creator=52380013&active-environment=52380013-785bdf1a-3108-4c33-808c-76e31ee3b67f)
-2. **Fork the collection** into your own Postman workspace
-3. Select the environment (**testnet** or **mainnet**)
-4. Start making requests!
+1. Open **[https://api.testnet.acta.build/docs](https://api.testnet.acta.build/docs)**
+2. Expand an operation, review parameters and examples, then use **Try it out** where enabled
+3. For routes that require an API key, set the **\`X-ACTA-Key\`** header (or use Swagger’s **Authorize** control when available) after creating a key (see **Getting an API Key** above)
 
-> Forking lets you keep a personal copy you can customize, and still pull updates when we add new endpoints.
+> Testnet is ideal for experimentation. For mainnet, use the Swagger or OpenAPI entry point that matches your production API host when your deployment exposes one.
     `,
 };

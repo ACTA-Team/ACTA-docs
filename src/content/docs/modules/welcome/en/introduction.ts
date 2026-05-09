@@ -19,12 +19,12 @@ ACTA is **Verifiable Credentials Infrastructure** for **Stellar blockchain**. Bu
 
 | Topic | Description |
 |-------|-------------|
-      | **Architecture** | System components, contracts, and data flow |
-      | **Getting Started** | Quick integration guide for API and SDK |
-      | **Credentials SDK** | \`npm i @acta-team/credentials\` — hooks for credential and vault operations |
-      | **API Reference** | Complete documentation of public API endpoints |
-      | **Links** | Official links, resources, and community |
-      | **Credential Flow** | Understanding issuance, verification, and storage flows |
+| **Architecture** | System components, contracts, and data flow |
+| **Getting Started** | Quick integration guide for API and SDK |
+| **Credentials SDK** | \`npm i @acta-team/credentials\` — hooks for credential and vault operations |
+| **API Reference** | Complete documentation of public API endpoints |
+| **Links** | Official links, resources, and community |
+| **Credential Flow** | Understanding issuance, verification, and storage flows |
 
 ## What you can build
 
@@ -46,8 +46,6 @@ ACTA is **Verifiable Credentials Infrastructure** for **Stellar blockchain**. Bu
 
 ## Try it now
 
-- [Open dApp](https://dapp.acta.build/) - Explore the ACTA dApp
-- [View GitHub](https://github.com/ACTA-Team) - Check the source code
-- [Join Discord](https://discord.gg/DsUSE3aMDZ) - Connect with the community
+:::welcome-try-cta:::
     `,
 };

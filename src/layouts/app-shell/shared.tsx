@@ -1,12 +1,32 @@
 import type { ReactNode } from "react";
+import type { LucideIcon } from "lucide-react";
 import {
+  Activity,
+  AlertTriangle,
   BookOpen,
+  Bot,
   Code,
+  Coins,
+  Database,
+  Eye,
+  FileCode,
+  FileText,
   FileWarning,
+  Gift,
   Headphones,
   HelpCircle,
+  Key,
+  KeyRound,
+  Layers,
   LayoutGrid,
+  Link2,
+  Lock,
+  IdCard,
+  PenLine,
+  PlayCircle,
   Plug,
+  Puzzle,
+  Rocket,
   Server,
   Sparkles,
 } from "lucide-react";
@@ -34,16 +54,49 @@ type SectionKey =
   | "sdk"
   | "api-reference"
   | "contracts"
-  | "mcp"
+  | "ia"
   | "dapp";
 
+const subIconClass = "size-3.5 shrink-0 text-sidebar-foreground/65";
+
+const NAV_SUB_ITEM_ICONS: Partial<Record<string, LucideIcon>> = {
+  introduction: Sparkles,
+  architecture: Layers,
+  "getting-started": Rocket,
+  links: Link2,
+  "sdk-overview": BookOpen,
+  useCredential: KeyRound,
+  useVault: Lock,
+  useVaultRead: Eye,
+  sponsoredVault: Gift,
+  "api-overview": FileText,
+  "api-health-status": Activity,
+  "api-keys": Key,
+  "api-contract-info": FileCode,
+  "api-vault-read": Database,
+  "api-vault-write": PenLine,
+  "api-sponsored-vault": Coins,
+  "api-credentials": IdCard,
+  "contract-errors": AlertTriangle,
+  mcp: Plug,
+  "dapp-overview": LayoutGrid,
+  "dapp-getting-started": PlayCircle,
+  "dapp-features": Puzzle,
+};
+
+function navSubItemIcon(slug: string): ReactNode {
+  const Icon = NAV_SUB_ITEM_ICONS[slug];
+  if (!Icon) return null;
+  return <Icon className={subIconClass} />;
+}
+
 const sectionIcons: Record<SectionKey, ReactNode> = {
-  welcome: <Sparkles />,
-  sdk: <Code />,
-  "api-reference": <Server />,
-  contracts: <FileWarning />,
-  mcp: <Plug />,
-  dapp: <LayoutGrid />,
+  welcome: <Sparkles className="size-3.5 shrink-0" />,
+  sdk: <Code className="size-3.5 shrink-0" />,
+  "api-reference": <Server className="size-3.5 shrink-0" />,
+  contracts: <FileWarning className="size-3.5 shrink-0" />,
+  ia: <Bot className="size-3.5 shrink-0" />,
+  dapp: <LayoutGrid className="size-3.5 shrink-0" />,
 };
 
 const SECTION_ORDER: SectionKey[] = [
@@ -51,14 +104,14 @@ const SECTION_ORDER: SectionKey[] = [
   "sdk",
   "api-reference",
   "contracts",
-  "mcp",
+  "ia",
   "dapp",
 ];
 
 const GROUP_DEFS: Array<{ key: string; sections: SectionKey[] }> = [
   {
     key: "docs",
-    sections: ["welcome", "sdk", "api-reference", "contracts", "mcp", "dapp"],
+    sections: ["welcome", "sdk", "api-reference", "contracts", "ia", "dapp"],
   },
 ];
 
@@ -72,8 +125,8 @@ function getSectionLabel(key: SectionKey, t: Translations): string {
       return t.apiReference;
     case "contracts":
       return t.contracts;
-    case "mcp":
-      return "MCP";
+    case "ia":
+      return t.aiCategory;
     case "dapp":
       return t.dApp;
   }
@@ -93,6 +146,7 @@ function toSubItem(item: NavigationItem, currentSlug: string): SidebarNavItem {
     title: item.title,
     slug: item.slug,
     externalUrl: item.externalUrl,
+    icon: navSubItemIcon(item.slug),
     isActive: item.externalUrl ? false : item.slug === currentSlug,
   };
 }
@@ -143,13 +197,13 @@ export function buildFooterNav(
   const items = nav.help;
   if (!items) return [];
   const iconFor: Record<string, ReactNode> = {
-    faq: <HelpCircle />,
-    support: <Headphones />,
+    faq: <HelpCircle className="size-3.5 shrink-0" />,
+    support: <Headphones className="size-3.5 shrink-0" />,
   };
   return items.map(item => ({
     title: item.title,
     slug: item.slug,
-    icon: iconFor[item.slug] ?? <BookOpen />,
+    icon: iconFor[item.slug] ?? <BookOpen className="size-3.5 shrink-0" />,
     isActive: item.slug === currentSlug,
   }));
 }
@@ -168,6 +222,7 @@ export function findActivePage(
       return {
         title: match.title,
         slug: match.slug,
+        icon: match.slug ? navSubItemIcon(match.slug) : undefined,
         isActive: true,
       };
     }

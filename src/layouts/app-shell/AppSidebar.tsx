@@ -66,12 +66,12 @@ export function AppSidebar({ currentSlug, onNavigate }: AppSidebarProps) {
 
       <SidebarFooter>
         <LatestChange onNavigate={onNavigate} />
-        <SidebarMenu className="mt-1.5 gap-0.5">
+        <SidebarMenu className="mt-2 gap-0.5">
           {footerNav.map(item => (
             <SidebarMenuItem key={item.slug ?? item.title}>
               <SidebarMenuButton
                 asChild
-                className="h-6 text-[11px] text-muted-foreground"
+                className="h-7 text-[12px] text-muted-foreground"
                 isActive={item.isActive}
                 size="sm"
                 tooltip={item.title}

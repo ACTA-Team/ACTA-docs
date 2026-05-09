@@ -25,7 +25,7 @@ Start using the ACTA API to issue and verify credentials:
 3. **Issue Credentials**: Use \`POST /credentials\` endpoint
 4. **Verify Credentials**: Use \`GET /verify/:vc_id\` or \`POST /verify\`
 
-See API Developer Quickstart for detailed steps.
+For base URLs and the full endpoint map, open **[API Overview](doc:api-overview)**. To confirm the service is up, use **[Health & Status](doc:api-health-status)** (includes a live **GET /health** you can run in the browser).
 
 ## Credentials SDK Integration
 
@@ -40,33 +40,29 @@ npm install @acta-team/credentials
 2. **Provider**: Wrap your tree with **\`ActaConfig\`** (pass \`baseURL\`, optional \`apiKey\`; see Credentials SDK Overview).
 3. **Hooks**: \`useCredential\`, \`useVault\`, \`useVaultRead\`, and **\`useActaClient\`** when you need the HTTP client directly.
 
-See the Credentials SDK pages for hooks and examples.
+See **[Credentials SDK Overview](doc:sdk-overview)** and the hook pages for details.
 
 ## Wallet Integration
 
 Connect Stellar wallets for user authentication and transaction signing:
 
-1. **Install Wallet Kit**: Integrate wallet adapter
-2. **Connect Wallet**: User connects Freighter or other Stellar wallet
-3. **Sign Transactions**: Use transaction preparation endpoints
-
-See Wallet Kit Integration for details.
+1. **Wallet UI**: Integrate a Stellar wallet adapter—the Stellar docs cover **[Wallet Kit](https://developers.stellar.org/docs/tools/developer-tools/wallet-kit)** and related tooling.
+2. **Connect wallet**: User connects Freighter or another supported Stellar wallet.
+3. **Sign transactions**: Use ACTA’s transaction preparation endpoints from **[Vault Operations (Write)](doc:api-vault-write)** and **[Credential Operations](doc:api-credentials)**; your \`signTransaction\` callback signs the unsigned XDR the API returns.
 
 ## Testnet Setup
 
 Before deploying to mainnet:
 
-1. **Get Testnet Tokens**: Request XLM from Stellar testnet faucet
-2. **Test Operations**: Issue, store, and verify test credentials
-3. **Verify Contracts**: Testnet contract IDs are pre-configured
-
-See Testnet Tokens for faucet links.
+1. **Get testnet XLM**: Use **[Stellar Lab Friendbot](https://lab.stellar.org/friendbot)** or the **[testnet account](https://developers.stellar.org/docs/fundamentals-and-concepts/testnet-and-pubnet)** resources from Stellar.
+2. **Test operations**: Issue, store, and verify test credentials against testnet (see **[API Overview](doc:api-overview)**).
+3. **Verify contracts**: Testnet contract IDs are pre-configured when you use the testnet API base URL.
 
 ## Next Steps
 
-- Review API Reference for all available endpoints
-- Check Schema Documentation for data structures
-- Explore \`@acta-team/credentials\` hooks for React integration
-- Read Troubleshooting Guide for common issues
+- **[API Overview](doc:api-overview)** — all public endpoints
+- **[Credential Operations](doc:api-credentials)** and **[Vault Operations (Read)](doc:api-vault-read)** — payloads and examples
+- **[Contract errors](doc:contract-errors)** — on-chain error codes
+- **[FAQ](doc:faq)** — common questions
     `,
 };

@@ -19,12 +19,12 @@ ACTA es **infraestructura de credenciales verificables** para la **blockchain St
 
 | Tema | Descripción |
 |-------|-------------|
-      | **Arquitectura** | Componentes del sistema, contratos y flujo de datos |
-      | **Primeros Pasos** | Guía rápida de integración con API y SDK |
-      | **SDK de credenciales** | \`npm i @acta-team/credentials\` — hooks para credenciales y bóvedas |
-      | **Referencia API** | Documentación completa de endpoints públicos de la API |
-      | **Enlaces** | Enlaces oficiales, recursos y comunidad |
-      | **Flujo de Credenciales** | Entender los flujos de emisión, verificación y almacenamiento |
+| **Arquitectura** | Componentes del sistema, contratos y flujo de datos |
+| **Primeros Pasos** | Guía rápida de integración con API y SDK |
+| **SDK de credenciales** | \`npm i @acta-team/credentials\` — hooks para credenciales y bóvedas |
+| **Referencia API** | Documentación completa de endpoints públicos de la API |
+| **Enlaces** | Enlaces oficiales, recursos y comunidad |
+| **Flujo de Credenciales** | Entender los flujos de emisión, verificación y almacenamiento |
 
 ## Qué puedes construir
 
@@ -46,8 +46,6 @@ ACTA es **infraestructura de credenciales verificables** para la **blockchain St
 
 ## Pruébalo ahora
 
-- [Abrir dApp](https://dapp.acta.build/) - Explora la dApp de ACTA  
-- [Ver GitHub](https://github.com/ACTA-Team) - Revisa el código fuente  
-- [Unirte a Discord](https://discord.gg/DsUSE3aMDZ) - Conéctate con la comunidad  
+:::welcome-try-cta:::
     `,
 };

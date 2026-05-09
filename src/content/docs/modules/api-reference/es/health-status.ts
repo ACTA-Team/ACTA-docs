@@ -28,8 +28,10 @@ Verifica el estado de la API. No requiere autenticación.
 **Ejemplo:**
 
 \`\`\`bash
-curl https://acta.build/api/testnet/health
+curl https://api.testnet.acta.build/health
 \`\`\`
+
+:::health-try:::
 
 ## Configuración de red
 
@@ -56,7 +58,7 @@ X-ACTA-Key: tu_api_key_aqui
 **Ejemplo:**
 
 \`\`\`bash
-curl -H "X-ACTA-Key: tu_key" https://acta.build/api/testnet/config
+curl -H "X-ACTA-Key: tu_key" https://api.testnet.acta.build/config
 \`\`\`
     `,
 };

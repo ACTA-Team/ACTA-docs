@@ -6,8 +6,8 @@ export interface Translations {
   reactSdk: string;
   apiReference: string;
   contracts: string;
-  zkProofs: string;
-  scf: string;
+  /** Sidebar / breadcrumb label for the AI category (IA / AI). */
+  aiCategory: string;
   dApp: string;
   introduction: string;
   architecture: string;
@@ -24,10 +24,26 @@ export interface Translations {
 
   // Content
   onThisPage: string;
-  wasThisHelpful: string;
   copy: string;
   copied: string;
   downloadPdf: string;
+  /** Primary pill CTA linking to the ACTA dApp (docs markdown directive). */
+  dappOpenCtaButton: string;
+  /** Welcome page "Try it now" CTA row (titles + short hints). */
+  welcomeTryItDapp: string;
+  welcomeTryItDappHint: string;
+  welcomeTryItGithub: string;
+  welcomeTryItGithubHint: string;
+  welcomeTryItDiscord: string;
+  welcomeTryItDiscordHint: string;
+
+  /** Live GET /health demo on the Health & Status doc page. */
+  healthTryBadge: string;
+  healthTryDescription: string;
+  healthTryButton: string;
+  healthTryLoading: string;
+  healthTryHttpLabel: string;
+  healthTryUnexpectedError: string;
 
   // Footer
   poweredBy: string;

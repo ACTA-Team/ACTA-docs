@@ -11,6 +11,7 @@ export const overview: DocPage = {
     "Environment variables",
     "Accessing the client",
     "Hooks summary",
+    "sponsoredVault",
   ],
   content: `
 # Credentials SDK Overview
@@ -28,6 +29,7 @@ npm install @acta-team/credentials
 - **\`ActaConfig\`**: Provider — required \`baseURL\`; optional explicit \`apiKey\`.
 - **\`useActaClient\`**: Returns the contextual \`ActaClient\` (must be rendered under \`ActaConfig\`).
 - **Hooks**: \`useVault\`, \`useCredential\`, \`useVaultRead\`.
+- **\`ActaClient\`**: \`sponsoredVaultCreate\` for the public sponsored-vault **create** flow (prepare/submit); see **sponsoredVault**.
 - **URLs**: \`mainNet\`, \`testNet\` (string constants typed as the \`baseURL\` literal union for the two API hosts).
 
 ## Provider (\`ActaConfig\`)
@@ -70,6 +72,10 @@ const config = await client.getConfig();
 - **\`useVault\`** — \`createVault\`, \`authorizeIssuer\`, \`revokeIssuer\`.
 - **\`useCredential\`** — \`issue\`, \`issueLinked\`, \`revoke\`.
 - **\`useVaultRead\`** — \`listVcIds\`, \`getVc\`, \`getVcParent\`, \`verifyVc\`.
+
+## sponsoredVault
+
+\`ActaClient.sponsoredVaultCreate\` prepares/submits \`create_sponsored_vault\` when a **sponsor** pays or signs vault creation for an **owner**. See **sponsoredVault** for signatures and payloads.
 
 Owners can be ordinary Stellar accounts (\`G...\`) or smart-wallet contract IDs (\`C...\`): when signing is delegated to ACTA infra, omit or follow the signatures described on each hook page.
     `,

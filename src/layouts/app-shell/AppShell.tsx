@@ -69,7 +69,10 @@ export function AppShell() {
             ) : (
               <>
                 <Content page={currentPage} onNavigate={handleNavigate} />
-                <TableOfContents items={currentPage?.tocItems || []} />
+                <TableOfContents
+                  key={currentSlug}
+                  items={currentPage?.tocItems || []}
+                />
               </>
             )}
           </div>

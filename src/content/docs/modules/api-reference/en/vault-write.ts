@@ -12,13 +12,13 @@ export const vaultWrite: DocPage = {
     "Revoke Vault",
     "Set New Owner",
     "Migrate",
-    "Create Sponsored Vault",
+    "Sponsored vault",
     "Prepare/Submit Flow",
   ],
   content: `
 # Vault Operations (Write)
 
-Write operations for vault management. All endpoints support prepare/submit flow. No authentication required.
+Write operations for vault management. All endpoints support prepare/submit flow. **Authentication:** same as other \`/contracts/*\` routes — valid \`X-ACTA-Key\` (see API Overview).
 
 ## Create Vault
 
@@ -272,55 +272,11 @@ Migrates legacy vault data for an owner to the current format.
 }
 \`\`\`
 
-## Create Sponsored Vault
+## Sponsored vault
 
-### POST /contracts/sponsored-vault/create
+Vault creation where a **sponsor** signs \`create_sponsored_vault\` on the vc-vault contract instead of the owner signing \`create_vault\`. On-chain, the contract also has admin-only settings (\`open-to-all\`, sponsor allowlist). The **public** HTTP surface is only **\`POST /contracts/sponsored-vault/create\`** (same \`X-ACTA-Key\` middleware as other public \`/contracts/*\` writes—not admin-key routes).
 
-Creates a sponsored vault for an owner. A sponsor pays for the vault creation on behalf of the owner. No authentication required.
-
-**Request Body (Prepare):**
-
-\`\`\`json
-{
-  "sponsor": "G...",
-  "owner": "G...",
-  "didUri": "did:pkh:stellar:testnet:G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
-}
-\`\`\`
-
-**Request Body (Submit):**
-
-\`\`\`json
-{
-  "signedXdr": "AAAA..."
-}
-\`\`\`
-
-**Response (Prepare):**
-
-\`\`\`json
-{
-  "xdr": "AAAA...",
-  "network": "Test SDF Network ; September 2015"
-}
-\`\`\`
-
-**Response (Submit):**
-
-\`\`\`json
-{
-  "tx_id": "abc123..."
-}
-\`\`\`
-
-**Parameters:**
-- **sponsor** (required): Sponsor address that pays for vault creation (G...)
-- **owner** (required): Vault owner address (G...)
-- **didUri** (required): DID URI of the vault owner
-- **sourcePublicKey** (required): Transaction source that will sign (must be sponsor)
-- **contractId** (optional): Override ACTA contract ID (C...)
+See **Sponsored Vault** (\`api-sponsored-vault\`) for contract semantics, the create endpoint, and \`sponsoredVaultCreate\` in the Credentials SDK.
 
 ## Prepare/Submit Flow
 

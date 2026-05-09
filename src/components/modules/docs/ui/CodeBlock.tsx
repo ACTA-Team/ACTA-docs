@@ -27,9 +27,9 @@ export function CodeBlock({ code, language = "text" }: CodeBlockProps) {
   };
 
   return (
-    <div className="group relative mb-6 max-w-full">
-      <div className="overflow-hidden rounded-lg border border-border bg-[#1e1e1e]">
-        <div className="flex items-center justify-between bg-[#252526] border-b border-border px-4 py-2">
+    <div className="group relative mb-8 max-w-full">
+      <div className="overflow-hidden rounded-2xl border border-border/60 bg-[#1e1e1e] shadow-sm">
+        <div className="flex items-center justify-between border-b border-border/50 bg-[#252526] px-4 py-2.5">
           {language && (
             <span className="text-xs text-muted-foreground font-mono">
               {language}
