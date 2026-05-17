@@ -1,5 +1,16 @@
 import { NextResponse } from "next/server";
+import Anthropic from "@anthropic-ai/sdk";
 import { docsDataEn } from "@/content/docs";
+
+const SLUGS = [
+  "introduction",
+  "architecture",
+  "getting-started",
+  "sdk-overview",
+  "useCredential",
+  "useVault",
+  "useVaultRead",
+];
 
 export async function POST(request: Request) {
   try {
@@ -9,91 +20,95 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Query is required" }, { status: 400 });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.ANTHROPIC_API_KEY;
 
     if (!apiKey) {
       return NextResponse.json(
-        { error: "GEMINI_API_KEY is not configured" },
+        { error: "ANTHROPIC_API_KEY is not configured" },
         { status: 500 }
       );
     }
 
-    // Prepare documentation context for Gemini (using English version)
+    const client = new Anthropic({ apiKey });
+
     const docsContext = Object.values(docsDataEn)
       .map(page => `## ${page.title}\n${page.content}`)
       .join("\n\n---\n\n");
 
-    const prompt = `You are an AI assistant for ACTA documentation. ACTA is a verifiable credentials infrastructure on Stellar blockchain.
+    const systemPrompt = `You are an AI assistant for ACTA documentation. ACTA is a verifiable credentials infrastructure on Stellar blockchain.
 
-Here is the documentation context:
+Answer questions based ONLY on the documentation context below. Be concise and helpful. If the question is unrelated to ACTA, politely redirect to ACTA topics.
 
-${docsContext}
+At the end, suggest 1-3 relevant page slugs from this list that might help the user: ${SLUGS.join(", ")}.
 
----
+Documentation context:
 
-User question: ${query}
+${docsContext}`;
 
-Instructions:
-1. Answer the question based ONLY on the documentation provided above
-2. Be concise and helpful
-3. If the question is not related to ACTA or the documentation, politely redirect to ACTA topics
-4. At the end, suggest 1-3 relevant page slugs from this list that might help: introduction, architecture, getting-started, sdk-overview, useCredential, useVault, useVaultRead
-
-Format your response as JSON:
-{
-  "answer": "Your helpful answer here",
-  "suggestedPages": ["slug1", "slug2"]
-}`;
-
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 1024,
+    const response = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1024,
+      system: [
+        {
+          type: "text",
+          text: systemPrompt,
+          cache_control: { type: "ephemeral" },
+        },
+      ],
+      messages: [{ role: "user", content: query }],
+      output_config: {
+        format: {
+          type: "json_schema",
+          schema: {
+            type: "object",
+            properties: {
+              answer: {
+                type: "string",
+                description: "The helpful answer to the user's question",
+              },
+              suggestedPages: {
+                type: "array",
+                items: { type: "string", enum: SLUGS },
+                description: "Relevant page slugs (1-3 items)",
+              },
+            },
+            required: ["answer", "suggestedPages"],
+            additionalProperties: false,
           },
-        }),
-      }
-    );
+        },
+      },
+    });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Gemini API error:", errorText);
+    const textBlock = response.content.find(b => b.type === "text");
+    if (!textBlock || textBlock.type !== "text") {
       return NextResponse.json(
-        { error: "Failed to get AI response" },
+        { error: "Empty response from Claude" },
         { status: 500 }
       );
     }
 
-    const data = await response.json();
-    const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const parsed = JSON.parse(textBlock.text) as {
+      answer: string;
+      suggestedPages: string[];
+    };
 
-    // Try to parse JSON response
-    let answer = textResponse;
-    let suggestedPages: string[] = [];
-
-    try {
-      // Extract JSON from response
-      const jsonMatch = textResponse.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
-        answer = parsed.answer || textResponse;
-        suggestedPages = parsed.suggestedPages || [];
-      }
-    } catch {
-      // If JSON parsing fails, use the raw text
-      answer = textResponse;
-    }
-
-    return NextResponse.json({ answer, suggestedPages });
+    return NextResponse.json({
+      answer: parsed.answer,
+      suggestedPages: parsed.suggestedPages ?? [],
+    });
   } catch (error) {
     console.error("Search error:", error);
+
+    if (error instanceof Anthropic.APIError) {
+      return NextResponse.json(
+        { error: `Claude API error (${error.status}): ${error.message}` },
+        { status: 500 }
+      );
+    }
+
+    const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: `Internal server error: ${message}` },
       { status: 500 }
     );
   }

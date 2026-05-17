@@ -60,7 +60,7 @@ const translations: Record<Locale, Translations> = {
     aiPowered: "AI-powered search",
     relatedPages: "Related pages:",
     askAnything: "Ask anything about ACTA, credentials, vaults, or the SDK",
-    poweredByGemini: "Powered by Gemini AI",
+    poweredByClaude: "Powered by Claude AI",
     toSearch: "to search",
     toClose: "to close",
     // FAQ
@@ -165,7 +165,7 @@ const translations: Record<Locale, Translations> = {
     relatedPages: "Páginas relacionadas:",
     askAnything:
       "Pregunta lo que quieras sobre ACTA, credenciales, bóvedas o el SDK",
-    poweredByGemini: "Con tecnología de Gemini AI",
+    poweredByClaude: "Con tecnología de Claude AI",
     toSearch: "para buscar",
     toClose: "para cerrar",
     // FAQ

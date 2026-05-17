@@ -110,7 +110,7 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
         <div className="px-4 py-3 border-t border-border bg-secondary/30 flex items-center justify-between">
           <span className="text-xs text-muted-foreground flex items-center gap-1">
             <Sparkles className="w-3 h-3" />
-            {t.poweredByGemini}
+            {t.poweredByClaude}
           </span>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <kbd className="px-1.5 py-0.5 bg-secondary rounded">Enter</kbd>

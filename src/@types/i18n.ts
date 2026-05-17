@@ -63,7 +63,7 @@ export interface Translations {
   aiPowered: string;
   relatedPages: string;
   askAnything: string;
-  poweredByGemini: string;
+  poweredByClaude: string;
   toSearch: string;
   toClose: string;
 
