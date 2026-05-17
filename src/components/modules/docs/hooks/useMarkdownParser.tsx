@@ -32,8 +32,10 @@ const topicToExternalUrl: Record<string, string> = {
 
 export function useMarkdownParser(
   content: string,
-  onNavigate?: (slug: string) => void
+  onNavigate?: (slug: string) => void,
+  variant: "default" | "compact" = "default"
 ) {
+  const isCompact = variant === "compact";
   const renderContent = (text: string) => {
     const lines = text.split("\n");
     const elements: React.ReactNode[] = [];
@@ -257,7 +259,11 @@ export function useMarkdownParser(
         elements.push(
           <ListTag
             key={elements.length}
-            className={`${listType === "ul" ? "list-none" : "list-decimal"} mb-10 ml-1 space-y-3 text-muted-foreground marker:text-muted-foreground/70`}
+            className={
+              isCompact
+                ? `${listType === "ul" ? "list-none" : "list-decimal"} mb-4 ml-1 space-y-2 text-sm text-foreground/85`
+                : `${listType === "ul" ? "list-none" : "list-decimal"} mb-10 ml-1 space-y-3 text-muted-foreground marker:text-muted-foreground/70`
+            }
           >
             {renderNestedList(listItems)}
           </ListTag>
@@ -394,6 +400,7 @@ export function useMarkdownParser(
                 key={elements.length}
                 code={codeContent}
                 language={language}
+                compact={isCompact}
               />
             );
           }
@@ -514,7 +521,11 @@ export function useMarkdownParser(
           <h1
             key={elements.length}
             id={slugifyHeading(text)}
-            className="mb-8 mt-0 scroll-mt-24 text-3xl font-medium tracking-tight text-foreground md:text-4xl md:leading-tight"
+            className={
+              isCompact
+                ? "mb-3 mt-0 text-base font-medium tracking-tight text-foreground"
+                : "mb-8 mt-0 scroll-mt-24 text-3xl font-medium tracking-tight text-foreground md:text-4xl md:leading-tight"
+            }
           >
             {text}
           </h1>
@@ -530,7 +541,11 @@ export function useMarkdownParser(
           <h2
             key={elements.length}
             id={slugifyHeading(text)}
-            className="mb-5 mt-16 scroll-mt-24 text-xl font-medium tracking-tight text-foreground md:text-2xl [&+h3]:mt-8"
+            className={
+              isCompact
+                ? "mb-2 mt-4 text-sm font-medium tracking-tight text-foreground"
+                : "mb-5 mt-16 scroll-mt-24 text-xl font-medium tracking-tight text-foreground md:text-2xl [&+h3]:mt-8"
+            }
           >
             {text}
           </h2>
@@ -546,7 +561,11 @@ export function useMarkdownParser(
           <h3
             key={elements.length}
             id={slugifyHeading(text)}
-            className="mb-3 mt-10 scroll-mt-24 text-lg font-medium tracking-tight text-foreground md:text-xl"
+            className={
+              isCompact
+                ? "mb-2 mt-3 text-sm font-medium tracking-tight text-foreground"
+                : "mb-3 mt-10 scroll-mt-24 text-lg font-medium tracking-tight text-foreground md:text-xl"
+            }
           >
             {text}
           </h3>
@@ -626,7 +645,11 @@ export function useMarkdownParser(
       elements.push(
         <p
           key={elements.length}
-          className="mb-5 max-w-[65ch] text-[17px] leading-[1.75] text-muted-foreground md:text-lg md:leading-[1.8]"
+          className={
+            isCompact
+              ? "mb-3 text-sm leading-relaxed text-foreground/90"
+              : "mb-5 max-w-[65ch] text-[17px] leading-[1.75] text-muted-foreground md:text-lg md:leading-[1.8]"
+          }
         >
           {processInlineFormatting(line)}
         </p>

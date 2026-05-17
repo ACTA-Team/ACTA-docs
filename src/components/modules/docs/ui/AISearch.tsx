@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
-import { Search, X, Sparkles, Loader2 } from "lucide-react";
+import { Search, X, Sparkles, Loader2, ArrowRight } from "lucide-react";
 import { useAISearch } from "../hooks/useAISearch";
+import { MarkdownContent } from "./MarkdownContent";
 
 interface AISearchProps {
   onNavigate: (slug: string) => void;
@@ -33,8 +34,8 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
         onClick={e => e.stopPropagation()}
       >
         {/* Search Input */}
-        <div className="flex items-center gap-3 px-4 py-4 border-b border-border">
-          <Sparkles className="w-5 h-5 text-primary" />
+        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border">
+          <Sparkles className="w-4 h-4 text-primary shrink-0" />
           <input
             ref={inputRef}
             type="text"
@@ -42,45 +43,40 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
             onChange={e => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={t.searchPlaceholder}
-            className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-lg"
+            className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-base"
           />
           <button
             onClick={onClose}
-            className="p-1 hover:bg-secondary rounded-md transition-colors"
+            className="p-1.5 hover:bg-secondary rounded-md transition-colors"
+            aria-label={t.toClose}
           >
-            <X className="w-5 h-5 text-muted-foreground" />
+            <X className="w-4 h-4 text-muted-foreground" />
           </button>
         </div>
 
         {/* Results Area */}
-        <div className="max-h-[60vh] overflow-y-auto p-4">
+        <div className="max-h-[60vh] overflow-y-auto px-5 py-4">
           {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-6 h-6 text-primary animate-spin" />
-              <span className="ml-3 text-muted-foreground">{t.searching}</span>
+            <div className="flex items-center justify-center gap-2.5 py-14">
+              <Loader2 className="w-5 h-5 text-primary animate-spin" />
+              <span className="text-sm text-muted-foreground">
+                {t.searching}
+              </span>
             </div>
           ) : response ? (
-            <div className="space-y-4">
-              {/* AI Response */}
-              <div className="prose prose-invert prose-sm max-w-none">
-                <div className="flex items-center gap-2 mb-3">
-                  <Sparkles className="w-4 h-4 text-primary" />
-                  <span className="text-xs text-primary font-medium">
-                    {t.aiPowered}
-                  </span>
-                </div>
-                <p className="text-foreground/90 leading-relaxed whitespace-pre-wrap">
-                  {response}
-                </p>
-              </div>
+            <div className="space-y-5">
+              <MarkdownContent
+                content={response}
+                onNavigate={onNavigate}
+                variant="compact"
+              />
 
-              {/* Suggested Pages */}
               {suggestedPages.length > 0 && (
-                <div className="pt-4 border-t border-border">
-                  <p className="text-xs text-muted-foreground mb-3">
+                <div className="pt-4 border-t border-border/60">
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground/70 mb-2.5">
                     {t.relatedPages}
                   </p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {suggestedPages.map(slug => {
                       const page = docsData[slug];
                       if (!page) return null;
@@ -88,9 +84,10 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
                         <button
                           key={slug}
                           onClick={() => handlePageClick(slug)}
-                          className="px-3 py-1.5 text-sm bg-secondary hover:bg-secondary/80 text-foreground rounded-md transition-colors"
+                          className="group inline-flex items-center gap-1 px-2.5 py-1 text-xs text-foreground/90 border border-border/80 hover:border-primary/40 hover:text-primary rounded-md transition-colors"
                         >
                           {page.title}
+                          <ArrowRight className="w-3 h-3 opacity-0 -translate-x-1 group-hover:opacity-60 group-hover:translate-x-0 transition-all" />
                         </button>
                       );
                     })}
@@ -99,23 +96,27 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
               )}
             </div>
           ) : (
-            <div className="py-12 text-center">
-              <Search className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-              <p className="text-muted-foreground text-sm">{t.askAnything}</p>
+            <div className="py-14 text-center">
+              <Search className="w-10 h-10 text-muted-foreground/25 mx-auto mb-3" />
+              <p className="text-sm text-muted-foreground">{t.askAnything}</p>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="px-4 py-3 border-t border-border bg-secondary/30 flex items-center justify-between">
-          <span className="text-xs text-muted-foreground flex items-center gap-1">
-            <Sparkles className="w-3 h-3" />
+        <div className="px-4 py-2.5 border-t border-border bg-secondary/20 flex items-center justify-between">
+          <span className="text-[11px] text-muted-foreground/80 flex items-center gap-1">
+            <Sparkles className="w-3 h-3 text-primary/70" />
             {t.poweredByClaude}
           </span>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <kbd className="px-1.5 py-0.5 bg-secondary rounded">Enter</kbd>
+          <div className="flex items-center gap-2 text-[11px] text-muted-foreground/70">
+            <kbd className="px-1.5 py-0.5 bg-secondary/80 rounded text-[10px]">
+              Enter
+            </kbd>
             <span>{t.toSearch}</span>
-            <kbd className="px-1.5 py-0.5 bg-secondary rounded ml-2">Esc</kbd>
+            <kbd className="px-1.5 py-0.5 bg-secondary/80 rounded text-[10px] ml-1">
+              Esc
+            </kbd>
             <span>{t.toClose}</span>
           </div>
         </div>

@@ -10,9 +10,14 @@ import { useI18n } from "@/lib/i18n";
 interface CodeBlockProps {
   code: string;
   language?: string;
+  compact?: boolean;
 }
 
-export function CodeBlock({ code, language = "text" }: CodeBlockProps) {
+export function CodeBlock({
+  code,
+  language = "text",
+  compact = false,
+}: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
   const { t } = useI18n();
 
@@ -27,9 +32,19 @@ export function CodeBlock({ code, language = "text" }: CodeBlockProps) {
   };
 
   return (
-    <div className="group relative mb-8 max-w-full">
-      <div className="overflow-hidden rounded-2xl border border-border/60 bg-[#1e1e1e] shadow-sm">
-        <div className="flex items-center justify-between border-b border-border/50 bg-[#252526] px-4 py-2.5">
+    <div className={cn("group relative max-w-full", compact ? "mb-3" : "mb-8")}>
+      <div
+        className={cn(
+          "overflow-hidden border border-border/60 bg-[#1e1e1e]",
+          compact ? "rounded-lg" : "rounded-2xl shadow-sm"
+        )}
+      >
+        <div
+          className={cn(
+            "flex items-center justify-between border-b border-border/50 bg-[#252526]",
+            compact ? "px-3 py-1.5" : "px-4 py-2.5"
+          )}
+        >
           {language && (
             <span className="text-xs text-muted-foreground font-mono">
               {language}
@@ -63,9 +78,9 @@ export function CodeBlock({ code, language = "text" }: CodeBlockProps) {
             style={vscDarkPlus}
             customStyle={{
               margin: 0,
-              padding: "1rem",
+              padding: compact ? "0.75rem" : "1rem",
               background: "#1e1e1e",
-              fontSize: "0.875rem",
+              fontSize: compact ? "0.8125rem" : "0.875rem",
               lineHeight: "1.5",
               minWidth: "100%",
               width: "max-content",

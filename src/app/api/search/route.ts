@@ -39,6 +39,12 @@ export async function POST(request: Request) {
 
 Answer questions based ONLY on the documentation context below. Be concise and helpful. If the question is unrelated to ACTA, politely redirect to ACTA topics.
 
+Format the answer as Markdown:
+- Use fenced code blocks with language tags (\`\`\`bash, \`\`\`tsx, etc.) for commands and code samples
+- Use bullet lists for enumerations (hooks, steps, options)
+- Use inline \`backticks\` for identifiers, package names, and hook names
+- Keep paragraphs short; avoid headings unless the answer is long
+
 At the end, suggest 1-3 relevant page slugs from this list that might help the user: ${SLUGS.join(", ")}.
 
 Documentation context:
