@@ -24,6 +24,8 @@ export function useContent({ page }: UseContentProps) {
       case "Contracts":
       case "Contratos":
         return t.contracts;
+      case "DID:Stellar":
+        return t.didStellar;
       case "dApp":
         return t.dApp;
       default:

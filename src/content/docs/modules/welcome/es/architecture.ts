@@ -10,7 +10,7 @@ export const architecture: DocPage = {
     "Contrato de bóveda",
     "Capa de API",
     "Almacenamiento",
-    "Modelo de identidad",
+    "Modelo de identidad (did:stellar)",
     "Flujo de credenciales",
     "Soporte de red",
   ],
@@ -59,20 +59,18 @@ Todos los endpoints soportan automáticamente mainnet y testnet vía la configur
 - **On-chain**: Hashes de credenciales y metadatos de estado (contratos inteligentes Soroban)  
 - **Off-chain**: Payload cifrado de la credencial (bóvedas controladas por el usuario)  
 
-## Modelo de identidad 1.0
+## Modelo de identidad
 
-Usa el formato DID:pkh:
+Usa el método \`did:stellar\` — una identidad compatible con W3C DID Core 1.1 anclada en un contrato registry de Soroban:
 
 \`\`\`
-did:pkh:stellar:{network}:{wallet_address}
+did:stellar:{network}:{didId}
 \`\`\`
 
-- **network**: \`mainnet\` o \`testnet\`  
-- **wallet_address**: clave pública de Stellar (G...)  
+- **network**: \`mainnet\` o \`testnet\`
+- **didId**: identificador base32 de 26 caracteres (128 bits aleatorios, registrado on-chain)
 
-No se requiere infraestructura de identidad adicional: las claves de la wallet Stellar actúan como identidad.
-
-> **Nota**: La versión 1.0 es la primera versión en ACTA. Se está trabajando en la versión 2.0 donde se usará el DID oficial de Stellar.
+Capacidades principales: rotación de claves, múltiples claves de verificación, endpoints de servicio, transferencia de controlador y desactivación irreversible. Consulta la [documentación de DID:Stellar](#did-stellar-overview) para más detalles.
 
 ## Flujo de credenciales
 

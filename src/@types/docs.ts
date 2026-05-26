@@ -20,6 +20,8 @@ export type NavigationItems = {
   sdk: NavigationItem[];
   "api-reference": NavigationItem[];
   contracts?: NavigationItem[];
+  /** DID:Stellar identity layer docs. */
+  "did-stellar"?: NavigationItem[];
   /** AI-related docs (e.g. MCP). */
   ia?: NavigationItem[];
   dapp: NavigationItem[];

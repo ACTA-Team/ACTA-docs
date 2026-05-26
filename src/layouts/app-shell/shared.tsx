@@ -12,7 +12,9 @@ import {
   FileCode,
   FileText,
   FileWarning,
+  Fingerprint,
   Gift,
+  Globe,
   Headphones,
   HelpCircle,
   Key,
@@ -22,12 +24,14 @@ import {
   Link2,
   Lock,
   IdCard,
+  Package,
   PenLine,
   PlayCircle,
   Plug,
   Puzzle,
   Rocket,
   Server,
+  ShieldCheck,
   Sparkles,
 } from "lucide-react";
 import type { NavigationItems, NavigationItem } from "@/@types/docs";
@@ -54,6 +58,7 @@ type SectionKey =
   | "sdk"
   | "api-reference"
   | "contracts"
+  | "did-stellar"
   | "ia"
   | "dapp";
 
@@ -78,6 +83,10 @@ const NAV_SUB_ITEM_ICONS: Partial<Record<string, LucideIcon>> = {
   "api-sponsored-vault": Coins,
   "api-credentials": IdCard,
   "contract-errors": AlertTriangle,
+  "did-stellar-overview": BookOpen,
+  "did-stellar-sdk": Package,
+  "did-stellar-api": Globe,
+  "did-stellar-proof-of-control": ShieldCheck,
   mcp: Plug,
   "dapp-overview": LayoutGrid,
   "dapp-getting-started": PlayCircle,
@@ -95,6 +104,7 @@ const sectionIcons: Record<SectionKey, ReactNode> = {
   sdk: <Code className="size-3.5 shrink-0" />,
   "api-reference": <Server className="size-3.5 shrink-0" />,
   contracts: <FileWarning className="size-3.5 shrink-0" />,
+  "did-stellar": <Fingerprint className="size-3.5 shrink-0" />,
   ia: <Bot className="size-3.5 shrink-0" />,
   dapp: <LayoutGrid className="size-3.5 shrink-0" />,
 };
@@ -104,6 +114,7 @@ const SECTION_ORDER: SectionKey[] = [
   "sdk",
   "api-reference",
   "contracts",
+  "did-stellar",
   "ia",
   "dapp",
 ];
@@ -111,7 +122,15 @@ const SECTION_ORDER: SectionKey[] = [
 const GROUP_DEFS: Array<{ key: string; sections: SectionKey[] }> = [
   {
     key: "docs",
-    sections: ["welcome", "sdk", "api-reference", "contracts", "ia", "dapp"],
+    sections: [
+      "welcome",
+      "sdk",
+      "api-reference",
+      "contracts",
+      "did-stellar",
+      "ia",
+      "dapp",
+    ],
   },
 ];
 
@@ -125,6 +144,8 @@ function getSectionLabel(key: SectionKey, t: Translations): string {
       return t.apiReference;
     case "contracts":
       return t.contracts;
+    case "did-stellar":
+      return t.didStellar;
     case "ia":
       return t.aiCategory;
     case "dapp":

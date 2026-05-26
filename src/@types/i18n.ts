@@ -6,6 +6,7 @@ export interface Translations {
   reactSdk: string;
   apiReference: string;
   contracts: string;
+  didStellar: string;
   /** Sidebar / breadcrumb label for the AI category (IA / AI). */
   aiCategory: string;
   dApp: string;

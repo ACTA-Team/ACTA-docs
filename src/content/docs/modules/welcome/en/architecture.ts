@@ -10,7 +10,7 @@ export const architecture: DocPage = {
     "Vault Contract",
     "API Layer",
     "Storage",
-    "Identity Model",
+    "Identity Model (did:stellar)",
     "Credential Flow",
     "Network Support",
   ],
@@ -59,20 +59,18 @@ All endpoints support both mainnet and testnet automatically via \`NETWORK_TYPE\
 - **On-chain**: Credential hashes and status metadata (Soroban smart contracts)
 - **Off-chain**: Encrypted credential payloads (user-controlled vaults)
 
-## Identity Model 1.0
+## Identity Model
 
-Uses DID:pkh format:
+Uses the \`did:stellar\` method — a W3C DID Core 1.1 compliant identity anchored on a Soroban registry contract:
 
 \`\`\`
-did:pkh:stellar:{network}:{wallet_address}
+did:stellar:{network}:{didId}
 \`\`\`
 
 - **Network**: \`mainnet\` or \`testnet\`
-- **Wallet Address**: Stellar public key (G...)
+- **didId**: 26-character base32 identifier (128-bit random, registered on-chain)
 
-No additional identity infrastructure required - Stellar wallet keys serve as identity.
-
-> **Note**: Version 1.0 is the first version in ACTA. Version 2.0 is currently being developed where the official Stellar DID will be used.
+Key capabilities: key rotation, multiple verification keys, service endpoints, controller transfer, and irreversible deactivation. See the [DID:Stellar documentation](#did-stellar-overview) for full details.
 
 ## Credential Flow
 

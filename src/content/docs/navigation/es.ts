@@ -29,6 +29,12 @@ export const navigation: NavigationItems = {
     { slug: "api-credentials", title: "Operaciones de Credenciales" },
   ],
   contracts: [{ slug: "contract-errors", title: "Errores de contrato" }],
+  "did-stellar": [
+    { slug: "did-stellar-overview", title: "Resumen" },
+    { slug: "did-stellar-sdk", title: "SDK" },
+    { slug: "did-stellar-api", title: "API HTTP" },
+    { slug: "did-stellar-proof-of-control", title: "Prueba de control" },
+  ],
   ia: [{ slug: "mcp", title: "MCP" }],
   dapp: [
     { slug: "dapp-overview", title: "Resumen" },
