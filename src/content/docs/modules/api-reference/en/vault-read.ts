@@ -75,7 +75,7 @@ Gets a specific verifiable credential from a vault.
     ],
     "type": ["VerifiableCredential"],
     "credentialSubject": {
-      "id": "did:pkh:stellar:testnet:G...",
+      "id": "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
       "name": "John Doe"
     }
   }

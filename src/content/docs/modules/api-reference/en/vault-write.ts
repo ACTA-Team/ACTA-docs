@@ -31,7 +31,7 @@ Creates (initializes) a vault for an owner.
 \`\`\`json
 {
   "owner": "G...",
-  "didUri": "did:pkh:stellar:testnet:G...",
+  "didUri": "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
   "sourcePublicKey": "G...",
   "contractId": "C..."
 }

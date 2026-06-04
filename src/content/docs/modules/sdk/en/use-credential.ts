@@ -80,7 +80,7 @@ const { txId } = await issue({
     ],
     type: ["VerifiableCredential"],
     credentialSubject: {
-      id: "did:pkh:stellar:testnet:G...",
+      id: "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
       name: "John Doe"
     }
   }),
@@ -135,7 +135,7 @@ const { txId } = await issueLinked({
     ],
     type: ["VerifiableCredential"],
     credentialSubject: {
-      id: "did:pkh:stellar:testnet:G...",
+      id: "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
       name: "John Doe",
       certification: "Advanced Level"
     }

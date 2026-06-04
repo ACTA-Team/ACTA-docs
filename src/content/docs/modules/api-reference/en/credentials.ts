@@ -34,10 +34,10 @@ X-ACTA-Key: your_api_key_here
 {
   "owner": "G...",
   "vcId": "credential-123",
-  "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:pkh:stellar:testnet:G...\\",\\"name\\":\\"John Doe\\"}}",
+  "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi\\",\\"name\\":\\"John Doe\\"}}",
   "issuer": "G...",
-  "holder": "did:pkh:stellar:testnet:G...",
-  "issuerDid": "did:pkh:stellar:testnet:G...",
+  "holder": "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
+  "issuerDid": "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
   "sourcePublicKey": "G...",
   "contractId": "C..."
 }
@@ -80,7 +80,7 @@ curl -X POST https://api.testnet.acta.build/contracts/vc/issue \\
     "vcId": "credential-123",
     "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"]}",
     "issuer": "G...",
-    "holder": "did:pkh:stellar:testnet:G...",
+    "holder": "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
     "sourcePublicKey": "G..."
   }'
 
@@ -111,10 +111,10 @@ X-ACTA-Key: your_api_key_here
 {
   "owner": "G...",
   "vcId": "linked-credential-456",
-  "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:pkh:stellar:testnet:G...\\",\\"name\\":\\"John Doe\\"}}",
+  "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi\\",\\"name\\":\\"John Doe\\"}}",
   "issuer": "G...",
-  "holder": "did:pkh:stellar:testnet:G...",
-  "issuerDid": "did:pkh:stellar:testnet:G...",
+  "holder": "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
+  "issuerDid": "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
   "sourcePublicKey": "G...",
   "contractId": "C...",
   "parentOwner": "G...",
@@ -159,7 +159,7 @@ curl -X POST https://api.testnet.acta.build/contracts/vc/issue-linked \\
     "vcId": "linked-credential-456",
     "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"]}",
     "issuer": "G...",
-    "holder": "did:pkh:stellar:testnet:G...",
+    "holder": "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
     "sourcePublicKey": "G...",
     "parentOwner": "G...",
     "parentVcId": "credential-123"
@@ -224,8 +224,8 @@ Revokes a VC by ID. No authentication required.
 - **vcId** (required): Credential identifier
 - **vcData** (required): Credential data payload (JSON string). Must include \`@context\` with at least \`"https://www.w3.org/ns/credentials/v2"\`
 - **issuer** (required): Issuer address (G...)
-- **holder** (required): DID of the credential holder in format \`did:pkh:stellar:{network}:{address}\`
-- **issuerDid** (optional): DID of the issuer in format \`did:pkh:stellar:{network}:{address}\`
+- **holder** (required): DID of the credential holder in format \`did:stellar:{network}:{didId}\`
+- **issuerDid** (optional): DID of the issuer in format \`did:stellar:{network}:{didId}\`
 - **sourcePublicKey** (required): Transaction source that will sign (must be issuer)
 - **contractId** (optional): Override ACTA contract ID (C...)
 
@@ -235,8 +235,8 @@ Revokes a VC by ID. No authentication required.
 - **vcId** (required): Credential identifier
 - **vcData** (required): Credential data payload (JSON string). Must include \`@context\` with at least \`"https://www.w3.org/ns/credentials/v2"\`
 - **issuer** (required): Issuer address (G...)
-- **holder** (required): DID of the credential holder in format \`did:pkh:stellar:{network}:{address}\`
-- **issuerDid** (optional): DID of the issuer in format \`did:pkh:stellar:{network}:{address}\`
+- **holder** (required): DID of the credential holder in format \`did:stellar:{network}:{didId}\`
+- **issuerDid** (optional): DID of the issuer in format \`did:stellar:{network}:{didId}\`
 - **sourcePublicKey** (required): Transaction source that will sign (must be issuer)
 - **contractId** (optional): Override ACTA contract ID (C...)
 - **parentOwner** (required): Parent VC owner address (G...)

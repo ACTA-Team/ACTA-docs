@@ -75,7 +75,7 @@ Obtiene una credencial verificable específica de una bóveda.
     ],
     "type": ["VerifiableCredential"],
     "credentialSubject": {
-      "id": "did:pkh:stellar:testnet:G...",
+      "id": "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
       "name": "John Doe"
     }
   }
