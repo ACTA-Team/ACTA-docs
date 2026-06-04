@@ -41,7 +41,7 @@ Lista los IDs de credenciales verificables (VC) almacenados en la bóveda de un 
 **Ejemplo:**
 
 \`\`\`bash
-curl -X POST https://acta.build/api/testnet/contracts/vault/list-vc-ids \\
+curl -X POST https://api.testnet.acta.build/contracts/vault/list-vc-ids \\
   -H "Content-Type: application/json" \\
   -d '{
     "owner": "G..."
@@ -85,7 +85,7 @@ Obtiene una credencial verificable específica de una bóveda.
 **Ejemplo:**
 
 \`\`\`bash
-curl -X POST https://acta.build/api/testnet/contracts/vault/get-vc \\
+curl -X POST https://api.testnet.acta.build/contracts/vault/get-vc \\
   -H "Content-Type: application/json" \\
   -d '{
     "owner": "G...",
@@ -131,7 +131,7 @@ Obtiene la info de la VC padre para una credencial vinculada. Devuelve \`null\` 
 **Ejemplo:**
 
 \`\`\`bash
-curl -X POST https://acta.build/api/testnet/contracts/vault/get-vc-parent \\
+curl -X POST https://api.testnet.acta.build/contracts/vault/get-vc-parent \\
   -H "Content-Type: application/json" \\
   -d '{
     "owner": "G...",
@@ -176,7 +176,7 @@ O si está revocada:
 **Ejemplo:**
 
 \`\`\`bash
-curl -X POST https://acta.build/api/testnet/contracts/vault/verify-vc \\
+curl -X POST https://api.testnet.acta.build/contracts/vault/verify-vc \\
   -H "Content-Type: application/json" \\
   -d '{
     "owner": "G...",

@@ -24,13 +24,13 @@ RESTful API for ACTA credential management on Stellar blockchain. All endpoints 
 **Testnet:**
 
 \`\`\`
-https://acta.build/api/testnet
+https://api.testnet.acta.build
 \`\`\`
 
 **Mainnet:**
 
 \`\`\`
-https://acta.build/api/mainnet
+https://api.mainnet.acta.build
 \`\`\`
 
 ## Authentication
@@ -45,7 +45,7 @@ X-ACTA-Key: your_api_key_here
 
 You can create a public API key (standard role, expires in 6 months) via:
 
-- **POST** \`/public/api-keys\` on the network base URL (e.g. \`https://acta.build/api/testnet/public/api-keys\` or \`https://acta.build/api/mainnet/public/api-keys\`)
+- **POST** \`/public/api-keys\` on the network base URL (e.g. \`https://api.testnet.acta.build/public/api-keys\` or \`https://api.mainnet.acta.build/public/api-keys\`)
 
 No authentication required, but rate limited to 5 requests per minute per IP.
 

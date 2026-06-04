@@ -82,8 +82,8 @@ Capacidades principales: rotación de claves, múltiples claves de verificación
 
 ACTA maneja automáticamente la configuración de red:
 
-- **Testnet**: \`https://acta.build/api/testnet\` o \`NETWORK_TYPE=testnet\`  
-- **Mainnet**: \`https://acta.build/api/mainnet\` o \`NETWORK_TYPE=mainnet\`  
+- **Testnet**: \`https://api.testnet.acta.build\` o \`NETWORK_TYPE=testnet\`  
+- **Mainnet**: \`https://api.mainnet.acta.build\` o \`NETWORK_TYPE=mainnet\`  
 
 Los IDs de contratos, URLs RPC y passphrases de red se configuran automáticamente según el tipo de red.
     `,
