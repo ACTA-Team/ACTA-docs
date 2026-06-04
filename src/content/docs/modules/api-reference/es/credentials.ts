@@ -72,7 +72,7 @@ X-ACTA-Key: tu_api_key_aqui
 
 \`\`\`bash
 # Prepare
-curl -X POST https://acta.build/api/testnet/contracts/vc/issue \\
+curl -X POST https://api.testnet.acta.build/contracts/vc/issue \\
   -H "X-ACTA-Key: tu_key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -85,7 +85,7 @@ curl -X POST https://acta.build/api/testnet/contracts/vc/issue \\
   }'
 
 # Submit (después de firmar)
-curl -X POST https://acta.build/api/testnet/contracts/vc/issue \\
+curl -X POST https://api.testnet.acta.build/contracts/vc/issue \\
   -H "X-ACTA-Key: tu_key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -151,7 +151,7 @@ X-ACTA-Key: tu_api_key_aqui
 
 \`\`\`bash
 # Prepare
-curl -X POST https://acta.build/api/testnet/contracts/vc/issue-linked \\
+curl -X POST https://api.testnet.acta.build/contracts/vc/issue-linked \\
   -H "X-ACTA-Key: tu_key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -166,7 +166,7 @@ curl -X POST https://acta.build/api/testnet/contracts/vc/issue-linked \\
   }'
 
 # Submit (después de firmar)
-curl -X POST https://acta.build/api/testnet/contracts/vc/issue-linked \\
+curl -X POST https://api.testnet.acta.build/contracts/vc/issue-linked \\
   -H "X-ACTA-Key: tu_key" \\
   -H "Content-Type: application/json" \\
   -d '{

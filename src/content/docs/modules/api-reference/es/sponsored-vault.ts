@@ -57,7 +57,7 @@ En almacenamiento persistente aparecen \`SponsoredVaultOpenToAll\` y entradas \`
 
 ## API HTTP
 
-Esta ruta usa el mismo middleware que otros \`/contracts/*\` de escritura públicos: cabecera **\`X-ACTA-Key\`**, API key válida y límites de tasa. Antepón la URL base de red (p. ej. \`https://acta.build/api/testnet\`).
+Esta ruta usa el mismo middleware que otros \`/contracts/*\` de escritura públicos: cabecera **\`X-ACTA-Key\`**, API key válida y límites de tasa. Antepón la URL base de red (p. ej. \`https://api.testnet.acta.build\`).
 
 ### POST /contracts/sponsored-vault/create
 

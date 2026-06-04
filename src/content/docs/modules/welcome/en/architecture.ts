@@ -84,8 +84,8 @@ No additional identity infrastructure required - Stellar wallet keys serve as id
 
 ACTA automatically handles network configuration:
 
-- **Testnet**: \`https://acta.build/api/testnet\` or \`NETWORK_TYPE=testnet\`
-- **Mainnet**: \`https://acta.build/api/mainnet\` or \`NETWORK_TYPE=mainnet\`
+- **Testnet**: \`https://api.testnet.acta.build\` or \`NETWORK_TYPE=testnet\`
+- **Mainnet**: \`https://api.mainnet.acta.build\` or \`NETWORK_TYPE=mainnet\`
 
 Contract IDs, RPC URLs, and network passphrases are configured automatically based on network type.
     `,

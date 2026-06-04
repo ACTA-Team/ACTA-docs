@@ -36,7 +36,7 @@ Devuelve la cadena de versión del contrato ACTA. No requiere autenticación.
 **Ejemplo:**
 
 \`\`\`bash
-curl "https://acta.build/api/testnet/contracts/version?sourcePublicKey=G..."
+curl "https://api.testnet.acta.build/contracts/version?sourcePublicKey=G..."
 \`\`\`
 
 ## Parámetros de consulta

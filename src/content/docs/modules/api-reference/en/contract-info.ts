@@ -32,7 +32,7 @@ Returns the ACTA contract version string. No authentication required.
 **Example:**
 
 \`\`\`bash
-curl "https://acta.build/api/testnet/contracts/version?sourcePublicKey=G..."
+curl "https://api.testnet.acta.build/contracts/version?sourcePublicKey=G..."
 \`\`\`
 
 ## Query Parameters

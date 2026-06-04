@@ -57,7 +57,7 @@ Persistent keys include \`SponsoredVaultOpenToAll\` and per-address \`SponsoredV
 
 ## HTTP API
 
-This route uses the same middleware as other public \`/contracts/*\` write routes: **\`X-ACTA-Key\`** header, valid API key, and rate limits. Prefix paths with your network base URL (e.g. \`https://acta.build/api/testnet\`).
+This route uses the same middleware as other public \`/contracts/*\` write routes: **\`X-ACTA-Key\`** header, valid API key, and rate limits. Prefix paths with your network base URL (e.g. \`https://api.testnet.acta.build\`).
 
 ### POST /contracts/sponsored-vault/create
 

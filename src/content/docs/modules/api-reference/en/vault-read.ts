@@ -41,7 +41,7 @@ Lists verifiable credential (VC) IDs stored in an owner's vault.
 **Example:**
 
 \`\`\`bash
-curl -X POST https://acta.build/api/testnet/contracts/vault/list-vc-ids \\
+curl -X POST https://api.testnet.acta.build/contracts/vault/list-vc-ids \\
   -H "Content-Type: application/json" \\
   -d '{
     "owner": "G..."
@@ -85,7 +85,7 @@ Gets a specific verifiable credential from a vault.
 **Example:**
 
 \`\`\`bash
-curl -X POST https://acta.build/api/testnet/contracts/vault/get-vc \\
+curl -X POST https://api.testnet.acta.build/contracts/vault/get-vc \\
   -H "Content-Type: application/json" \\
   -d '{
     "owner": "G...",
@@ -131,7 +131,7 @@ Gets the parent VC info for a linked credential. Returns \`null\` if the credent
 **Example:**
 
 \`\`\`bash
-curl -X POST https://acta.build/api/testnet/contracts/vault/get-vc-parent \\
+curl -X POST https://api.testnet.acta.build/contracts/vault/get-vc-parent \\
   -H "Content-Type: application/json" \\
   -d '{
     "owner": "G...",
@@ -176,7 +176,7 @@ Or if revoked:
 **Example:**
 
 \`\`\`bash
-curl -X POST https://acta.build/api/testnet/contracts/vault/verify-vc \\
+curl -X POST https://api.testnet.acta.build/contracts/vault/verify-vc \\
   -H "Content-Type: application/json" \\
   -d '{
     "owner": "G...",
