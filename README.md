@@ -55,13 +55,13 @@ The site runs at `http://localhost:3000/`.
 
 ## Scripts
 
-| Script | What it does |
-|---|---|
-| `npm run dev` | Start the dev server |
-| `npm run build` | Generate the docs index and build the site |
-| `npm run start` | Run the production server |
-| `npm run lint` | Run ESLint |
-| `npm run format` | Format with Prettier |
+| Script                      | What it does                                     |
+| --------------------------- | ------------------------------------------------ |
+| `npm run dev`               | Start the dev server                             |
+| `npm run build`             | Generate the docs index and build the site       |
+| `npm run start`             | Run the production server                        |
+| `npm run lint`              | Run ESLint                                       |
+| `npm run format`            | Format with Prettier                             |
 | `npm run mcp:generate-docs` | Regenerate the MCP `docs-data.json` from content |
 
 ## Content structure
