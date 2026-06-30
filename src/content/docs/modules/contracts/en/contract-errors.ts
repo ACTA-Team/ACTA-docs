@@ -16,20 +16,20 @@ export const contractErrors: DocPage = {
   content: `
 # Contract errors
 
-If something goes wrong inside the Soroban contract, Stellar surfaces **\`Error(Contract, #N)\`** — **N** is just a number. **Important:** the same **N** can mean different things on the **vault** contract, the **issuer registry**, or the **DID registry**. Always match the code to the contract you invoked.
+If something goes wrong inside the Soroban contract, Stellar surfaces **\`Error(Contract, #N)\`** - **N** is just a number. **Important:** the same **N** can mean different things on the **vault** contract, the **issuer registry**, or the **DID registry**. Always match the code to the contract you invoked.
 
-> **v0.4.0:** vaults are single-tenant and deployed by the \`vc-vault-factory\`. Issuance is **open by default** — owners **block** issuers (deny-by-exception) rather than authorizing them. The old allow-list and linked-VC error codes no longer apply.
+> **v0.4.0:** vaults are single-tenant and deployed by the \`vc-vault-factory\`. Issuance is **open by default** - owners **block** issuers (deny-by-exception) rather than authorizing them. The old allow-list and linked-VC error codes no longer apply.
 
 ## In one minute
 
-- **Vault** — A single-tenant \`vc-vault\` (one per owner) deployed by the factory: issue, revoke, deny/allow issuer, and related operations.
-- **Issuer registry** — A separate contract for issuer metadata; it has its own error codes in the section below.
-- **DID registry** — The \`did:stellar\` identity registry contract; manages DID registration, updates, transfers, and deactivation.
+- **Vault** - A single-tenant \`vc-vault\` (one per owner) deployed by the factory: issue, revoke, deny/allow issuer, and related operations.
+- **Issuer registry** - A separate contract for issuer metadata; it has its own error codes in the section below.
+- **DID registry** - The \`did:stellar\` identity registry contract; manages DID registration, updates, transfers, and deactivation.
 
 ## When you see this
 
-- **Usually on submit** — Prepare may still return XDR; the error often appears only after your signed transaction runs on-chain.
-- **RPC / Horizon** — Failed simulation or submission responses include the contract error code.
+- **Usually on submit** - Prepare may still return XDR; the error often appears only after your signed transaction runs on-chain.
+- **RPC / Horizon** - Failed simulation or submission responses include the contract error code.
 
 ## Vault (vc-vault)
 
@@ -37,10 +37,10 @@ Codes below are **only** for \`vc-vault\`.
 
 | Error | What happened & what to try |
 |-------|----------------------------|
-| **#1** · Vault already exists | A vault already exists for this owner at this \`userSalt\` — e.g. deploying twice for the same owner. **Try:** check the vault exists first; do not replay the deploy. |
+| **#1** · Vault already exists | A vault already exists for this owner at this \`userSalt\` - e.g. deploying twice for the same owner. **Try:** check the vault exists first; do not replay the deploy. |
 | **#2** · Issuer denied | This issuer has been **blocked** on the vault (deny-by-exception). **Try:** the owner can \`allow_issuer\` to unblock, or issue from an unblocked account. |
 | **#3** · Issuer already in that state | You blocked an issuer already blocked, or unblocked one that wasn't blocked. **Try:** refresh the denied-issuer list before changing it. |
-| **#4** · Vault revoked / not active | This owner's vault is revoked or inactive — writes that need an active vault are blocked. **Try:** stop issuing for this vault; handle recovery off-chain if needed. |
+| **#4** · Vault revoked / not active | This owner's vault is revoked or inactive - writes that need an active vault are blocked. **Try:** stop issuing for this vault; handle recovery off-chain if needed. |
 | **#6** · VC not found | No credential with that \`vc_id\` for this owner (typo, wrong network, or wrong vault). **Try:** list VC ids, double-check \`owner\` + \`vc_id\` + \`userSalt\`. |
 | **#7** · VC already revoked | You acted on a credential that is already revoked (e.g. revoke twice). **Try:** refresh state from chain; treat the VC as invalid. |
 | **#8** · Vault not initialized | There is no vault yet for this owner. **Try:** deploy the vault (normal or sponsored flow) before issuing. |
@@ -58,7 +58,7 @@ Codes below are **only** for \`vc-vault\`.
 
 ## API-level errors
 
-Some errors come from the **ACTA API** before a transaction reaches the contract — they are string codes, not \`Error(Contract, #N)\`:
+Some errors come from the **ACTA API** before a transaction reaches the contract - they are string codes, not \`Error(Contract, #N)\`:
 
 | Error | What happened & what to try |
 |-------|----------------------------|
@@ -66,7 +66,7 @@ Some errors come from the **ACTA API** before a transaction reaches the contract
 
 ## Issuer registry
 
-Codes **1–5** here belong **only** to \`vc-issuer-registry\` — do not mix them with vault codes.
+Codes **1-5** here belong **only** to \`vc-issuer-registry\` - do not mix them with vault codes.
 
 | Error | What happened & what to try |
 |-------|----------------------------|
@@ -78,7 +78,7 @@ Codes **1–5** here belong **only** to \`vc-issuer-registry\` — do not mix th
 
 ## DID registry (did-stellar-registry)
 
-Codes **1–20** here belong **only** to \`did-stellar-registry\` — the on-chain registry for \`did:stellar\` identifiers.
+Codes **1-20** here belong **only** to \`did-stellar-registry\` - the on-chain registry for \`did:stellar\` identifiers.
 
 | Error | What happened & what to try |
 |-------|----------------------------|
@@ -86,7 +86,7 @@ Codes **1–20** here belong **only** to \`did-stellar-registry\` — the on-cha
 | **#2** · DID not found | \`update\` / \`transfer_controller\` / \`deactivate\` called for an unknown DID. **Try:** verify the DID string and network. |
 | **#3** · Version mismatch | \`expected_version\` does not match the current on-chain version. **Try:** re-read the record, get the latest version, and retry. |
 | **#4** · DID deactivated | Mutation attempted on a deactivated (tombstone) DID. **Try:** deactivation is irreversible; create a new DID instead. |
-| **#5** · Invalid auth key count | \`authentication\` count is outside the allowed range (1–3). **Try:** provide between 1 and 3 authentication keys. |
+| **#5** · Invalid auth key count | \`authentication\` count is outside the allowed range (1-3). **Try:** provide between 1 and 3 authentication keys. |
 | **#6** · Invalid assertion key count | \`assertion_method\` count exceeds the maximum (3). **Try:** reduce the number of assertion method keys. |
 | **#7** · Invalid key agreement count | \`key_agreement\` count exceeds the maximum (1). **Try:** provide at most 1 key agreement key. |
 | **#8** · Invalid service count | \`services\` count exceeds the maximum (3). **Try:** reduce the number of services. |

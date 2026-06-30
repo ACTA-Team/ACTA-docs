@@ -25,7 +25,7 @@ With **\`?owner=\`** it returns the **per-vault** version of that owner's derive
 
 **Query Parameters:**
 
-- \`owner\` (optional): Owner address (\`G...\`) — returns that vault's version.
+- \`owner\` (optional): Owner address (\`G...\`) - returns that vault's version.
 - \`userSalt\` (optional): Selects which of the owner's vaults to read (default all-zero).
 - \`sourcePublicKey\` (required): An existing Stellar account (\`G...\`) used for Soroban simulation.
 
@@ -45,7 +45,7 @@ curl "https://api.testnet.acta.build/contracts/version?owner=G...&sourcePublicKe
 
 ## Fee Configuration
 
-Issuance fees live **on the factory** and are read via its **\`quote_fee\`** (the same value charged on-chain at issuance — default 1 USDC per credential, paid by the issuer). There are **no role-based fee reads** (the old fee-admin / fee-early / fee-standard tiers are gone); the factory exposes a single standard fee plus an optional per-issuer custom fee.
+Issuance fees live **on the factory** and are read via its **\`quote_fee\`** (the same value charged on-chain at issuance - default 1 USDC per credential, paid by the issuer). There are **no role-based fee reads** (the old fee-admin / fee-early / fee-standard tiers are gone); the factory exposes a single standard fee plus an optional per-issuer custom fee.
 
 \`quote_fee\` resolves the effective fee for a given issuer (custom fee if set and unexpired, otherwise the standard fee).
 

@@ -69,7 +69,7 @@ El enlace de compartir contiene los campos seleccionados que necesita el destina
 
 ## Acceso de Emisores
 
-La emisión es **abierta por defecto** — cualquiera con un \`did:stellar\` registrado puede emitir a tu bóveda. Controlas el acceso **bloqueando** a los emisores que no quieres (denegar-por-excepción).
+La emisión es **abierta por defecto** - cualquiera con un \`did:stellar\` registrado puede emitir a tu bóveda. Controlas el acceso **bloqueando** a los emisores que no quieres (denegar-por-excepción).
 
 ### Bloquear un Emisor
 

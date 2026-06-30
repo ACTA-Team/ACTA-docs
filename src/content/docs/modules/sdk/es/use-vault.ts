@@ -20,7 +20,7 @@ export const useVault: DocPage = {
 
 Hook para operaciones de bóveda: crear bóveda, bloquear (deny) un emisor, desbloquear (allow) un emisor.
 
-> **Denegar-por-excepción (v0.4.0):** la emisión es abierta por defecto. Los propietarios ya no autorizan emisores — los **bloquean** con \`denyIssuer\` y los **desbloquean** con \`allowIssuer\`. \`authorizeIssuer\` / \`revokeIssuer\` siguen existiendo como **alias** (authorize→allow, revoke→deny) por retrocompatibilidad.
+> **Denegar-por-excepción (v0.4.0):** la emisión es abierta por defecto. Los propietarios ya no autorizan emisores - los **bloquean** con \`denyIssuer\` y los **desbloquean** con \`allowIssuer\`. \`authorizeIssuer\` / \`revokeIssuer\` siguen existiendo como **alias** (authorize→allow, revoke→deny) por retrocompatibilidad.
 
 ## Función
 

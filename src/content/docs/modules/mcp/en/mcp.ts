@@ -17,7 +17,7 @@ export const mcp: DocPage = {
   content: `
 # MCP
 
-**MCP** (npm package \`@acta-team/docs-mcp\`) is a read-only [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server. MCP-compatible clients—for example Claude, Cursor, or other assistants that support MCP—can query the **official ACTA documentation** through it.
+**MCP** (npm package \`@acta-team/docs-mcp\`) is a read-only [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server. MCP-compatible clients-for example Claude, Cursor, or other assistants that support MCP-can query the **official ACTA documentation** through it.
 
 Use it when you want an assistant to answer questions about ACTA using **public, official, and up-to-date** documentation, not guesses from general training data alone.
 

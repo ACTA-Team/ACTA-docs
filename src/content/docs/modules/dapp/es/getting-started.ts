@@ -45,12 +45,12 @@ La creación de la bóveda es una operación única por propietario.
 
 ## Paso 3: Registrar tu DID
 
-Para **emitir** credenciales debes controlar un \`did:stellar\` registrado y resoluble. (No necesitas autorizar emisores — la emisión es abierta por defecto.)
+Para **emitir** credenciales debes controlar un \`did:stellar\` registrado y resoluble. (No necesitas autorizar emisores - la emisión es abierta por defecto.)
 
 1. Ve a la sección **Mi DID** en el sidebar
 2. Si aún no tienes un \`did:stellar\`, sigue la indicación para registrar uno
 3. Firma la transacción de registro con tu wallet
-4. El controlador on-chain de tu DID debe coincidir con tu wallet emisora — el dApp gestiona este vínculo por ti
+4. El controlador on-chain de tu DID debe coincidir con tu wallet emisora - el dApp gestiona este vínculo por ti
 
 **Nota:** Las direcciones de wallet planas y \`did:pkh\` ya no se aceptan como DID del emisor.
 

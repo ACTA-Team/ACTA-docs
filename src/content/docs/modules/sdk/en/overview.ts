@@ -36,7 +36,7 @@ npm install @acta-team/credentials
 
 ## Exports
 
-- **\`ActaConfig\`**: Provider — required \`baseURL\`; optional explicit \`apiKey\`.
+- **\`ActaConfig\`**: Provider - required \`baseURL\`; optional explicit \`apiKey\`.
 - **\`useActaClient\`**: Returns the contextual \`ActaClient\` (must be rendered under \`ActaConfig\`).
 - **Hooks**: \`useVault\`, \`useCredential\`, \`useVaultRead\`.
 - **\`ActaClient\`**: \`sponsoredVaultCreate\` for the public sponsored-vault **create** flow (prepare/submit); see **sponsoredVault**.
@@ -82,9 +82,9 @@ The \`ConfigResponse\` now exposes \`networkType\`, \`factoryContractId\`, \`vau
 
 ## Hooks summary
 
-- **\`useVault\`** — \`createVault\` (optional \`userSalt\`), \`denyIssuer\`, \`allowIssuer\` (\`authorizeIssuer\`/\`revokeIssuer\` kept as aliases).
-- **\`useCredential\`** — \`issue\` (optional \`userSalt\`), \`revoke\` (sends \`owner\`).
-- **\`useVaultRead\`** — \`listVcIds\`, \`getVc\`, \`verifyVc\`.
+- **\`useVault\`** - \`createVault\` (optional \`userSalt\`), \`denyIssuer\`, \`allowIssuer\` (\`authorizeIssuer\`/\`revokeIssuer\` kept as aliases).
+- **\`useCredential\`** - \`issue\` (optional \`userSalt\`), \`revoke\` (sends \`owner\`).
+- **\`useVaultRead\`** - \`listVcIds\`, \`getVc\`, \`verifyVc\`.
 
 ## sponsoredVault
 

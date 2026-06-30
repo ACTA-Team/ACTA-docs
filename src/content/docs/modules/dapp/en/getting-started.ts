@@ -45,12 +45,12 @@ The vault creation is a one-time operation per owner.
 
 ## Step 3: Register Your DID
 
-To **issue** credentials you must control a registered, resolvable \`did:stellar\`. (You do **not** need to authorize issuers — issuance is open by default.)
+To **issue** credentials you must control a registered, resolvable \`did:stellar\`. (You do **not** need to authorize issuers - issuance is open by default.)
 
 1. Go to the **My DID** section in the sidebar
 2. If you do not have a \`did:stellar\` yet, follow the prompt to register one
 3. Sign the registration transaction with your wallet
-4. Your DID's on-chain controller must match your issuing wallet — the dApp handles this binding for you
+4. Your DID's on-chain controller must match your issuing wallet - the dApp handles this binding for you
 
 **Note:** Bare wallet addresses and \`did:pkh\` are no longer accepted as the issuer DID.
 

@@ -39,9 +39,9 @@ https://api.mainnet.acta.build
 
 As of v0.4.0 vaults are **single-tenant**: each owner has their **own** \`vc-vault\` contract, deployed deterministically by a **\`vc-vault-factory\`**. There is one factory per network.
 
-- The API/SDK **derive** an owner's vault address from \`(factory, owner, userSalt)\` — you never pass a vault \`contractId\` for normal operations.
+- The API/SDK **derive** an owner's vault address from \`(factory, owner, userSalt)\` - you never pass a vault \`contractId\` for normal operations.
 - The default **\`userSalt\`** is 32 zero bytes, giving exactly **one canonical vault per owner**. Pass a different \`userSalt\` (or an explicit \`vaultContract\`) only if an owner runs multiple vaults.
-- **Fees** are charged **on-chain** by the vault via the factory's \`quote_fee\` at issuance time (default **1 USDC per credential, paid by the issuer**). The API no longer accepts a fee override, and the old role-based fee tiers (admin / early / standard) are gone — the factory has a single standard fee plus an optional per-issuer custom fee.
+- **Fees** are charged **on-chain** by the vault via the factory's \`quote_fee\` at issuance time (default **1 USDC per credential, paid by the issuer**). The API no longer accepts a fee override, and the old role-based fee tiers (admin / early / standard) are gone - the factory has a single standard fee plus an optional per-issuer custom fee.
 - **Issuance is open by default** (deny-by-exception): owners do not authorize issuers; they **block** (\`deny-issuer\`) and **unblock** (\`allow-issuer\`).
 - The issuer must control a **registered, resolvable \`did:stellar\`**. \`did:pkh\` and bare wallet addresses are no longer accepted as the issuer DID, and the API enforces a controller↔DID binding (the DID's on-chain controller must equal the signing issuer; mismatches return \`issuerDid_controller_mismatch\`).
 
@@ -52,7 +52,7 @@ As of v0.4.0 vaults are **single-tenant**: each owner has their **own** \`vc-vau
 
 ## Authentication
 
-**Contract routes** (\`/contracts/*\` — vault read/write, sponsored vault, VC operations, contract version, etc.) require a valid API key on every request. Send it in the request header:
+**Contract routes** (\`/contracts/*\` - vault read/write, sponsored vault, VC operations, contract version, etc.) require a valid API key on every request. Send it in the request header:
 
 \`\`\`
 X-ACTA-Key: your_api_key_here

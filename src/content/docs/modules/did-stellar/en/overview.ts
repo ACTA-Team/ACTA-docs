@@ -19,7 +19,7 @@ export const didStellarOverview: DocPage = {
 
 \`did:stellar\` is ACTA's Decentralized Identifier method for the Stellar blockchain. It provides a W3C DID Core 1.1 compliant identity layer anchored on Soroban smart contracts.
 
-> **Required for issuance:** ACTA credential issuance now requires the **issuer to control a registered \`did:stellar\`**. The API enforces a controller↔issuer binding — the DID's on-chain controller must equal the signing issuer account. \`did:pkh\` and bare wallet addresses are no longer accepted as the issuer DID.
+> **Required for issuance:** ACTA credential issuance now requires the **issuer to control a registered \`did:stellar\`**. The API enforces a controller↔issuer binding - the DID's on-chain controller must equal the signing issuer account. \`did:pkh\` and bare wallet addresses are no longer accepted as the issuer DID.
 
 ## What is did:stellar?
 

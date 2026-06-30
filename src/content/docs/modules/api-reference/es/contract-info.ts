@@ -25,7 +25,7 @@ Con **\`?owner=\`** devuelve la versión **por bóveda** de la bóveda derivada 
 
 **Parámetros de consulta:**
 
-- \`owner\` (opcional): Dirección del propietario (\`G...\`) — devuelve la versión de esa bóveda.
+- \`owner\` (opcional): Dirección del propietario (\`G...\`) - devuelve la versión de esa bóveda.
 - \`userSalt\` (opcional): Selecciona cuál de las bóvedas del propietario leer (por defecto todo en cero).
 - \`sourcePublicKey\` (requerido): Una cuenta Stellar existente (\`G...\`) usada para simulación Soroban.
 
@@ -45,7 +45,7 @@ curl "https://api.testnet.acta.build/contracts/version?owner=G...&sourcePublicKe
 
 ## Configuración de Tarifas
 
-Las tarifas de emisión viven **en el factory** y se leen mediante su **\`quote_fee\`** (el mismo valor cobrado on-chain al emitir — por defecto 1 USDC por credencial, pagada por el emisor). **No hay lecturas de tarifa por rol** (los antiguos niveles fee-admin / fee-early / fee-standard desaparecieron); el factory expone una sola tarifa estándar más una tarifa personalizada opcional por emisor.
+Las tarifas de emisión viven **en el factory** y se leen mediante su **\`quote_fee\`** (el mismo valor cobrado on-chain al emitir - por defecto 1 USDC por credencial, pagada por el emisor). **No hay lecturas de tarifa por rol** (los antiguos niveles fee-admin / fee-early / fee-standard desaparecieron); el factory expone una sola tarifa estándar más una tarifa personalizada opcional por emisor.
 
 \`quote_fee\` resuelve la tarifa efectiva para un emisor dado (la personalizada si está configurada y vigente, de lo contrario la estándar).
 

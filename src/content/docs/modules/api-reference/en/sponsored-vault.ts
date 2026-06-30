@@ -25,7 +25,7 @@ For comparison, \`POST /contracts/vault/create\` prepares the factory's \`deploy
 | **Sponsor** | Signs the transaction; mapped on-chain to the deployer. Pays network/fees like any invoke. |
 | **Owner** | Receives the single-tenant vault; address stored as vault admin; \`didUri\` stored for the vault. |
 
-**Sponsored deploy is open** — any sponsor address may call \`deploy_sponsored\` (subject to Stellar/Soroban auth and fees). There is **no sponsor whitelist** and **no open-to-all flag** to manage.
+**Sponsored deploy is open** - any sponsor address may call \`deploy_sponsored\` (subject to Stellar/Soroban auth and fees). There is **no sponsor whitelist** and **no open-to-all flag** to manage.
 
 On success the factory deploys the owner's vault at the deterministic \`(factory, owner, userSalt)\` address.
 
@@ -37,7 +37,7 @@ Relevant Soroban entrypoint on the **vc-vault-factory**:
 |----------|------|-------------|
 | \`deploy_sponsored(sponsor, owner, did_uri, user_salt)\` | Sponsor | Deterministically deploys a single-tenant vault for \`owner\`; the sponsor authorizes the deploy. |
 
-**Public HTTP:** the ACTA API documents only **\`POST /contracts/sponsored-vault/create\`** (prepare/submit for \`deploy_sponsored\`). There are no admin/whitelist routes — sponsored deploy is open.
+**Public HTTP:** the ACTA API documents only **\`POST /contracts/sponsored-vault/create\`** (prepare/submit for \`deploy_sponsored\`). There are no admin/whitelist routes - sponsored deploy is open.
 
 ## HTTP API
 
@@ -73,9 +73,9 @@ Prepares or submits \`deploy_sponsored\`.
 
 This write endpoint follows the standard two-step flow:
 
-1. **Prepare** — JSON with operation fields (no \`signedXdr\`) → \`xdr\` + \`network\` passphrase.
-2. **Sign** — Stellar wallet signs the XDR so the sponsor's auth requirements are met.
-3. **Submit** — POST the same path with \`{ "signedXdr" }\` → \`tx_id\`.
+1. **Prepare** - JSON with operation fields (no \`signedXdr\`) → \`xdr\` + \`network\` passphrase.
+2. **Sign** - Stellar wallet signs the XDR so the sponsor's auth requirements are met.
+3. **Submit** - POST the same path with \`{ "signedXdr" }\` → \`tx_id\`.
 
 ## Operational notes
 

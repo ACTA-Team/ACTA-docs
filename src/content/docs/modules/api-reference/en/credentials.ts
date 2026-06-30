@@ -18,7 +18,7 @@ export const credentials: DocPage = {
 
 Endpoints for issuing and revoking verifiable credentials. All support prepare/submit flow. **Issue Credential** (\`POST /contracts/vc/issue\`) and **Batch Issue** (\`POST /contracts/vc/batch-issue\`) require an API key; **Revoke Credential** does not require authentication.
 
-> **Single-tenant vaults (v0.4.0):** issuance targets the **owner's derived vault** (\`(factory, owner, userSalt)\`). Pass **\`owner\`** plus the optional **\`userSalt\`** / **\`vaultContract\`** — there is no vault \`contractId\` for issuance.
+> **Single-tenant vaults (v0.4.0):** issuance targets the **owner's derived vault** (\`(factory, owner, userSalt)\`). Pass **\`owner\`** plus the optional **\`userSalt\`** / **\`vaultContract\`** - there is no vault \`contractId\` for issuance.
 
 ## Issuer DID requirement
 
@@ -184,7 +184,7 @@ Revokes a VC by ID in the owner's derived vault. No authentication required. **R
 
 ## Fees
 
-Issuance fees are charged **on-chain** by the vault via the factory's \`quote_fee\` (default **1 USDC per credential**, paid by the **issuer**). The API **no longer accepts a fee override**, and there are no role-based fee tiers — the factory has a single standard fee plus an optional per-issuer custom fee (with optional expiry).
+Issuance fees are charged **on-chain** by the vault via the factory's \`quote_fee\` (default **1 USDC per credential**, paid by the **issuer**). The API **no longer accepts a fee override**, and there are no role-based fee tiers - the factory has a single standard fee plus an optional per-issuer custom fee (with optional expiry).
 
 ## Request Body
 

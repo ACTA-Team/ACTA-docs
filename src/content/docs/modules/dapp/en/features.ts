@@ -69,7 +69,7 @@ The share link contains the selected revealed fields needed by the recipient.
 
 ## Issuer Access
 
-Issuance is **open by default** — anyone with a registered \`did:stellar\` can issue to your vault. You control access by **blocking** issuers you do not want (deny-by-exception).
+Issuance is **open by default** - anyone with a registered \`did:stellar\` can issue to your vault. You control access by **blocking** issuers you do not want (deny-by-exception).
 
 ### Block an Issuer
 

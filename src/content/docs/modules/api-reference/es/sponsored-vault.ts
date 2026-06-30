@@ -25,7 +25,7 @@ Como comparación, \`POST /contracts/vault/create\` prepara el \`deploy\` del fa
 | **Sponsor** | Firma la transacción; mapeado on-chain al desplegador. Paga red/fees como cualquier invocación. |
 | **Propietario** | Recibe la bóveda mono-inquilino; su dirección se almacena como admin de la bóveda; el \`didUri\` se almacena para la bóveda. |
 
-**El despliegue patrocinado es abierto** — cualquier dirección sponsor puede llamar a \`deploy_sponsored\` (sujeto a auth de Stellar/Soroban y a las fees). **No hay lista blanca de sponsors** ni **flag open-to-all** que gestionar.
+**El despliegue patrocinado es abierto** - cualquier dirección sponsor puede llamar a \`deploy_sponsored\` (sujeto a auth de Stellar/Soroban y a las fees). **No hay lista blanca de sponsors** ni **flag open-to-all** que gestionar.
 
 Al tener éxito, el factory despliega la bóveda del propietario en la dirección determinista \`(factory, owner, userSalt)\`.
 
@@ -37,7 +37,7 @@ Entrypoint Soroban relevante en el **vc-vault-factory**:
 |----------|------|-------------|
 | \`deploy_sponsored(sponsor, owner, did_uri, user_salt)\` | Sponsor | Despliega de forma determinista una bóveda mono-inquilino para \`owner\`; el sponsor autoriza el despliegue. |
 
-**HTTP público:** la API de ACTA documenta solo **\`POST /contracts/sponsored-vault/create\`** (prepare/submit para \`deploy_sponsored\`). No hay rutas de admin/lista blanca — el despliegue patrocinado es abierto.
+**HTTP público:** la API de ACTA documenta solo **\`POST /contracts/sponsored-vault/create\`** (prepare/submit para \`deploy_sponsored\`). No hay rutas de admin/lista blanca - el despliegue patrocinado es abierto.
 
 ## API HTTP
 
@@ -73,9 +73,9 @@ Prepara o envía \`deploy_sponsored\`.
 
 Este endpoint de escritura sigue el flujo estándar de dos pasos:
 
-1. **Prepare** — JSON con campos de operación (sin \`signedXdr\`) → \`xdr\` + \`network\` passphrase.
-2. **Firmar** — la wallet Stellar firma el XDR para satisfacer los requisitos de auth del sponsor.
-3. **Submit** — POST a la misma ruta con \`{ "signedXdr" }\` → \`tx_id\`.
+1. **Prepare** - JSON con campos de operación (sin \`signedXdr\`) → \`xdr\` + \`network\` passphrase.
+2. **Firmar** - la wallet Stellar firma el XDR para satisfacer los requisitos de auth del sponsor.
+3. **Submit** - POST a la misma ruta con \`{ "signedXdr" }\` → \`tx_id\`.
 
 ## Notas operativas
 

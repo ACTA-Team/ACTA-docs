@@ -16,7 +16,7 @@ export const vaultWrite: DocPage = {
   content: `
 # Operaciones de Bóveda (Escritura)
 
-Operaciones de escritura para gestión de bóvedas. Todos los endpoints soportan flujo prepare/submit. **Autenticación:** igual que otros \`/contracts/*\` — \`X-ACTA-Key\` válida (ver Resumen de la API).
+Operaciones de escritura para gestión de bóvedas. Todos los endpoints soportan flujo prepare/submit. **Autenticación:** igual que otros \`/contracts/*\` - \`X-ACTA-Key\` válida (ver Resumen de la API).
 
 > **Bóvedas mono-inquilino (v0.4.0):** cada propietario tiene su propia \`vc-vault\`, desplegada por el \`vc-vault-factory\`. La API deriva la dirección de la bóveda a partir de \`(factory, owner, userSalt)\`, por lo que pasas **\`owner\`** (no un \`contractId\` de bóveda). El **\`userSalt\`** opcional (hex de 32 bytes, por defecto todo en cero) selecciona cuál de las bóvedas del propietario se usa.
 
@@ -214,7 +214,7 @@ Establece el nuevo propietario de la bóveda (admin de bóveda). Debe ser firmad
 
 ## Bóveda patrocinada
 
-Creación de bóveda en la que un **sponsor** firma \`deploy_sponsored\` en el factory en lugar de que el propietario firme \`deploy\`. El propietario igualmente recibe una bóveda mono-inquilino en la dirección determinista de \`(factory, owner, userSalt)\`. La superficie HTTP **pública** es solo **\`POST /contracts/sponsored-vault/create\`** (mismo middleware \`X-ACTA-Key\` que otros escritos públicos \`/contracts/*\`). El despliegue patrocinado es **abierto** — no hay lista blanca de sponsors.
+Creación de bóveda en la que un **sponsor** firma \`deploy_sponsored\` en el factory en lugar de que el propietario firme \`deploy\`. El propietario igualmente recibe una bóveda mono-inquilino en la dirección determinista de \`(factory, owner, userSalt)\`. La superficie HTTP **pública** es solo **\`POST /contracts/sponsored-vault/create\`** (mismo middleware \`X-ACTA-Key\` que otros escritos públicos \`/contracts/*\`). El despliegue patrocinado es **abierto** - no hay lista blanca de sponsors.
 
 Consulta **Bóveda patrocinada (Sponsored Vault)** (\`api-sponsored-vault\`) para semántica del contrato, el endpoint create y \`sponsoredVaultCreate\` en el SDK de credenciales.
 

@@ -61,7 +61,7 @@ Todos los endpoints soportan automáticamente mainnet y testnet vía la configur
 
 ## Modelo de identidad
 
-Usa el método \`did:stellar\` — una identidad compatible con W3C DID Core 1.1 anclada en un contrato registry de Soroban:
+Usa el método \`did:stellar\` - una identidad compatible con W3C DID Core 1.1 anclada en un contrato registry de Soroban:
 
 \`\`\`
 did:stellar:{network}:{didId}

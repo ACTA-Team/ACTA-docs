@@ -15,7 +15,7 @@ export const overview: DocPage = {
     "sponsoredVault",
   ],
   content: `
-# SDK de credenciales — Resumen
+# SDK de credenciales - Resumen
 
 Paquete publicado: **\`@acta-team/credentials\`** (instalable con npm, pnpm o yarn). Si ves referencias viejas a **\`@acta-team/acta-sdk\`** es la misma pieza de integración renombrada: el provider React **\`ActaConfig\`** crea el **\`ActaClient\`** en contexto (accedes con **\`useActaClient()\`**), más hooks para lectura/escritura de bóveda y credenciales. La red viene de **\`baseURL\`** (\`mainNet\` o \`testNet\`).
 
@@ -36,7 +36,7 @@ npm install @acta-team/credentials
 
 ## Exports
 
-- **\`ActaConfig\`**: provider — \`baseURL\` obligatorio; \`apiKey\` opcional.
+- **\`ActaConfig\`**: provider - \`baseURL\` obligatorio; \`apiKey\` opcional.
 - **\`useActaClient\`**: devuelve el \`ActaClient\` del contexto (hijo de \`ActaConfig\`).
 - **Hooks**: \`useVault\`, \`useCredential\`, \`useVaultRead\`.
 - **\`ActaClient\`**: \`sponsoredVaultCreate\` para el flujo público **create** de bóveda patrocinada (prepare/submit); ver **sponsoredVault**.
@@ -82,9 +82,9 @@ El \`ConfigResponse\` ahora expone \`networkType\`, \`factoryContractId\`, \`vau
 
 ## Resumen de hooks
 
-- **\`useVault\`** — \`createVault\` (\`userSalt\` opcional), \`denyIssuer\`, \`allowIssuer\` (\`authorizeIssuer\`/\`revokeIssuer\` se mantienen como alias).
-- **\`useCredential\`** — \`issue\` (\`userSalt\` opcional), \`revoke\` (envía \`owner\`).
-- **\`useVaultRead\`** — \`listVcIds\`, \`getVc\`, \`verifyVc\`.
+- **\`useVault\`** - \`createVault\` (\`userSalt\` opcional), \`denyIssuer\`, \`allowIssuer\` (\`authorizeIssuer\`/\`revokeIssuer\` se mantienen como alias).
+- **\`useCredential\`** - \`issue\` (\`userSalt\` opcional), \`revoke\` (envía \`owner\`).
+- **\`useVaultRead\`** - \`listVcIds\`, \`getVc\`, \`verifyVc\`.
 
 ## sponsoredVault
 

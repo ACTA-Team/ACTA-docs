@@ -18,7 +18,7 @@ export const credentials: DocPage = {
 
 Endpoints para emitir y revocar credenciales verificables. Todos soportan flujo prepare/submit. **Emitir Credencial** (\`POST /contracts/vc/issue\`) y **Emisión por Lote** (\`POST /contracts/vc/batch-issue\`) requieren API key; **Revocar Credencial** no requiere autenticación.
 
-> **Bóvedas mono-inquilino (v0.4.0):** la emisión apunta a la **bóveda derivada del propietario** (\`(factory, owner, userSalt)\`). Pasa **\`owner\`** más los opcionales **\`userSalt\`** / **\`vaultContract\`** — no hay un \`contractId\` de bóveda para emitir.
+> **Bóvedas mono-inquilino (v0.4.0):** la emisión apunta a la **bóveda derivada del propietario** (\`(factory, owner, userSalt)\`). Pasa **\`owner\`** más los opcionales **\`userSalt\`** / **\`vaultContract\`** - no hay un \`contractId\` de bóveda para emitir.
 
 ## Requisito de DID del emisor
 
@@ -184,7 +184,7 @@ Revoca una VC por ID en la bóveda derivada del propietario. No requiere autenti
 
 ## Tarifas
 
-Las tarifas de emisión se cobran **on-chain** por la bóveda mediante el \`quote_fee\` del factory (por defecto **1 USDC por credencial**, pagada por el **emisor**). La API **ya no acepta sobrescritura de tarifa**, y no hay niveles de tarifa por rol — el factory tiene una sola tarifa estándar más una tarifa personalizada opcional por emisor (con expiración opcional).
+Las tarifas de emisión se cobran **on-chain** por la bóveda mediante el \`quote_fee\` del factory (por defecto **1 USDC por credencial**, pagada por el **emisor**). La API **ya no acepta sobrescritura de tarifa**, y no hay niveles de tarifa por rol - el factory tiene una sola tarifa estándar más una tarifa personalizada opcional por emisor (con expiración opcional).
 
 ## Cuerpo de solicitud
 

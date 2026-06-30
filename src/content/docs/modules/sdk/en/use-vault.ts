@@ -20,7 +20,7 @@ export const useVault: DocPage = {
 
 Hook for vault operations: create vault, block (deny) an issuer, unblock (allow) an issuer.
 
-> **Deny-by-exception (v0.4.0):** issuance is open by default. Owners no longer authorize issuers — they **block** them with \`denyIssuer\` and **unblock** them with \`allowIssuer\`. \`authorizeIssuer\` / \`revokeIssuer\` still exist as **aliases** (authorize→allow, revoke→deny) for backward compatibility.
+> **Deny-by-exception (v0.4.0):** issuance is open by default. Owners no longer authorize issuers - they **block** them with \`denyIssuer\` and **unblock** them with \`allowIssuer\`. \`authorizeIssuer\` / \`revokeIssuer\` still exist as **aliases** (authorize→allow, revoke→deny) for backward compatibility.
 
 ## Function
 

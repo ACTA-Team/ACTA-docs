@@ -19,7 +19,7 @@ El dApp de ACTA es una aplicación web que proporciona una interfaz para emitir,
 
 El dApp de ACTA es una aplicación descentralizada que te permite:
 
-- **Emitir credenciales** a usuarios (emitir requiere un \`did:stellar\` registrado — ver **Mi DID**)
+- **Emitir credenciales** a usuarios (emitir requiere un \`did:stellar\` registrado - ver **Mi DID**)
 - **Mantener una bóveda mono-inquilino** de credenciales con búsqueda, compartición y revocación
 - **Compartir credenciales** con divulgación selectiva de campos
 - **Gestionar el acceso de emisores** bloqueando y desbloqueando emisores (la emisión es abierta por defecto)
@@ -40,7 +40,7 @@ Cada propietario tiene su **propia** bóveda, desplegada de forma determinista p
 
 ### Acceso de Emisores (lista de bloqueo)
 
-- **La emisión es abierta por defecto** — cualquiera con un \`did:stellar\` registrado puede emitir a una bóveda salvo que esté bloqueado
+- **La emisión es abierta por defecto** - cualquiera con un \`did:stellar\` registrado puede emitir a una bóveda salvo que esté bloqueado
 - **Bloquea** un emisor para impedir que escriba en tu bóveda
 - **Desbloquea** un emisor previamente bloqueado para restaurar el acceso
 - Revisa tu lista de emisores bloqueados
@@ -76,7 +76,7 @@ Consulta la [Guía de Primeros Pasos](#dapp-getting-started) para instrucciones 
 
 ## Acceder al dApp
 
-El dApp de ACTA está disponible en el enlace de abajo. **No se requiere instalación** — ábrelo en tu navegador web y conecta tu wallet Stellar para comenzar.
+El dApp de ACTA está disponible en el enlace de abajo. **No se requiere instalación** - ábrelo en tu navegador web y conecta tu wallet Stellar para comenzar.
 
 :::dapp-open-cta:::
     `,

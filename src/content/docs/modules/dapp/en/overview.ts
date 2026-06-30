@@ -19,7 +19,7 @@ The ACTA dApp is a modern web application that provides a user-friendly interfac
 
 The ACTA dApp is a decentralized application that allows you to:
 
-- **Issue credentials** to users (issuing requires a registered \`did:stellar\` — see **My DID**)
+- **Issue credentials** to users (issuing requires a registered \`did:stellar\` - see **My DID**)
 - **Maintain a single-tenant vault** of credentials with search, share, and revoke actions
 - **Share credentials** with selective field disclosure
 - **Manage issuer access** by blocking and unblocking issuers (issuance is open by default)
@@ -40,7 +40,7 @@ Each owner has their **own** vault, deployed deterministically by the \`vc-vault
 
 ### Issuer Access (block list)
 
-- **Issuance is open by default** — anyone with a registered \`did:stellar\` can issue to a vault unless blocked
+- **Issuance is open by default** - anyone with a registered \`did:stellar\` can issue to a vault unless blocked
 - **Block** an issuer to stop it from writing to your vault
 - **Unblock** a previously blocked issuer to restore access
 - Review your blocked-issuer list
@@ -76,7 +76,7 @@ See the [Getting Started Guide](#dapp-getting-started) for detailed instructions
 
 ## Access the dApp
 
-The ACTA dApp is available at the link below. **No installation required** — open it in your web browser and connect your Stellar wallet to get started.
+The ACTA dApp is available at the link below. **No installation required** - open it in your web browser and connect your Stellar wallet to get started.
 
 :::dapp-open-cta:::
     `,

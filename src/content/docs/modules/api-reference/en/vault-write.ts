@@ -16,7 +16,7 @@ export const vaultWrite: DocPage = {
   content: `
 # Vault Operations (Write)
 
-Write operations for vault management. All endpoints support prepare/submit flow. **Authentication:** same as other \`/contracts/*\` routes — valid \`X-ACTA-Key\` (see API Overview).
+Write operations for vault management. All endpoints support prepare/submit flow. **Authentication:** same as other \`/contracts/*\` routes - valid \`X-ACTA-Key\` (see API Overview).
 
 > **Single-tenant vaults (v0.4.0):** each owner has their own \`vc-vault\`, deployed by the \`vc-vault-factory\`. The API derives the vault address from \`(factory, owner, userSalt)\`, so you pass **\`owner\`** (not a vault \`contractId\`). The optional **\`userSalt\`** (32-byte hex, default all-zero) selects which of an owner's vaults to target.
 
@@ -214,7 +214,7 @@ Sets the new vault owner (vault admin). Must be signed by the current owner.
 
 ## Sponsored vault
 
-Vault creation where a **sponsor** signs \`deploy_sponsored\` on the factory instead of the owner signing \`deploy\`. The owner still receives a single-tenant vault at the deterministic \`(factory, owner, userSalt)\` address. The **public** HTTP surface is only **\`POST /contracts/sponsored-vault/create\`** (same \`X-ACTA-Key\` middleware as other public \`/contracts/*\` writes). Sponsored deploy is **open** — there is no sponsor whitelist.
+Vault creation where a **sponsor** signs \`deploy_sponsored\` on the factory instead of the owner signing \`deploy\`. The owner still receives a single-tenant vault at the deterministic \`(factory, owner, userSalt)\` address. The **public** HTTP surface is only **\`POST /contracts/sponsored-vault/create\`** (same \`X-ACTA-Key\` middleware as other public \`/contracts/*\` writes). Sponsored deploy is **open** - there is no sponsor whitelist.
 
 See **Sponsored Vault** (\`api-sponsored-vault\`) for contract semantics, the create endpoint, and \`sponsoredVaultCreate\` in the Credentials SDK.
 

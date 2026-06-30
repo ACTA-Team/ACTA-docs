@@ -16,20 +16,20 @@ export const contractErrors: DocPage = {
   content: `
 # Errores de contrato
 
-Si algo falla dentro del contrato Soroban, Stellar muestra **\`Error(Contract, #N)\`** — **N** es solo un número. **Importante:** el mismo **N** puede significar cosas distintas en el contrato **bóveda**, el **registro de emisores** o el **registro DID**. Siempre cruza el código con el contrato que invocaste.
+Si algo falla dentro del contrato Soroban, Stellar muestra **\`Error(Contract, #N)\`** - **N** es solo un número. **Importante:** el mismo **N** puede significar cosas distintas en el contrato **bóveda**, el **registro de emisores** o el **registro DID**. Siempre cruza el código con el contrato que invocaste.
 
-> **v0.4.0:** las bóvedas son mono-inquilino y las despliega el \`vc-vault-factory\`. La emisión es **abierta por defecto** — los propietarios **bloquean** emisores (denegar-por-excepción) en vez de autorizarlos. Los antiguos códigos de lista de autorizados y de VC vinculada ya no aplican.
+> **v0.4.0:** las bóvedas son mono-inquilino y las despliega el \`vc-vault-factory\`. La emisión es **abierta por defecto** - los propietarios **bloquean** emisores (denegar-por-excepción) en vez de autorizarlos. Los antiguos códigos de lista de autorizados y de VC vinculada ya no aplican.
 
 ## En un minuto
 
-- **Bóveda** — Una \`vc-vault\` mono-inquilino (una por propietario) desplegada por el factory: emitir, revocar, bloquear/desbloquear emisor y operaciones relacionadas.
-- **Registro de emisores** — Otro contrato para metadatos de emisores; sus códigos de error están en la sección de abajo.
-- **Registro DID** — El contrato de registro de identidad \`did:stellar\`; gestiona registro, actualizaciones, transferencias y desactivación de DIDs.
+- **Bóveda** - Una \`vc-vault\` mono-inquilino (una por propietario) desplegada por el factory: emitir, revocar, bloquear/desbloquear emisor y operaciones relacionadas.
+- **Registro de emisores** - Otro contrato para metadatos de emisores; sus códigos de error están en la sección de abajo.
+- **Registro DID** - El contrato de registro de identidad \`did:stellar\`; gestiona registro, actualizaciones, transferencias y desactivación de DIDs.
 
 ## Cuándo los ves
 
-- **Casi siempre al enviar** — Prepare puede devolver XDR; el fallo suele verse solo cuando la transacción firmada se ejecuta on-chain.
-- **RPC / Horizon** — En simulación o envío fallido viene el código de error del contrato.
+- **Casi siempre al enviar** - Prepare puede devolver XDR; el fallo suele verse solo cuando la transacción firmada se ejecuta on-chain.
+- **RPC / Horizon** - En simulación o envío fallido viene el código de error del contrato.
 
 ## Bóveda (vc-vault)
 
@@ -37,10 +37,10 @@ Los códigos de abajo son **solo** de \`vc-vault\`.
 
 | Error | Qué pasó y qué probar |
 |-------|----------------------|
-| **#1** · Bóveda ya existe | Ya existe una bóveda para ese owner con este \`userSalt\` — p. ej. desplegar dos veces para el mismo owner. **Prueba:** comprobar si existe bóveda antes; no repetir el deploy. |
+| **#1** · Bóveda ya existe | Ya existe una bóveda para ese owner con este \`userSalt\` - p. ej. desplegar dos veces para el mismo owner. **Prueba:** comprobar si existe bóveda antes; no repetir el deploy. |
 | **#2** · Emisor bloqueado | Ese emisor fue **bloqueado** en la bóveda (denegar-por-excepción). **Prueba:** el propietario puede \`allow_issuer\` para desbloquear, o emitir desde una cuenta no bloqueada. |
 | **#3** · Emisor ya en ese estado | Bloqueaste un emisor ya bloqueado, o desbloqueaste uno que no lo estaba. **Prueba:** refrescar la lista de bloqueados antes de cambiarla. |
-| **#4** · Bóveda revocada / inactiva | La bóveda de ese owner está revocada o inactiva — no se permiten escrituras que exijan bóveda activa. **Prueba:** no emitir más ahí; recuperación off-chain si aplica. |
+| **#4** · Bóveda revocada / inactiva | La bóveda de ese owner está revocada o inactiva - no se permiten escrituras que exijan bóveda activa. **Prueba:** no emitir más ahí; recuperación off-chain si aplica. |
 | **#6** · VC no encontrada | No hay credencial con ese \`vc_id\` para ese owner (typo, red o bóveda equivocada). **Prueba:** listar ids, revisar \`owner\` + \`vc_id\` + \`userSalt\`. |
 | **#7** · VC ya revocada | Actuaste sobre una credencial ya revocada (p. ej. revocar dos veces). **Prueba:** refrescar estado on-chain; tratar la VC como inválida. |
 | **#8** · Bóveda no inicializada | Aún no hay bóveda para ese owner. **Prueba:** desplegar bóveda (normal o patrocinada) antes de emitir. |
@@ -58,7 +58,7 @@ Los códigos de abajo son **solo** de \`vc-vault\`.
 
 ## Errores a nivel de API
 
-Algunos errores vienen de la **API de ACTA** antes de que la transacción llegue al contrato — son códigos de texto, no \`Error(Contract, #N)\`:
+Algunos errores vienen de la **API de ACTA** antes de que la transacción llegue al contrato - son códigos de texto, no \`Error(Contract, #N)\`:
 
 | Error | Qué pasó y qué probar |
 |-------|----------------------|
@@ -66,7 +66,7 @@ Algunos errores vienen de la **API de ACTA** antes de que la transacción llegue
 
 ## Registro de emisores
 
-Los códigos **1–5** son **solo** de \`vc-issuer-registry\` — no los mezcles con los de la bóveda.
+Los códigos **1-5** son **solo** de \`vc-issuer-registry\` - no los mezcles con los de la bóveda.
 
 | Error | Qué pasó y qué probar |
 |-------|----------------------|
@@ -78,7 +78,7 @@ Los códigos **1–5** son **solo** de \`vc-issuer-registry\` — no los mezcles
 
 ## Registro DID (did-stellar-registry)
 
-Los códigos **1–20** son **solo** de \`did-stellar-registry\` — el registro on-chain de identificadores \`did:stellar\`.
+Los códigos **1-20** son **solo** de \`did-stellar-registry\` - el registro on-chain de identificadores \`did:stellar\`.
 
 | Error | Qué pasó y qué probar |
 |-------|----------------------|
@@ -86,7 +86,7 @@ Los códigos **1–20** son **solo** de \`did-stellar-registry\` — el registro
 | **#2** · DID no encontrado | \`update\` / \`transfer_controller\` / \`deactivate\` para un DID desconocido. **Prueba:** verificar el string del DID y la red. |
 | **#3** · Versión no coincide | \`expected_version\` no coincide con la versión on-chain actual. **Prueba:** releer el registro, obtener la última versión y reintentar. |
 | **#4** · DID desactivado | Mutación sobre un DID desactivado (tombstone). **Prueba:** la desactivación es irreversible; crear un nuevo DID. |
-| **#5** · Conteo de claves auth inválido | El conteo de \`authentication\` está fuera del rango permitido (1–3). **Prueba:** incluir entre 1 y 3 claves de autenticación. |
+| **#5** · Conteo de claves auth inválido | El conteo de \`authentication\` está fuera del rango permitido (1-3). **Prueba:** incluir entre 1 y 3 claves de autenticación. |
 | **#6** · Conteo de claves de aserción inválido | El conteo de \`assertion_method\` excede el máximo (3). **Prueba:** reducir la cantidad de claves de aserción. |
 | **#7** · Conteo de key agreement inválido | El conteo de \`key_agreement\` excede el máximo (1). **Prueba:** incluir como máximo 1 clave de key agreement. |
 | **#8** · Conteo de servicios inválido | El conteo de \`services\` excede el máximo (3). **Prueba:** reducir la cantidad de servicios. |

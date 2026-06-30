@@ -61,7 +61,7 @@ All endpoints support both mainnet and testnet automatically via \`NETWORK_TYPE\
 
 ## Identity Model
 
-Uses the \`did:stellar\` method — a W3C DID Core 1.1 compliant identity anchored on a Soroban registry contract:
+Uses the \`did:stellar\` method - a W3C DID Core 1.1 compliant identity anchored on a Soroban registry contract:
 
 \`\`\`
 did:stellar:{network}:{didId}

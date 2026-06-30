@@ -39,9 +39,9 @@ https://api.mainnet.acta.build
 
 Desde v0.4.0 las bóvedas son **mono-inquilino**: cada propietario tiene su **propio** contrato \`vc-vault\`, desplegado de forma determinista por un **\`vc-vault-factory\`**. Hay un factory por red.
 
-- La API/SDK **derivan** la dirección de la bóveda de un propietario a partir de \`(factory, owner, userSalt)\` — nunca pasas un \`contractId\` de bóveda en operaciones normales.
+- La API/SDK **derivan** la dirección de la bóveda de un propietario a partir de \`(factory, owner, userSalt)\` - nunca pasas un \`contractId\` de bóveda en operaciones normales.
 - El **\`userSalt\`** por defecto son 32 bytes en cero, dando exactamente **una bóveda canónica por propietario**. Usa un \`userSalt\` distinto (o un \`vaultContract\` explícito) solo si un propietario maneja varias bóvedas.
-- Las **tarifas** se cobran **on-chain** por la bóveda mediante el \`quote_fee\` del factory al momento de emitir (por defecto **1 USDC por credencial, pagada por el emisor**). La API ya no acepta sobrescritura de tarifa, y los antiguos niveles de tarifa por rol (admin / early / standard) desaparecieron — el factory tiene una sola tarifa estándar más una tarifa personalizada opcional por emisor.
+- Las **tarifas** se cobran **on-chain** por la bóveda mediante el \`quote_fee\` del factory al momento de emitir (por defecto **1 USDC por credencial, pagada por el emisor**). La API ya no acepta sobrescritura de tarifa, y los antiguos niveles de tarifa por rol (admin / early / standard) desaparecieron - el factory tiene una sola tarifa estándar más una tarifa personalizada opcional por emisor.
 - La **emisión es abierta por defecto** (denegar-por-excepción): los propietarios no autorizan emisores; los **bloquean** (\`deny-issuer\`) y **desbloquean** (\`allow-issuer\`).
 - El emisor debe controlar un **\`did:stellar\` registrado y resoluble**. \`did:pkh\` y direcciones de wallet planas ya no se aceptan como DID del emisor, y la API exige un vínculo controlador↔DID (el controlador on-chain del DID debe ser igual al emisor que firma; las discrepancias devuelven \`issuerDid_controller_mismatch\`).
 
@@ -52,7 +52,7 @@ Desde v0.4.0 las bóvedas son **mono-inquilino**: cada propietario tiene su **pr
 
 ## Autenticación
 
-Las rutas de **contrato** (\`/contracts/*\` — bóveda lectura/escritura, bóveda patrocinada, operaciones VC, versión del contrato, etc.) requieren una API key válida en cada solicitud. Envíala en el header:
+Las rutas de **contrato** (\`/contracts/*\` - bóveda lectura/escritura, bóveda patrocinada, operaciones VC, versión del contrato, etc.) requieren una API key válida en cada solicitud. Envíala en el header:
 
 \`\`\`
 X-ACTA-Key: tu_api_key_aqui
