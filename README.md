@@ -1,87 +1,80 @@
-# ACTA
+# ACTA Docs
 
-### *Revolutionizing credential verification through blockchain technology*
+The documentation site for **ACTA**: verifiable credentials and decentralized
+identity on **Stellar**. It is the single reference for everything an issuer,
+holder, verifier, or integrator needs to build on ACTA, from the REST API and
+the SDK to the Soroban contracts and the dApp.
 
-[![Stellar Network](https://img.shields.io/badge/Stellar-Network-7B4BFF?style=for-the-badge&logo=stellar)](https://stellar.org)
-[![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=next.js)](https://nextjs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-Powered-3178C6?style=for-the-badge&logo=typescript)](https://typescriptlang.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-22C55E?style=for-the-badge)](./LICENSE)
+- Live: https://docs.acta.build
+- dApp: https://dapp.acta.build
+- DID resolver: https://did.acta.build
+- API: `https://api.{testnet,mainnet}.acta.build`
 
----
+## About ACTA
 
-## **What is ACTA?**
+ACTA issues W3C-style verifiable credentials anchored on Stellar and Soroban:
 
-**ACTA** is a Verifiable Credentials API built on the Stellar network that enables startups, DAOs and companies to issue and verify trusted digital credentials. Our vision is to make trust in digital records as seamless and transparent as a blockchain transaction.
+- **`did:stellar` identities** resolved from an on-chain registry, decoupled
+  from any single wallet (key rotation, portability).
+- **Single-tenant credential vaults**, one Soroban contract per owner, deployed
+  by a `vc-vault-factory`. Status and revocation are publicly verifiable on
+  Stellar; issuance fees settle on-chain in USDC.
+- A **prepare/submit** flow so the user's Stellar wallet signs every
+  transaction; the services never hold keys.
 
-The problem we address is the fragmentation and inefficiency of current credential systems, from universities validating diplomas to DAOs verifying member contributions. ACTA provides a simple API layer that abstracts the complexity of blockchain, allowing any platform to issue tamper-proof credentials anchored on Stellar's public ledger.
+## What this site documents
 
-Technically, ACTA leverages Soroban smart contracts and off-chain verification logic to create, store, and validate verifiable credentials following the W3C standard. Issuers and holders are identified by a portable `did:stellar` resolved on-chain; each holder owns a single-tenant credential vault deployed by a factory contract, so status and revocation are publicly verifiable while sensitive data stays off-chain behind our API.
+Bilingual (English / Spanish) content for:
 
-This hybrid approach ensures scalability, low cost, and interoperability with other identity frameworks. We are currently focused on integrations with educational institutions, companies and startups in LATAM, with the vision to expand globally and empower users to control and share their credentials securely.
+- **Welcome**: introduction, architecture, getting started.
+- **API Reference**: vault, credential, contract-info, sponsored-vault, and
+  health endpoints (prepare/submit XDR).
+- **SDK** (`@acta-team/credentials`): `useVault`, `useCredential`,
+  `useVaultRead`, sponsored vault.
+- **Contracts**: `vc-vault-factory`, single-tenant `vc-vault`,
+  `did-stellar-registry`, and contract errors.
+- **dApp**: features and usage of the web app.
+- **MCP**: the docs MCP server for AI assistants.
 
-By combining open-source principles with Stellar's trust and efficiency, ACTA aims to become the backbone for verifiable identity and credential infrastructure across the ecosystem.
+## Tech stack
 
----
+- Next.js (App Router), React, TypeScript, Tailwind CSS.
+- Content is authored as typed `DocPage` modules (not Markdown files), which
+  keeps it type-checked and lets the build generate a machine-readable index.
+- `@acta-team/docs-mcp` (in `packages/docs-mcp`): an MCP server that exposes the
+  docs to AI assistants, built from a generated `docs-data.json`.
 
-## **Our Mission**
-
-**ACTA's mission** is to build the infrastructure that enables the secure, transparent, and accessible issuance and verification of verifiable digital credentials, leveraging the Stellar network to ensure trust and traceability without exposing personal data.
-
----
-
-## **Official Links**
-
-These are the official ACTA resources.
-If you are looking for the correct website, docs, demo or support channels, start here:
-
-- 🌐 Website (Landing): https://acta.build
-- 🧪 dApp: https://dapp.acta.build
-- 📚 API Docs: https://docs.acta.build
-- 🪪 DID Resolver: https://did.acta.build
-
-> ACTA is built on Stellar + Soroban, following the W3C Verifiable Credentials standard.
-
----
-
-## **SEO & Discoverability**
-
-ACTA is actively developed as an open-source infrastructure for **verifiable credentials on Stellar**.
-If you found this repository via search, these keywords describe the project:
-
-- Verifiable Credentials (W3C)
-- Blockchain credentials infrastructure
-- Stellar / Soroban smart contracts
-- `did:stellar` decentralized identity
-- Digital trust & credential verification
-- Identity & credential interoperability
-
----
-
-## **Documentation site**
-
-This repository powers [docs.acta.build](https://docs.acta.build): the reference for the ACTA API, SDK, Soroban contracts, dApp, and MCP server, in English and Spanish.
+## Quick start
 
 ```bash
 npm install
-npm run dev   # http://localhost:3000
+npm run dev
 ```
 
-Content is authored as typed `DocPage` modules under `src/content/docs/modules/<module>/<lang>/`. After editing, run `npm run mcp:generate-docs` to refresh the search index and the `@acta-team/docs-mcp` data.
+The site runs at `http://localhost:3000/`.
 
----
+## Scripts
 
-## **Built for Meridian Hackathon**
+| Script | What it does |
+|---|---|
+| `npm run dev` | Start the dev server |
+| `npm run build` | Generate the docs index and build the site |
+| `npm run start` | Run the production server |
+| `npm run lint` | Run ESLint |
+| `npm run format` | Format with Prettier |
+| `npm run mcp:generate-docs` | Regenerate the MCP `docs-data.json` from content |
 
-*Showcasing the future of decentralized credential management.*
+## Content structure
 
-**Meet us at:** https://acta.build • **Try demo:** https://dapp.acta.build • **API Docs:** https://docs.acta.build
+- `src/content/docs/modules/<module>/<lang>/<page>.ts` - one `DocPage` per page
+  (`slug`, `title`, `section`, `tocItems`, `content`). `<lang>` is `en` or `es`.
+- `src/content/docs/navigation/{en,es}.ts` - sidebar navigation per language.
+- `src/content/docs/locales/` - UI strings.
+- `packages/docs-mcp/` - the MCP server and the generated `docs-data.json`.
 
----
+After editing content, run `npm run mcp:generate-docs` so the search index and
+MCP data stay in sync.
 
-## **License**
+## License
 
-MIT. See [LICENSE](./LICENSE).
-
----
-
-*The new infrastructure for digital trust.*
+MIT.
