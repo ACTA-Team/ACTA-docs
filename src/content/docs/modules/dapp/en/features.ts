@@ -8,7 +8,7 @@ export const features: DocPage = {
     "Issue Credentials",
     "Vault Management",
     "Share Credentials",
-    "Authorize Issuers",
+    "Issuer Access",
     "API Key Management",
   ],
   content: `
@@ -18,7 +18,7 @@ Detailed overview of the documented features available in the ACTA dApp.
 
 ## Issue Credentials
 
-Create and issue verifiable credentials to a Stellar wallet address.
+Create and issue verifiable credentials to a Stellar wallet address. Issuing requires a registered, resolvable **did:stellar** issuer identity (not a bare wallet address) and charges an on-chain fee paid by the issuer (on mainnet, 1 USDC per credential).
 
 ### How to Issue
 
@@ -26,8 +26,8 @@ Create and issue verifiable credentials to a Stellar wallet address.
 2. Fill in the credential form:
    - **Credential ID**: Unique identifier for the credential
    - **Credential Data**: JSON data containing the credential information
-   - **Owner**: Stellar wallet address (G...) that will receive the credential
-   - **Issuer DID** (optional): Your DID identifier
+   - **Owner**: Stellar wallet address (G...) whose vault will receive the credential
+   - **Issuer DID** (optional): Your registered did:stellar issuer identity
 3. Click **Issue Credential**
 4. Sign the transaction
 
@@ -67,22 +67,22 @@ Share credentials by choosing which fields to reveal.
 
 The share link contains the selected revealed fields needed by the recipient.
 
-## Authorize Issuers
+## Issuer Access
 
-Control who can issue credentials to your vault.
+Issuance is open by default: anyone can issue credentials to your vault unless you block them. Use this section to block issuers you want to stop and unblock them later to restore access.
 
-### Authorize an Issuer
+### Block an Issuer
 
-1. Go to **Authorize** section
-2. Enter the wallet address of the issuer
-3. Click **Authorize Issuer**
+1. Go to the **Issuer Access** section
+2. Enter the issuer you want to block
+3. Click **Block Issuer**
 4. Sign the transaction
 
-### Manage Authorized Issuers
+### Manage Blocked Issuers
 
-- View all authorized issuers
-- Revoke authorization if needed
-- Only authorized issuers can create credentials in your vault
+- View all blocked issuers
+- Unblock an issuer to restore their access
+- Anyone can issue to you unless you block them (deny-by-exception)
 
 ## API Key Management
 

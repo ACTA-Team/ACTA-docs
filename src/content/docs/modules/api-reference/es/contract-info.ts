@@ -6,6 +6,7 @@ export const contractInfo: DocPage = {
   section: "Referencia API",
   tocItems: [
     "Obtener Versión del Contrato",
+    "Comisiones",
     "Parámetros de consulta",
     "Respuesta",
   ],
@@ -18,34 +19,40 @@ Endpoints para recuperar información del contrato.
 
 ### GET /contracts/version
 
-Devuelve la cadena de versión del contrato ACTA. No requiere autenticación.
+Devuelve la cadena de versión del contrato de **bóveda** de un owner. Las bóvedas son mono-inquilino, así que la versión es por bóveda: pasa el \`owner\` (y opcionalmente \`userSalt\`) para que el factory pueda resolver la bóveda a consultar. No requiere autenticación.
 
 **Parámetros de consulta:**
 
-- \`contractId\` (opcional): Sobrescribir ID de contrato (C...)
+- \`owner\` (requerido): Dirección del owner (G...) cuya versión de bóveda quieres
+- \`userSalt\` (opcional): salt de 32 bytes que selecciona la bóveda del owner; por defecto 32 bytes en cero
 - \`sourcePublicKey\` (requerido): Una cuenta Stellar existente (G...) usada para simulación Soroban
 
 **Respuesta:**
 
 \`\`\`json
 {
-  "version": "1.0.0"
+  "version": "0.4.0"
 }
 \`\`\`
 
 **Ejemplo:**
 
 \`\`\`bash
-curl "https://api.testnet.acta.build/contracts/version?sourcePublicKey=G..."
+curl "https://api.testnet.acta.build/contracts/version?owner=G...&sourcePublicKey=G..."
 \`\`\`
+
+## Comisiones
+
+La comisión de emisión se lee **on-chain desde \`quote_fee\` del factory** únicamente. No hay niveles de comisión por rol: aplica una única comisión estándar, con una comisión personalizada opcional por emisor, ambas resueltas on-chain. La comisión la paga el emisor al momento de emitir (mainnet: 1 USDC por credencial). La API no expone un endpoint de niveles de comisión ni acepta un override de comisión.
 
 ## Parámetros de consulta
 
-- **contractId** (opcional): Sobrescribir el ID de contrato ACTA por defecto
+- **owner** (requerido): Dirección del owner de la bóveda (G...)
+- **userSalt** (opcional): salt de 32 bytes que selecciona la bóveda del owner; por defecto 32 bytes en cero
 - **sourcePublicKey** (requerido): Clave pública Stellar (G...) usada para simulación del contrato
 
 ## Respuesta
 
-- **version**: Cadena de versión del contrato
+- **version**: Cadena de versión del contrato de bóveda
     `,
 };

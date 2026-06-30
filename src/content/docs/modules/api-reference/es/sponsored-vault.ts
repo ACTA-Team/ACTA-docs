@@ -6,7 +6,7 @@ export const sponsoredVault: DocPage = {
   section: "Referencia API",
   tocItems: [
     "Concepto",
-    "Contrato on-chain (vc-vault)",
+    "On-chain (vc-vault-factory)",
     "API HTTP",
     "Prepare / submit",
     "Notas operativas",
@@ -14,88 +14,74 @@ export const sponsoredVault: DocPage = {
   content: `
 # Bóveda patrocinada (Sponsored Vault)
 
-Una **bóveda patrocinada** es una bóveda ACTA normal (mismo almacenamiento que \`create_vault\`) creada mediante \`create_sponsored_vault\` en el contrato Soroban **vc-vault**. El **patrocinador (sponsor)** invoca el contrato y debe cumplir la autenticación Soroban (\`sponsor.require_auth()\`); el **propietario (owner)** es el administrador de la bóveda y no firma esta transacción. Sirve cuando una organización paga fees u orquesta el alta mientras el usuario final solo recibe la bóveda.
+Una **bóveda patrocinada** es una bóveda ACTA mono-inquilino normal, desplegada mediante **\`deploy_sponsored\`** en el contrato **vc-vault-factory**. El **sponsor** invoca el factory y debe satisfacer la auth de Soroban (\`sponsor.require_auth()\`); el **owner** es el admin de la bóveda y no firma esta transacción. Úsala cuando una organización paga comisiones u orquesta el onboarding mientras el usuario final solo recibe la bóveda.
 
-En comparación, \`POST /contracts/vault/create\` prepara \`create_vault\`, donde suele firmar el **propietario**. El flujo patrocinado usa \`POST /contracts/sponsored-vault/create\`; la invocación debe cumplir la auth on-chain del **sponsor**—en la práctica el XDR preparado suele firmarlo la cuenta sponsor (ver **sourcePublicKey** abajo).
+Para comparar, \`POST /contracts/vault/create\` prepara el despliegue del propio owner vía factory, donde normalmente firma el **owner**. El flujo patrocinado usa \`POST /contracts/sponsored-vault/create\`; la invocación debe satisfacer la auth on-chain del **sponsor** - en la práctica el XDR preparado suele firmarlo la cuenta del sponsor (ver **sourcePublicKey** abajo).
 
 ## Concepto
 
 | Rol | Responsabilidad |
 |-----|-----------------|
-| **Sponsor** | Firma la transacción; debe estar permitido (ver abajo). Paga red/fees como en cualquier invocación. |
-| **Owner** | Recibe la bóveda; su dirección queda como admin de bóveda; se guarda \`didUri\`. |
-| **Admin del contrato** | Admin Soroban del contrato (no “admin HTTP”): siempre puede patrocinar; puede activar modo abierto y gestionar la lista de sponsors on-chain. |
+| **Sponsor** | Firma la transacción. Paga red/comisiones como cualquier invocación. |
+| **Owner** | Recibe la bóveda; su dirección se guarda como admin de la bóveda; \`didUri\` se guarda para la bóveda. |
 
-**Modos de autorización** (flag on-chain \`sponsored_vault_open_to_all\`, por defecto \`false\`):
+**Patrocinio abierto:** el patrocinio es **abierto**. Cualquier dirección sponsor puede llamar a \`deploy_sponsored\` para un owner (siempre sujeto a la auth y comisiones de Stellar/Soroban). En este modelo no hay lista de sponsors permitidos ni un interruptor de "abierto a todos".
 
-- **Restringido (\`open_to_all = false\`)**: Solo el admin del contrato **o** las direcciones en la **lista de sponsors autorizados** pueden llamar \`create_sponsored_vault\`.
-- **Abierto (\`open_to_all = true\`)**: Cualquier sponsor puede llamar \`create_sponsored_vault\` (siguen aplicando auth y fees de Stellar/Soroban).
+El factory deriva la dirección de la bóveda de forma determinista a partir de \`(factory, owner, userSalt)\`, por lo que un despliegue patrocinado y un despliegue autoservicio para el mismo owner + salt resuelven a la misma bóveda. Volver a desplegar para un owner que ya tiene bóveda en ese salt falla on-chain (ya desplegada).
 
-**Fallos habituales on-chain:**
+Al tener éxito, el factory emite un evento de bóveda desplegada con \`sponsor\`, \`owner\` y \`did_uri\`.
 
-- \`NotAuthorizedSponsor\` (código **11**): Sponsor no permitido con modo restringido.
-- \`AlreadyInitialized\` (código **1**): El owner ya tiene bóveda; no repetir create para ese owner.
-- \`NotInitialized\`: Contrato no inicializado.
+## On-chain (vc-vault-factory)
 
-Si tiene éxito, el contrato emite **\`SponsoredVaultCreated\`** con \`sponsor\`, \`owner\` y \`did_uri\`.
-
-## Contrato on-chain (vc-vault)
-
-Entrypoints Soroban relevantes en el mismo contrato **vc-vault** que el resto de operaciones de bóveda:
+El entrypoint relevante del factory es:
 
 | Función | Auth | Descripción |
 |---------|------|-------------|
-| \`create_sponsored_vault(sponsor, owner, did_uri)\` | Sponsor | Crea estado de bóveda para \`owner\` si está permitido y no estaba inicializado. |
-| \`get_sponsored_vault_open_to_all\` | Solo lectura | Devuelve el booleano modo abierto/restringido. |
-| \`set_sponsored_vault_open_to_all(open)\` | Admin del contrato | Establece modo restringido vs abierto. |
-| \`add_sponsored_vault_sponsor(sponsor)\` | Admin del contrato | Añade una dirección al conjunto de sponsors autorizados. |
-| \`remove_sponsored_vault_sponsor(sponsor)\` | Admin del contrato | Quita una dirección del conjunto de sponsors autorizados. |
+| \`deploy_sponsored(sponsor, owner, did_uri, user_salt)\` | Sponsor | Despliega de forma determinista la bóveda del owner si aún no está desplegada en ese salt. |
 
-En almacenamiento persistente aparecen \`SponsoredVaultOpenToAll\` y entradas \`SponsoredVaultSponsor(Address)\` por dirección.
-
-**HTTP público:** la API ACTA documenta aquí solo **\`POST /contracts/sponsored-vault/create\`** (prepare/submit de \`create_sponsored_vault\`). Lecturas y ajustes admin del flag y de la lista de sponsors **no** forman parte de la superficie REST pública; los admins del contrato invocan on-chain (o herramientas internas), no estas rutas en esta referencia.
+**HTTP público:** la API de ACTA documenta solo **\`POST /contracts/sponsored-vault/create\`** (prepare/submit para \`deploy_sponsored\`).
 
 ## API HTTP
 
-Esta ruta usa el mismo middleware que otros \`/contracts/*\` de escritura públicos: cabecera **\`X-ACTA-Key\`**, API key válida y límites de tasa. Antepón la URL base de red (p. ej. \`https://api.testnet.acta.build\`).
+Esta ruta usa el mismo middleware que otras rutas de escritura públicas \`/contracts/*\`: header **\`X-ACTA-Key\`**, API key válida y límites de tasa. Antepón las rutas con la URL base de tu red (ej. \`https://api.testnet.acta.build\`).
 
 ### POST /contracts/sponsored-vault/create
 
-Prepara o envía \`create_sponsored_vault\`.
+Prepara o envía \`deploy_sponsored\`.
 
-**Cuerpo (prepare):**
+**Cuerpo prepare:**
 
 \`\`\`json
 {
   "sponsor": "G...",
   "owner": "G...",
-  "didUri": "did:pkh:stellar:testnet:G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
+  "didUri": "did:stellar:...",
+  "userSalt": "00...00",
+  "sourcePublicKey": "G..."
 }
 \`\`\`
 
-- **sponsor** (requerido): Dirección Stellar que el contrato recibe como sponsor (debe cumplir \`sponsor.require_auth()\` al firmar y enviar la transacción).
-- **owner** (requerido): Propietario de la bóveda (\`G...\`).
-- **didUri** (requerido): DID URI de la bóveda.
-- **sourcePublicKey** (requerido): Cuenta Stellar usada como **fuente (source)** de la transacción al preparar el XDR. La invocación firmada debe autorizar igualmente al **sponsor** en el contrato; lo habitual es que la cuenta sponsor sea a la vez \`sponsor\` y cuenta source/firmante.
-- **contractId** (opcional): id del contrato vc-vault (\`C...\`); si no, el valor por defecto del servidor.
+- **sponsor** (requerido): Dirección Stellar pasada al factory como sponsor (debe satisfacer \`sponsor.require_auth()\` cuando la transacción se firma y envía).
+- **owner** (requerido): Owner de la bóveda (\`G...\`).
+- **didUri** (requerido): URI del DID guardado para la bóveda.
+- **userSalt** (opcional): salt de 32 bytes que selecciona la bóveda del owner; por defecto 32 bytes en cero (una bóveda canónica por owner).
+- **sourcePublicKey** (requerido): Cuenta Stellar usada como **fuente de transacción** cuando la API prepara el XDR. La invocación firmada debe autorizar igualmente al **sponsor** en el contrato; normalmente la cuenta del sponsor es a la vez \`sponsor\` y la cuenta firmante/fuente.
 
-**Cuerpo (submit):** \`{ "signedXdr": "AAAA..." }\`
+**Cuerpo submit:** \`{ "signedXdr": "AAAA..." }\`
 
-**Respuestas:** Prepare → \`{ "xdr", "network" }\`; Submit → \`{ "tx_id" }\`.
+**Respuestas:** Prepare devuelve \`{ "xdr", "network" }\`; Submit devuelve \`{ "tx_id" }\`.
 
 ## Prepare / submit
 
-Este endpoint de escritura sigue el flujo estándar en dos pasos:
+Este endpoint de escritura sigue el flujo estándar de dos pasos:
 
-1. **Prepare** — JSON con campos de operación (sin \`signedXdr\`) → \`xdr\` + \`network\`.
-2. **Firmar** — Wallet Stellar firma el XDR de forma que se cumplan los requisitos de auth del sponsor.
-3. **Submit** — POST al mismo path con \`{ "signedXdr" }\` → \`tx_id\`.
+1. **Prepare** - JSON con campos de la operación (sin \`signedXdr\`) devuelve \`xdr\` + \`network\` passphrase.
+2. **Firmar** - la wallet Stellar firma el XDR para cumplir los requisitos de auth del sponsor.
+3. **Submit** - haz POST a la misma ruta con \`{ "signedXdr" }\` y devuelve \`tx_id\`.
 
 ## Notas operativas
 
-- En modo **restringido**, confirma por otros medios o vía simulación Soroban que tu **sponsor** es admin del contrato o está en la lista autorizada antes de llamar a **create**; no hay helper HTTP público para el flag open-to-all ni la allowlist en esta referencia.
-- Evita llamar **create** si el owner ya tiene bóveda; mejor comprobar existencia vía lectura de bóveda (API u on-chain).
+- Evita llamar a **create** cuando el owner ya tiene bóveda en el \`userSalt\` elegido; el despliegue on-chain falla si la bóveda ya existe. Mejor consulta la existencia de la bóveda on-chain o por API primero (ver operaciones de lectura de bóveda).
+- Las comisiones de emisión se cobran on-chain en la bóveda (vía \`quote_fee\` del factory) y las paga el emisor al momento de emitir, con independencia de quién patrocinó el despliegue de la bóveda.
     `,
 };

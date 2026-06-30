@@ -6,12 +6,13 @@ export const architecture: DocPage = {
   section: "Bienvenida",
   tocItems: [
     "Componentes del sistema",
-    "Contrato de emisión",
-    "Contrato de bóveda",
+    "Vault Factory (vc-vault-factory)",
+    "Contrato de bóveda (vc-vault)",
     "Capa de API",
     "Almacenamiento",
     "Modelo de identidad",
     "Flujo de credenciales",
+    "Direcciones de contratos",
     "Soporte de red",
   ],
   content: `
@@ -21,71 +22,83 @@ Vista técnica de la arquitectura de ACTA y sus componentes.
 
 ## Componentes del sistema
 
-### Contrato de emisión (Soroban)
+La capa on-chain de ACTA (v0.4.0) se construye sobre dos contratos Soroban: una única **Vault Factory** por red y una **bóveda single-tenant** propiedad de cada emisor.
 
-Gestiona el ciclo de vida de la credencial on-chain:
+### Vault Factory (vc-vault-factory)
 
-- **Emitir**: Crea nuevas credenciales y ancla el hash on-chain  
-- **Verificar**: Verificación pública del estado de la credencial  
-- **Revocar**: Revoca credenciales con fecha de revocación opcional  
+Existe exactamente un \`vc-vault-factory\` por red. Se encarga de desplegar y tarifar las bóvedas de cada propietario:
+
+- **Despliegue determinista**: Despliega un nuevo \`vc-vault\` para un propietario a partir de un WASM plantilla. La dirección de la bóveda se deriva de \`(factory, owner, userSalt)\`.
+- **Bóveda canónica**: El \`userSalt\` por defecto son 32 bytes en cero, lo que produce una única bóveda canónica por propietario. Salts distintos permiten bóvedas adicionales para el mismo propietario.
+- **Bóvedas inmutables**: Las bóvedas se despliegan desde un WASM plantilla fijo y son inmutables una vez creadas.
+- **Cotización de tarifa**: Expone \`quote_fee\`, la tarifa de emisión on-chain que paga el emisor (en mainnet, 1 USDC por credencial).
+
+### Contrato de bóveda (vc-vault)
+
+Cada propietario tiene su **propio** contrato \`vc-vault\` single-tenant. No existe un almacén compartido multi-tenant. La bóveda gestiona todo el ciclo de vida de la credencial on-chain:
+
+- **Emitir**: Crea nuevas credenciales y ancla el hash on-chain. La emisión cobra una tarifa on-chain vía el \`quote_fee\` de la factory, pagada por el emisor.
+- **Verificar**: Verificación pública del estado de la credencial.
+- **Revocar**: Revoca credenciales con fecha de revocación opcional.
+- **Almacenar / Listar / Obtener**: Guarda y recupera IDs y datos de credenciales dentro de la bóveda del propietario.
+- **Control de emisores**: La emisión es **abierta por defecto** (denegación por excepción). No hay lista de permitidos. El propietario puede **bloquear** a un emisor con \`deny_issuer\` y **desbloquear** con \`allow_issuer\`.
 
 Las funciones del contrato se exponen vía endpoints de la API. Revisa la referencia de API para más detalles.
-
-### Contrato de bóveda (Soroban)
-
-Repositorio multi-tenant de almacenamiento de credenciales:
-
-- **Inicializar**: Crea una nueva bóveda para un usuario  
-- **Almacenar**: Guarda credenciales cifradas en la bóveda del usuario  
-- **Listar/Obtener**: Recupera IDs y datos de credenciales  
-- **Verificar**: Verifica credenciales delegando al contrato de emisión  
-- **Autorización**: Gestiona las listas de emisores autorizados
-
-Cada usuario tiene una bóveda aislada con controles de administración e autorización de emisores independientes.
 
 ### Capa de API
 
 API REST que provee:
 
-- **Operaciones de credenciales**: emitir, verificar, revocar  
-- **Operaciones de bóveda**: almacenar, recuperar y gestionar bóvedas  
-- **Preparación de transacciones**: genera XDR sin firmar para firma del lado del cliente  
-- **Operaciones de lectura**: consulta de credenciales y estado de la bóveda (sin firma)  
+- **Operaciones de credenciales**: emitir, verificar, revocar
+- **Operaciones de bóveda**: desplegar, almacenar, recuperar y gestionar bóvedas por propietario
+- **Preparación de transacciones**: genera XDR sin firmar para firma del lado del cliente
+- **Operaciones de lectura**: consulta de credenciales y estado de la bóveda (sin firma)
 
 Todos los endpoints soportan automáticamente mainnet y testnet vía la configuración de \`NETWORK_TYPE\`.
 
 ### Almacenamiento
 
-- **On-chain**: Hashes de credenciales y metadatos de estado (contratos inteligentes Soroban)  
-- **Off-chain**: Payload cifrado de la credencial (bóvedas controladas por el usuario)  
+- **On-chain**: Hashes de credenciales y metadatos de estado (contratos inteligentes Soroban)
+- **Off-chain**: Payload cifrado de la credencial (bóvedas controladas por el propietario)
 
-## Modelo de identidad 1.0
+## Modelo de identidad
 
-Usa el formato DID:pkh:
+La identidad del emisor es un \`did:stellar\` registrado y resoluble:
 
 \`\`\`
-did:pkh:stellar:{network}:{wallet_address}
+did:stellar:{network}:{address}
 \`\`\`
 
-- **network**: \`mainnet\` o \`testnet\`  
-- **wallet_address**: clave pública de Stellar (G...)  
+- **DID del emisor**: El emisor debe tener un \`did:stellar\` registrado en un registro did:stellar. Ya no se usa una clave de wallet simple ni \`did:pkh\` como DID del emisor.
+- **Sujeto / titular**: El titular de la credencial se identifica con un DID, expresado como \`credentialSubject.id\` dentro de la credencial.
 
-No se requiere infraestructura de identidad adicional: las claves de la wallet Stellar actúan como identidad.
-
-> **Nota**: La versión 1.0 es la primera versión en ACTA. Se está trabajando en la versión 2.0 donde se usará el DID oficial de Stellar.
+> **Nota**: v0.4.0 usa \`did:stellar\` para la identidad del emisor, resuelto a través del registro did:stellar on-chain.
 
 ## Flujo de credenciales
 
-![Issuance Flow](/issuance-flow.png)  
+![Issuance Flow](/issuance-flow.png)
 
-![Verification Flow](/credential-verifier.png)  
+![Verification Flow](/credential-verifier.png)
+
+## Direcciones de contratos
+
+**Mainnet**
+
+- **vc-vault-factory**: \`CCWNZ6UMUXCDOVP2TWOPVLI4KP4VY4YF7VKPN6XLYVHNFAT24NDB33CX\`
+- **registro did:stellar**: \`CD6LSWW5ZSXOO5WAIHKQLQ262TW7BPI37PNEVMMA273BAPC65NN2AYXQ\`
+- **hash WASM de la plantilla vc-vault**: \`2bd0323a98acb8469606808368da6c79824f2dd8391494b94ddbeb3d22c1a957\`
+
+**Testnet**
+
+- **vc-vault-factory**: \`CDRFQRIP4FA3WMPWCSAM3XEY6EM6EGKRYZRSCSVZ5NHCF6AGEVR2XEPQ\`
+- **registro did:stellar**: \`CB7ATU7SF5QUKJMSULJDJVWJZVDXC23HTZX6NFUDTSFPVT6MA575NNZJ\`
 
 ## Soporte de red
 
 ACTA maneja automáticamente la configuración de red:
 
-- **Testnet**: \`https://api.testnet.acta.build\` o \`NETWORK_TYPE=testnet\`  
-- **Mainnet**: \`https://api.mainnet.acta.build\` o \`NETWORK_TYPE=mainnet\`  
+- **Testnet**: \`https://api.testnet.acta.build\` o \`NETWORK_TYPE=testnet\`
+- **Mainnet**: \`https://api.mainnet.acta.build\` o \`NETWORK_TYPE=mainnet\`
 
 Los IDs de contratos, URLs RPC y passphrases de red se configuran automáticamente según el tipo de red.
     `,

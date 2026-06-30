@@ -46,7 +46,7 @@ See **[Credentials SDK Overview](doc:sdk-overview)** and the hook pages for deta
 
 Connect Stellar wallets for user authentication and transaction signing:
 
-1. **Wallet UI**: Integrate a Stellar wallet adapter—the Stellar docs cover **[Wallet Kit](https://developers.stellar.org/docs/tools/developer-tools/wallet-kit)** and related tooling.
+1. **Wallet UI**: Integrate a Stellar wallet adapter - the Stellar docs cover **[Wallet Kit](https://developers.stellar.org/docs/tools/developer-tools/wallet-kit)** and related tooling.
 2. **Connect wallet**: User connects Freighter or another supported Stellar wallet.
 3. **Sign transactions**: Use ACTA’s transaction preparation endpoints from **[Vault Operations (Write)](doc:api-vault-write)** and **[Credential Operations](doc:api-credentials)**; your \`signTransaction\` callback signs the unsigned XDR the API returns.
 
@@ -60,9 +60,9 @@ Before deploying to mainnet:
 
 ## Next Steps
 
-- **[API Overview](doc:api-overview)** — all public endpoints
-- **[Credential Operations](doc:api-credentials)** and **[Vault Operations (Read)](doc:api-vault-read)** — payloads and examples
-- **[Contract errors](doc:contract-errors)** — on-chain error codes
-- **[FAQ](doc:faq)** — common questions
+- **[API Overview](doc:api-overview)** - all public endpoints
+- **[Credential Operations](doc:api-credentials)** and **[Vault Operations (Read)](doc:api-vault-read)** - payloads and examples
+- **[Contract errors](doc:contract-errors)** - on-chain error codes
+- **[FAQ](doc:faq)** - common questions
     `,
 };

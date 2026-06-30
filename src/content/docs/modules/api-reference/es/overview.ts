@@ -5,11 +5,15 @@ export const overview: DocPage = {
   title: "Resumen",
   section: "Referencia API",
   tocItems: [
+    "Arquitectura",
     "URLs base",
     "Autenticación",
     "Formato de solicitud",
     "Formato de respuesta",
     "Flujo Prepare/Submit",
+    "Comisiones",
+    "Requisito de DID del emisor",
+    "Configuración de red",
     "Manejo de errores",
     "Límites de tasa",
     "Pruébalo en Swagger",
@@ -18,6 +22,15 @@ export const overview: DocPage = {
 # Resumen de Referencia API
 
 API RESTful para la gestión de credenciales ACTA en la blockchain Stellar. Todos los endpoints soportan redes mainnet y testnet.
+
+## Arquitectura
+
+Las bóvedas de ACTA son **mono-inquilino**: cada owner tiene su propio contrato \`vc-vault\`. Las bóvedas se despliegan de forma determinista mediante un único **\`vc-vault-factory\`** por red. Como el despliegue es determinista, la API y el SDK derivan la dirección de la bóveda de un owner a partir de \`(factory, owner, userSalt)\` sin almacenarla: solo pasas el \`owner\`.
+
+- **\`userSalt\`** (opcional): salt de 32 bytes que distingue varias bóvedas para el mismo owner. El valor por defecto son **32 bytes en cero**, lo que produce una única bóveda canónica por owner. Usa un \`userSalt\` distinto solo si quieres ejecutar más de una bóveda por owner.
+- **\`vaultContract\`** (opcional, lecturas): el id del contrato de bóveda ya resuelto (\`C...\`). Si se omite, la API lo resuelve desde \`owner\` (y \`userSalt\`) vía el factory. Úsalo para saltarte la resolución si ya conoces la dirección.
+
+La mayoría de los endpoints reciben \`owner\` (y opcionalmente \`userSalt\`). Ya no hay un \`contractId\` por solicitud para sobrescribir la bóveda: el factory es dueño del despliegue y de la derivación de direcciones.
 
 ## URLs base
 
@@ -35,7 +48,7 @@ https://api.mainnet.acta.build
 
 ## Autenticación
 
-Las rutas de **contrato** (\`/contracts/*\` — bóveda lectura/escritura, bóveda patrocinada, operaciones VC, versión del contrato, etc.) requieren una API key válida en cada solicitud. Envíala en el header:
+Las rutas de **contrato** (\`/contracts/*\` - bóveda lectura/escritura, bóveda patrocinada, operaciones VC, versión del contrato, etc.) requieren una API key válida en cada solicitud. Envíala en el header:
 
 \`\`\`
 X-ACTA-Key: tu_api_key_aqui
@@ -115,6 +128,42 @@ El modo submit devuelve el ID de la transacción:
 1. **Prepare**: Llama al endpoint con parámetros de operación (sin \`signedXdr\`)
 2. **Firmar**: Firma el \`xdr\` devuelto con tu wallet Stellar usando el \`network\` passphrase
 3. **Submit**: Llama al mismo endpoint con \`signedXdr\` para ejecutar
+
+## Comisiones
+
+Las comisiones de emisión se cobran **on-chain en la bóveda** mediante \`quote_fee\` del factory. La comisión la paga el **emisor** al momento de emitir (mainnet: 1 USDC por credencial). La API **ya no acepta un override de comisión** en ningún cuerpo de solicitud. No hay niveles de comisión por rol: hay una única comisión estándar más una comisión personalizada opcional por emisor, ambas resueltas on-chain.
+
+## Requisito de DID del emisor
+
+El emisor debe ser un **\`did:stellar\`** registrado y resoluble. Las direcciones de wallet "a secas" y los valores \`did:pkh\` **ya no se aceptan** como DID del emisor. La API exige una vinculación controlador-DID: el controlador on-chain del DID debe ser igual al emisor que firma; de lo contrario la solicitud falla con el error \`issuerDid_controller_mismatch\`.
+
+El **holder** de la credencial se expresa dentro de \`vcData\` como \`credentialSubject.id\` (un DID). No existe un campo \`holder\` o de wallet aparte en las solicitudes de emisión.
+
+## Configuración de red
+
+### GET /config
+
+Devuelve la configuración pública de la red. Requiere API key (\`X-ACTA-Key\`).
+
+**Respuesta:**
+
+\`\`\`json
+{
+  "rpcUrl": "https://soroban-testnet.stellar.org:443",
+  "networkPassphrase": "Test SDF Network ; September 2015",
+  "networkType": "testnet",
+  "factoryContractId": "C...",
+  "vaultWasmHash": "2bd0323a...",
+  "didStellarRegistryId": "C...",
+  "actaContractId": "C..."
+}
+\`\`\`
+
+- **factoryContractId**: id del contrato \`vc-vault-factory\` para esta red.
+- **networkType**: \`testnet\` o \`mainnet\`.
+- **vaultWasmHash**: hash del WASM plantilla \`vc-vault\` que despliega el factory.
+- **didStellarRegistryId**: id del contrato del registro \`did:stellar\` usado para resolver los DID de emisores.
+- **actaContractId**: alias de retrocompatibilidad de \`factoryContractId\`.
 
 ## Manejo de errores
 

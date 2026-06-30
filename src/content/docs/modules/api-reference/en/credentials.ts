@@ -6,21 +6,23 @@ export const credentials: DocPage = {
   section: "API Reference",
   tocItems: [
     "Issue Credential",
-    "Issue Linked Credential",
+    "Batch Issue",
     "Revoke Credential",
+    "Issuer DID requirement",
+    "Fees",
     "Request Body",
     "Prepare/Submit Flow",
   ],
   content: `
 # Credential Operations
 
-Endpoints for issuing and revoking verifiable credentials. All support prepare/submit flow. **Issue Credential** (\`POST /contracts/vc/issue\`) and **Issue Linked Credential** (\`POST /contracts/vc/issue-linked\`) require an API key; **Revoke Credential** does not require authentication.
+Endpoints for issuing and revoking verifiable credentials. All support prepare/submit flow. **Issue Credential** (\`POST /contracts/vc/issue\`) and **Batch Issue** (\`POST /contracts/vc/batch-issue\`) require an API key; **Revoke Credential** does not require authentication.
 
 ## Issue Credential
 
 ### POST /contracts/vc/issue
 
-Issues a VC: stores payload in the owner's vault and writes issuance status = valid. **Requires API key.**
+Issues a VC: stores the payload in the owner's vault and writes issuance status = valid. **Requires API key.**
 
 **Headers:**
 
@@ -34,14 +36,15 @@ X-ACTA-Key: your_api_key_here
 {
   "owner": "G...",
   "vcId": "credential-123",
-  "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:pkh:stellar:testnet:G...\\",\\"name\\":\\"John Doe\\"}}",
+  "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:stellar:...\\",\\"name\\":\\"John Doe\\"}}",
   "issuer": "G...",
-  "holder": "did:pkh:stellar:testnet:G...",
-  "issuerDid": "did:pkh:stellar:testnet:G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
+  "issuerDid": "did:stellar:...",
+  "userSalt": "00...00",
+  "sourcePublicKey": "G..."
 }
 \`\`\`
+
+The credential **holder** is identified by \`credentialSubject.id\` (a DID) inside \`vcData\`. There is no separate \`holder\` field.
 
 **Request Body (Submit):**
 
@@ -80,7 +83,7 @@ curl -X POST https://api.testnet.acta.build/contracts/vc/issue \\
     "vcId": "credential-123",
     "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"]}",
     "issuer": "G...",
-    "holder": "did:pkh:stellar:testnet:G...",
+    "issuerDid": "did:stellar:...",
     "sourcePublicKey": "G..."
   }'
 
@@ -93,32 +96,31 @@ curl -X POST https://api.testnet.acta.build/contracts/vc/issue \\
   }'
 \`\`\`
 
-## Issue Linked Credential
+## Batch Issue
 
-### POST /contracts/vc/issue-linked
+### POST /contracts/vc/batch-issue
 
-Issues a VC linked to a parent VC: stores payload in the owner's vault with a reference to the parent credential. The parent VC must exist and be valid. **Requires API key.**
-
-**Headers:**
-
-\`\`\`
-X-ACTA-Key: your_api_key_here
-\`\`\`
+Issues several VCs into the same owner's vault in a single transaction. Each entry carries only \`vcId\` and \`vcData\`; the holder of each credential is \`credentialSubject.id\` inside its own \`vcData\` (there is **no** \`holder\` field). **Requires API key.**
 
 **Request Body (Prepare):**
 
 \`\`\`json
 {
   "owner": "G...",
-  "vcId": "linked-credential-456",
-  "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:pkh:stellar:testnet:G...\\",\\"name\\":\\"John Doe\\"}}",
   "issuer": "G...",
-  "holder": "did:pkh:stellar:testnet:G...",
-  "issuerDid": "did:pkh:stellar:testnet:G...",
+  "issuerDid": "did:stellar:...",
+  "userSalt": "00...00",
   "sourcePublicKey": "G...",
-  "contractId": "C...",
-  "parentOwner": "G...",
-  "parentVcId": "credential-123"
+  "vcs": [
+    {
+      "vcId": "credential-1",
+      "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:stellar:...\\"}}"
+    },
+    {
+      "vcId": "credential-2",
+      "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:stellar:...\\"}}"
+    }
+  ]
 }
 \`\`\`
 
@@ -130,64 +132,23 @@ X-ACTA-Key: your_api_key_here
 }
 \`\`\`
 
-**Response (Prepare):**
-
-\`\`\`json
-{
-  "xdr": "AAAA...",
-  "network": "Test SDF Network ; September 2015"
-}
-\`\`\`
-
-**Response (Submit):**
-
-\`\`\`json
-{
-  "tx_id": "abc123..."
-}
-\`\`\`
-
-**Example:**
-
-\`\`\`bash
-# Prepare
-curl -X POST https://api.testnet.acta.build/contracts/vc/issue-linked \\
-  -H "X-ACTA-Key: your_key" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "owner": "G...",
-    "vcId": "linked-credential-456",
-    "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"]}",
-    "issuer": "G...",
-    "holder": "did:pkh:stellar:testnet:G...",
-    "sourcePublicKey": "G...",
-    "parentOwner": "G...",
-    "parentVcId": "credential-123"
-  }'
-
-# Submit (after signing)
-curl -X POST https://api.testnet.acta.build/contracts/vc/issue-linked \\
-  -H "X-ACTA-Key: your_key" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "signedXdr": "AAAA..."
-  }'
-\`\`\`
+**Responses:** Prepare returns \`{ xdr, network }\`; Submit returns \`{ tx_id }\`.
 
 ## Revoke Credential
 
 ### POST /contracts/vc/revoke
 
-Revokes a VC by ID. No authentication required.
+Revokes a VC by ID in a specific owner's vault. No authentication required.
 
 **Request Body (Prepare):**
 
 \`\`\`json
 {
+  "owner": "G...",
   "vcId": "credential-123",
   "date": "2024-01-15T00:00:00.000Z",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
+  "userSalt": "00...00",
+  "sourcePublicKey": "G..."
 }
 \`\`\`
 
@@ -215,6 +176,21 @@ Revokes a VC by ID. No authentication required.
   "tx_id": "abc123..."
 }
 \`\`\`
+
+## Issuer DID requirement
+
+The \`issuerDid\` must be a registered, resolvable **\`did:stellar\`**. Bare wallet addresses and \`did:pkh\` values are **no longer accepted**. The API enforces a controller-to-DID binding: the DID's on-chain controller must equal the signing \`issuer\`. If they differ, the request fails with:
+
+\`\`\`json
+{
+  "error": "issuerDid_controller_mismatch",
+  "message": "The issuer DID controller does not match the signing issuer"
+}
+\`\`\`
+
+## Fees
+
+Issuance charges an **on-chain fee** computed by the vault via the factory's \`quote_fee\` and **paid by the issuer** (mainnet: 1 USDC per credential). The API does **not** accept a fee override: there is a single standard fee plus an optional per-issuer custom fee, both resolved on-chain.
 
 ## Request Body
 
@@ -222,32 +198,28 @@ Revokes a VC by ID. No authentication required.
 
 - **owner** (required): Vault owner address (G...)
 - **vcId** (required): Credential identifier
-- **vcData** (required): Credential data payload (JSON string). Must include \`@context\` with at least \`"https://www.w3.org/ns/credentials/v2"\`
+- **vcData** (required): Credential data payload (JSON string). Must include \`@context\` with at least \`"https://www.w3.org/ns/credentials/v2"\`, and \`credentialSubject.id\` (the holder DID)
 - **issuer** (required): Issuer address (G...)
-- **holder** (required): DID of the credential holder in format \`did:pkh:stellar:{network}:{address}\`
-- **issuerDid** (optional): DID of the issuer in format \`did:pkh:stellar:{network}:{address}\`
-- **sourcePublicKey** (required): Transaction source that will sign (must be issuer)
-- **contractId** (optional): Override ACTA contract ID (C...)
+- **issuerDid** (required): Registered, resolvable \`did:stellar\` whose on-chain controller equals \`issuer\`
+- **userSalt** (optional): 32-byte salt selecting the owner's vault; defaults to 32 zero bytes
+- **sourcePublicKey** (required): Transaction source that will sign (must be the issuer)
 
-### Issue Linked Credential
+### Batch Issue
 
 - **owner** (required): Vault owner address (G...)
-- **vcId** (required): Credential identifier
-- **vcData** (required): Credential data payload (JSON string). Must include \`@context\` with at least \`"https://www.w3.org/ns/credentials/v2"\`
 - **issuer** (required): Issuer address (G...)
-- **holder** (required): DID of the credential holder in format \`did:pkh:stellar:{network}:{address}\`
-- **issuerDid** (optional): DID of the issuer in format \`did:pkh:stellar:{network}:{address}\`
-- **sourcePublicKey** (required): Transaction source that will sign (must be issuer)
-- **contractId** (optional): Override ACTA contract ID (C...)
-- **parentOwner** (required): Parent VC owner address (G...)
-- **parentVcId** (required): Parent VC identifier
+- **issuerDid** (required): Registered, resolvable \`did:stellar\` whose on-chain controller equals \`issuer\`
+- **vcs** (required): Array of \`{ vcId, vcData }\`. Each \`vcData\` carries its own \`credentialSubject.id\` holder DID
+- **userSalt** (optional): 32-byte salt selecting the owner's vault
+- **sourcePublicKey** (required): Transaction source that will sign (must be the issuer)
 
 ### Revoke Credential
 
+- **owner** (required): Vault owner address (G...) whose vault holds the credential
 - **vcId** (required): Credential identifier
 - **date** (optional): ISO-8601 timestamp (default: now)
-- **sourcePublicKey** (required): Transaction source that will sign (must be VC owner or contract admin)
-- **contractId** (optional): Override ACTA contract ID (C...)
+- **userSalt** (optional): 32-byte salt selecting the owner's vault
+- **sourcePublicKey** (required): Transaction source that will sign (must be the VC owner or contract admin)
 
 ## Prepare/Submit Flow
 
@@ -255,6 +227,6 @@ Revokes a VC by ID. No authentication required.
 2. **Sign**: Sign the returned \`xdr\` with your Stellar wallet using the \`network\` passphrase
 3. **Submit**: Send request with \`signedXdr\` to execute
 
-**Note:** The \`issue\` endpoint automatically stores the credential in the vault and marks it as valid in a single transaction.
+**Note:** \`issue\` stores the credential in the vault and marks it as valid in a single transaction.
     `,
 };

@@ -60,9 +60,9 @@ Antes de desplegar a mainnet:
 
 ## Siguientes pasos
 
-- **[Resumen de API](doc:api-overview)** — todos los endpoints públicos  
-- **[Operaciones de Credenciales](doc:api-credentials)** y **[Operaciones de Bóveda (Lectura)](doc:api-vault-read)** — payloads y ejemplos  
-- **[Errores de contrato](doc:contract-errors)** — códigos on-chain  
-- **[Preguntas frecuentes](doc:faq)** — dudas habituales  
+- **[Resumen de API](doc:api-overview)** - todos los endpoints públicos  
+- **[Operaciones de Credenciales](doc:api-credentials)** y **[Operaciones de Bóveda (Lectura)](doc:api-vault-read)** - payloads y ejemplos  
+- **[Errores de contrato](doc:contract-errors)** - códigos on-chain  
+- **[Preguntas frecuentes](doc:faq)** - dudas habituales  
     `,
 };

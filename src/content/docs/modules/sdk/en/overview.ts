@@ -6,6 +6,7 @@ export const overview: DocPage = {
   section: "Credentials SDK",
   tocItems: [
     "Install",
+    "Architecture",
     "Exports",
     "Provider (ActaConfig)",
     "Environment variables",
@@ -24,9 +25,15 @@ Production package: **\`@acta-team/credentials\`** (install with npm / pnpm / ya
 npm install @acta-team/credentials
 \`\`\`
 
+## Architecture
+
+Vaults are **single-tenant**: each owner has their own \`vc-vault\` contract, deployed deterministically by a single \`vc-vault-factory\` per network. The API/SDK derive an owner's vault address from \`(factory, owner, userSalt)\`; the default \`userSalt\` is 32 zero bytes, giving one canonical vault per owner. Pass a non-default \`userSalt\` on create/read/issue calls to select an additional vault for the same owner.
+
+Issuance is **open by default** (deny-by-exception): owners block issuers with \`denyIssuer\` and unblock them with \`allowIssuer\`. The issuer must be a registered, resolvable \`did:stellar\`; bare wallet addresses and \`did:pkh\` are no longer accepted as issuer DID.
+
 ## Exports
 
-- **\`ActaConfig\`**: Provider — required \`baseURL\`; optional explicit \`apiKey\`.
+- **\`ActaConfig\`**: Provider - required \`baseURL\`; optional explicit \`apiKey\`.
 - **\`useActaClient\`**: Returns the contextual \`ActaClient\` (must be rendered under \`ActaConfig\`).
 - **Hooks**: \`useVault\`, \`useCredential\`, \`useVaultRead\`.
 - **\`ActaClient\`**: \`sponsoredVaultCreate\` for the public sponsored-vault **create** flow (prepare/submit); see **sponsoredVault**.
@@ -64,18 +71,21 @@ import { useActaClient } from "@acta-team/credentials";
 
 const client = useActaClient();
 const config = await client.getConfig();
-// config: { rpcUrl, networkPassphrase, actaContractId }
+// config: { rpcUrl, networkPassphrase, networkType, factoryContractId, vaultWasmHash, didStellarRegistryId, actaContractId }
+// actaContractId is a back-compat alias of factoryContractId
 \`\`\`
 
 ## Hooks summary
 
-- **\`useVault\`** — \`createVault\`, \`authorizeIssuer\`, \`revokeIssuer\`.
-- **\`useCredential\`** — \`issue\`, \`issueLinked\`, \`revoke\`.
-- **\`useVaultRead\`** — \`listVcIds\`, \`getVc\`, \`getVcParent\`, \`verifyVc\`.
+- **\`useVault\`** - \`createVault\`, \`denyIssuer\`, \`allowIssuer\` (\`authorizeIssuer\` / \`revokeIssuer\` remain as back-compat aliases).
+- **\`useCredential\`** - \`issue\`, \`revoke\`.
+- **\`useVaultRead\`** - \`listVcIds\`, \`getVc\`, \`verifyVc\`.
+
+\`userSalt\` is an optional argument on the create / read / issue calls; omit it to use the owner's canonical vault.
 
 ## sponsoredVault
 
-\`ActaClient.sponsoredVaultCreate\` prepares/submits \`create_sponsored_vault\` when a **sponsor** pays or signs vault creation for an **owner**. See **sponsoredVault** for signatures and payloads.
+\`ActaClient.sponsoredVaultCreate\` prepares/submits the factory's \`deploy_sponsored\` when a **sponsor** pays or signs vault creation for an **owner**. See **sponsoredVault** for signatures and payloads.
 
 Owners can be ordinary Stellar accounts (\`G...\`) or smart-wallet contract IDs (\`C...\`): when signing is delegated to ACTA infra, omit or follow the signatures described on each hook page.
     `,

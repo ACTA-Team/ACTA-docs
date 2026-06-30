@@ -6,36 +6,41 @@ export const vaultWrite: DocPage = {
   section: "API Reference",
   tocItems: [
     "Create Vault",
-    "Authorize Issuer",
-    "Authorize Issuers (Multiple)",
-    "Revoke Issuer",
+    "Deny Issuer",
+    "Allow Issuer",
     "Revoke Vault",
     "Set New Owner",
-    "Migrate",
     "Sponsored vault",
     "Prepare/Submit Flow",
   ],
   content: `
 # Vault Operations (Write)
 
-Write operations for vault management. All endpoints support prepare/submit flow. **Authentication:** same as other \`/contracts/*\` routes — valid \`X-ACTA-Key\` (see API Overview).
+Write operations for vault management. All endpoints support prepare/submit flow. **Authentication:** same as other \`/contracts/*\` routes - valid \`X-ACTA-Key\` (see API Overview).
+
+Vaults are **single-tenant**: each owner has their own \`vc-vault\` contract, deployed deterministically by the \`vc-vault-factory\`. You identify the vault by \`owner\` (plus an optional \`userSalt\`); there is no per-request vault \`contractId\` override.
 
 ## Create Vault
 
 ### POST /contracts/vault/create
 
-Creates (initializes) a vault for an owner.
+Deploys (and initializes) the owner's vault **through the factory**. The factory derives the vault address deterministically from \`(factory, owner, userSalt)\`, so the same owner + salt always maps to the same vault.
 
 **Request Body (Prepare):**
 
 \`\`\`json
 {
   "owner": "G...",
-  "didUri": "did:pkh:stellar:testnet:G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
+  "didUri": "did:stellar:...",
+  "userSalt": "00...00",
+  "sourcePublicKey": "G..."
 }
 \`\`\`
+
+- **owner** (required): Vault owner address (G...).
+- **didUri** (required): DID URI stored for the vault owner.
+- **userSalt** (optional): 32-byte salt selecting which vault for this owner. Defaults to 32 zero bytes (one canonical vault per owner).
+- **sourcePublicKey** (required): Transaction source that signs the prepared XDR.
 
 **Request Body (Submit):**
 
@@ -62,11 +67,13 @@ Creates (initializes) a vault for an owner.
 }
 \`\`\`
 
-## Authorize Issuer
+## Deny Issuer
 
-### POST /contracts/vault/authorize-issuer
+### POST /contracts/vault/deny-issuer
 
-Adds a single authorized issuer to an owner's vault.
+Issuance is **open by default**: any issuer may write to the vault unless the owner blocks it. **Deny Issuer** blocks a specific issuer (adds it to the vault's denied set).
+
+> **Back-compat:** \`POST /contracts/vault/authorize-issuer\` remains available as an alias of this route.
 
 **Request Body (Prepare):**
 
@@ -74,8 +81,8 @@ Adds a single authorized issuer to an owner's vault.
 {
   "owner": "G...",
   "issuer": "G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
+  "userSalt": "00...00",
+  "sourcePublicKey": "G..."
 }
 \`\`\`
 
@@ -96,45 +103,13 @@ Adds a single authorized issuer to an owner's vault.
 }
 \`\`\`
 
-## Authorize Issuers (Multiple)
+## Allow Issuer
 
-### POST /contracts/vault/authorize-issuers
+### POST /contracts/vault/allow-issuer
 
-Replaces the full authorized issuer list for a vault with the given array.
+Unblocks a previously denied issuer (removes it from the vault's denied set). Since issuance is open by default, this is only needed to undo a prior **Deny Issuer**.
 
-**Request Body (Prepare):**
-
-\`\`\`json
-{
-  "owner": "G...",
-  "issuers": ["G...", "G...", "G..."],
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
-}
-\`\`\`
-
-**Response (Prepare):**
-
-\`\`\`json
-{
-  "xdr": "AAAA...",
-  "network": "Test SDF Network ; September 2015"
-}
-\`\`\`
-
-**Response (Submit):**
-
-\`\`\`json
-{
-  "tx_id": "abc123..."
-}
-\`\`\`
-
-## Revoke Issuer
-
-### POST /contracts/vault/revoke-issuer
-
-Revokes an issuer's authorization from a vault.
+> **Back-compat:** \`POST /contracts/vault/revoke-issuer\` remains available as an alias of this route.
 
 **Request Body (Prepare):**
 
@@ -142,8 +117,8 @@ Revokes an issuer's authorization from a vault.
 {
   "owner": "G...",
   "issuer": "G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
+  "userSalt": "00...00",
+  "sourcePublicKey": "G..."
 }
 \`\`\`
 
@@ -168,15 +143,15 @@ Revokes an issuer's authorization from a vault.
 
 ### POST /contracts/vault/revoke-vault
 
-Completely revokes a vault.
+Completely revokes the owner's vault.
 
 **Request Body (Prepare):**
 
 \`\`\`json
 {
   "owner": "G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
+  "userSalt": "00...00",
+  "sourcePublicKey": "G..."
 }
 \`\`\`
 
@@ -209,49 +184,8 @@ Sets the new vault owner (vault admin). Must be signed by the current owner.
 {
   "owner": "G...",
   "new_owner": "G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
-}
-\`\`\`
-
-**Response (Prepare):**
-
-\`\`\`json
-{
-  "xdr": "AAAA...",
-  "network": "Test SDF Network ; September 2015"
-}
-\`\`\`
-
-**Response (Submit):**
-
-\`\`\`json
-{
-  "tx_id": "abc123..."
-}
-\`\`\`
-
-## Migrate
-
-### POST /contracts/vault/migrate
-
-Migrates legacy vault data for an owner to the current format.
-
-**Request Body (Prepare):**
-
-\`\`\`json
-{
-  "owner": "G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
-}
-\`\`\`
-
-**Request Body (Submit):**
-
-\`\`\`json
-{
-  "signedXdr": "AAAA..."
+  "userSalt": "00...00",
+  "sourcePublicKey": "G..."
 }
 \`\`\`
 
@@ -274,7 +208,7 @@ Migrates legacy vault data for an owner to the current format.
 
 ## Sponsored vault
 
-Vault creation where a **sponsor** signs \`create_sponsored_vault\` on the vc-vault contract instead of the owner signing \`create_vault\`. On-chain, the contract also has admin-only settings (\`open-to-all\`, sponsor allowlist). The **public** HTTP surface is only **\`POST /contracts/sponsored-vault/create\`** (same \`X-ACTA-Key\` middleware as other public \`/contracts/*\` writes—not admin-key routes).
+Vault deployment where a **sponsor** invokes \`deploy_sponsored\` on the **vc-vault-factory** instead of the owner deploying their own vault. Sponsorship is **open**: any sponsor may deploy a sponsored vault for an owner. The public HTTP surface is **\`POST /contracts/sponsored-vault/create\`** (same \`X-ACTA-Key\` middleware as other public \`/contracts/*\` writes).
 
 See **Sponsored Vault** (\`api-sponsored-vault\`) for contract semantics, the create endpoint, and \`sponsoredVaultCreate\` in the Credentials SDK.
 
@@ -288,7 +222,7 @@ All write endpoints follow the same pattern:
 
 **Common Parameters:**
 - **owner** (required): Vault owner address (G...)
-- **sourcePublicKey** (required): Transaction source that will sign (must be authorized signer)
-- **contractId** (optional): Override ACTA contract ID (C...)
+- **userSalt** (optional): 32-byte salt selecting the owner's vault; defaults to 32 zero bytes (one canonical vault per owner)
+- **sourcePublicKey** (required): Transaction source that will sign (must be an authorized signer)
     `,
 };

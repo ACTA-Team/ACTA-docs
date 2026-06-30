@@ -6,7 +6,7 @@ export const sponsoredVault: DocPage = {
   section: "API Reference",
   tocItems: [
     "Concept",
-    "On-chain contract (vc-vault)",
+    "On-chain (vc-vault-factory)",
     "HTTP API",
     "Prepare / submit",
     "Operational notes",
@@ -14,46 +14,32 @@ export const sponsoredVault: DocPage = {
   content: `
 # Sponsored Vault
 
-A **sponsored vault** is a normal ACTA vault (same storage as \`create_vault\`) created through \`create_sponsored_vault\` on the **vc-vault** Soroban contract. The **sponsor** invokes the contract and must satisfy Soroban auth (\`sponsor.require_auth()\`); the **owner** is the vault admin and does not sign this transaction. Use this when an organization pays fees or orchestrates onboarding while the end user only receives the vault.
+A **sponsored vault** is a normal single-tenant ACTA vault deployed through **\`deploy_sponsored\`** on the **vc-vault-factory** contract. The **sponsor** invokes the factory and must satisfy Soroban auth (\`sponsor.require_auth()\`); the **owner** is the vault admin and does not sign this transaction. Use this when an organization pays fees or orchestrates onboarding while the end user only receives the vault.
 
-For comparison, \`POST /contracts/vault/create\` prepares \`create_vault\`, where the **owner** typically signs. The sponsored flow uses \`POST /contracts/sponsored-vault/create\`; the invoke must satisfy on-chain auth for **sponsor**—in practice the prepared XDR is usually signed by the sponsor account (see **sourcePublicKey** below).
+For comparison, \`POST /contracts/vault/create\` prepares the owner's own factory deploy, where the **owner** typically signs. The sponsored flow uses \`POST /contracts/sponsored-vault/create\`; the invoke must satisfy on-chain auth for **sponsor** - in practice the prepared XDR is usually signed by the sponsor account (see **sourcePublicKey** below).
 
 ## Concept
 
 | Role | Responsibility |
 |------|----------------|
-| **Sponsor** | Signs the transaction; must be allowed (see below). Pays network/fees like any invoke. |
+| **Sponsor** | Signs the transaction. Pays network/fees like any invoke. |
 | **Owner** | Receives the vault; address stored as vault admin; \`didUri\` stored for the vault. |
-| **Contract admin** | Soroban “contract admin” (not HTTP): can always sponsor; can toggle open mode and manage the sponsor allowlist on-chain. |
 
-**Authorization modes** (on-chain flag \`sponsored_vault_open_to_all\`, default \`false\`):
+**Open sponsorship:** sponsorship is **open**. Any sponsor address may call \`deploy_sponsored\` for an owner (still subject to Stellar/Soroban auth and fees). There is no sponsor allowlist and no open-to-all toggle in this model.
 
-- **Restricted (\`open_to_all = false\`)**: Only the contract admin **or** addresses on the **authorized sponsors** list may call \`create_sponsored_vault\`.
-- **Open (\`open_to_all = true\`)**: Any sponsor address may call \`create_sponsored_vault\` (still subject to Stellar/Soroban auth and fees).
+The factory derives the vault address deterministically from \`(factory, owner, userSalt)\`, so a sponsored deploy and a self-service deploy for the same owner + salt resolve to the same vault. Calling deploy again for an owner that already has a vault at that salt fails on-chain (already deployed).
 
-**Failures you may see on-chain:**
+On success the factory emits a vault-deployed event with the \`sponsor\`, \`owner\`, and \`did_uri\`.
 
-- \`NotAuthorizedSponsor\` (error code **11**): Sponsor not allowed while restricted mode is on.
-- \`AlreadyInitialized\` (error code **1**): Owner already has a vault; do not call create again for that owner.
-- \`NotInitialized\`: Contract not initialized.
+## On-chain (vc-vault-factory)
 
-On success the contract emits **\`SponsoredVaultCreated\`** with \`sponsor\`, \`owner\`, and \`did_uri\`.
-
-## On-chain contract (vc-vault)
-
-Relevant Soroban entrypoints on the same **vc-vault** contract as standard vault ops:
+The relevant factory entrypoint is:
 
 | Function | Auth | Description |
 |----------|------|-------------|
-| \`create_sponsored_vault(sponsor, owner, did_uri)\` | Sponsor | Creates vault state for \`owner\` if allowed and not already initialized. |
-| \`get_sponsored_vault_open_to_all\` | Read-only | Returns the boolean open/restricted flag. |
-| \`set_sponsored_vault_open_to_all(open)\` | Contract admin | Sets restricted vs open sponsorship mode. |
-| \`add_sponsored_vault_sponsor(sponsor)\` | Contract admin | Adds an address to the authorized sponsors set. |
-| \`remove_sponsored_vault_sponsor(sponsor)\` | Contract admin | Removes an address from the authorized sponsors set. |
+| \`deploy_sponsored(sponsor, owner, did_uri, user_salt)\` | Sponsor | Deterministically deploys the owner's vault if not already deployed at that salt. |
 
-Persistent keys include \`SponsoredVaultOpenToAll\` and per-address \`SponsoredVaultSponsor(Address)\` entries.
-
-**Public HTTP:** the ACTA API documents only **\`POST /contracts/sponsored-vault/create\`** (prepare/submit for \`create_sponsored_vault\`). Admin and read helpers for the flag and sponsor list are **not** part of the public REST surface; contract admins use on-chain invocation (or internal tooling), not these docs.
+**Public HTTP:** the ACTA API documents only **\`POST /contracts/sponsored-vault/create\`** (prepare/submit for \`deploy_sponsored\`).
 
 ## HTTP API
 
@@ -61,7 +47,7 @@ This route uses the same middleware as other public \`/contracts/*\` write route
 
 ### POST /contracts/sponsored-vault/create
 
-Prepares or submits \`create_sponsored_vault\`.
+Prepares or submits \`deploy_sponsored\`.
 
 **Prepare body:**
 
@@ -69,33 +55,33 @@ Prepares or submits \`create_sponsored_vault\`.
 {
   "sponsor": "G...",
   "owner": "G...",
-  "didUri": "did:pkh:stellar:testnet:G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
+  "didUri": "did:stellar:...",
+  "userSalt": "00...00",
+  "sourcePublicKey": "G..."
 }
 \`\`\`
 
-- **sponsor** (required): Stellar address passed to the contract as the sponsor (must satisfy \`sponsor.require_auth()\` when the transaction is signed and submitted).
+- **sponsor** (required): Stellar address passed to the factory as the sponsor (must satisfy \`sponsor.require_auth()\` when the transaction is signed and submitted).
 - **owner** (required): Vault owner (\`G...\`).
-- **didUri** (required): DID URI for the vault.
+- **didUri** (required): DID URI stored for the vault.
+- **userSalt** (optional): 32-byte salt selecting the owner's vault; defaults to 32 zero bytes (one canonical vault per owner).
 - **sourcePublicKey** (required): Stellar account used as the **transaction source** when the API prepares the XDR. The signed invoke must still authorize **sponsor** on the contract; typically the sponsor account is both \`sponsor\` and the signing/source account.
-- **contractId** (optional): vc-vault contract id (\`C...\`); otherwise configured default.
 
 **Submit body:** \`{ "signedXdr": "AAAA..." }\`
 
-**Responses:** Prepare → \`{ "xdr", "network" }\`; Submit → \`{ "tx_id" }\`.
+**Responses:** Prepare returns \`{ "xdr", "network" }\`; Submit returns \`{ "tx_id" }\`.
 
 ## Prepare / submit
 
 This write endpoint follows the standard two-step flow:
 
-1. **Prepare** — JSON with operation fields (no \`signedXdr\`) → \`xdr\` + \`network\` passphrase.
-2. **Sign** — Stellar wallet signs the XDR so the sponsor’s auth requirements are met.
-3. **Submit** — POST the same path with \`{ "signedXdr" }\` → \`tx_id\`.
+1. **Prepare** - JSON with operation fields (no \`signedXdr\`) returns \`xdr\` + \`network\` passphrase.
+2. **Sign** - Stellar wallet signs the XDR so the sponsor's auth requirements are met.
+3. **Submit** - POST the same path with \`{ "signedXdr" }\` returns \`tx_id\`.
 
 ## Operational notes
 
-- In **restricted** mode, confirm out-of-band or via Soroban simulation that your **sponsor** is the contract admin or on the authorized sponsor list before calling **create**; there is no public HTTP helper for the open-to-all flag or allowlist in this reference.
-- Avoid calling **create** when the owner already has a vault; prefer an on-chain or API read of vault existence first (see vault read operations).
+- Avoid calling **create** when the owner already has a vault at the chosen \`userSalt\`; the on-chain deploy fails if the vault already exists. Prefer an on-chain or API read of vault existence first (see vault read operations).
+- Issuance fees are charged on-chain by the vault (via the factory's \`quote_fee\`) and paid by the issuer at issuance time, independently of who sponsored the vault deploy.
     `,
 };

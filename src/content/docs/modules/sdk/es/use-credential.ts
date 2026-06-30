@@ -11,7 +11,6 @@ export const useCredential: DocPage = {
     "Tipo de firmante",
     "Valor de retorno",
     "Ejemplo",
-    "issueLinked",
     "revoke",
     "Flujo de transacción",
     "Notas",
@@ -19,14 +18,13 @@ export const useCredential: DocPage = {
   content: `
 # useCredential
 
-Hook para operaciones de credenciales: emitir, emitir vinculada y revocar.
+Hook para operaciones de credenciales: emitir y revocar.
 
 ## Función
 
 \`\`\`ts
 useCredential(): {
   issue: (args: IssueArgs) => Promise<{ txId: string }>;
-  issueLinked: (args: IssueLinkedArgs) => Promise<{ txId: string }>;
   revoke: (args: RevokeArgs) => Promise<{ txId: string }>;
 }
 \`\`\`
@@ -43,12 +41,15 @@ Emite una credencial (la guarda en la bóveda y la marca como válida).
   vcId: string;                    // Identificador único de la credencial
   vcData: string | object;         // Datos de credencial (string JSON u objeto). @context si falta se agrega
   issuer: string;                  // Clave pública Stellar del emisor
-  issuerDid?: string;              // DID del emisor; si omites puede derivarse de la dirección
+  issuerDid?: string;              // DID del emisor: un did:stellar registrado y resoluble
   signTransaction: Signer;         // Firma del XDR devuelto por el prepare en ACTA
   sourcePublicKey?: string;        // Cuenta G que firma (opcional; omitir cuando el relay firma vaults C)
+  userSalt?: string;               // Salt de 32 bytes que selecciona una bóveda no predeterminada del propietario (opcional)
   contractId?: string;             // ID de contrato (opcional, usa el configurado por defecto)
 }
 \`\`\`
+
+El titular se expresa dentro de \`vcData\` como \`credentialSubject.id\` (un DID); no hay un campo \`holder\` / wallet aparte. El \`issuerDid\` debe ser un \`did:stellar\` registrado y resoluble; las direcciones de wallet sueltas y \`did:pkh\` ya no se aceptan. El SDK realiza el alta automática del \`did:stellar\` del emisor mediante \`getOrCreateIssuerIdentity\`, de modo que los integradores obtienen la configuración del DID de emisor sin costo adicional.
 
 ### Tipo de firmante
 
@@ -80,12 +81,12 @@ const { txId } = await issue({
     ],
     type: ["VerifiableCredential"],
     credentialSubject: {
-      id: "did:pkh:stellar:testnet:G...",
+      id: "did:stellar:...",   // DID del titular
       name: "John Doe"
     }
   }),
   issuer: "G...",
-  issuerDid: "G...",
+  issuerDid: "did:stellar:...",   // did:stellar registrado y resoluble
   signTransaction: async (xdr, { networkPassphrase }) => {
     // Firma el XDR con tu wallet
     return signedXdr;
@@ -93,76 +94,20 @@ const { txId } = await issue({
 });
 \`\`\`
 
-## issueLinked
-
-Emite una credencial vinculada a una VC padre. La VC padre debe existir y estar válida en su bóveda. Esto permite relaciones jerárquicas entre credenciales.
-
-### Argumentos
-
-\`\`\`ts
-{
-  owner: string;                    // Propietario del vault: cuenta G o contrato C (smart wallet)
-  vcId: string;                    // Identificador único de la credencial
-  vcData: string | object;         // Datos de credencial; @context opcional automático
-  issuer: string;                  // Clave pública del emisor
-  issuerDid?: string;              // DID del emisor
-  signTransaction: Signer;         // Firma del XDR de prepare ACTA
-  sourcePublicKey?: string;        // G firmante (opcional; vaults C con relay pueden omitir)
-  contractId?: string;             // ID de contrato (opcional, usa el default)
-  parentOwner: string;             // Owner de la VC padre
-  parentVcId: string;              // Identificador de la VC padre
-}
-\`\`\`
-
-### Valor de retorno
-
-- \`Promise<{ txId: string }>\`: ID de la transacción después de enviarse a la red  
-
-### Ejemplo
-
-\`\`\`ts
-import { useCredential } from "@acta-team/credentials";
-
-const { issueLinked } = useCredential();
-
-const { txId } = await issueLinked({
-  owner: "G...",
-  vcId: "linked-credential-456",
-  vcData: JSON.stringify({
-    "@context": [
-      "https://www.w3.org/ns/credentials/v2",
-      "https://www.w3.org/ns/credentials/examples/v2"
-    ],
-    type: ["VerifiableCredential"],
-    credentialSubject: {
-      id: "did:pkh:stellar:testnet:G...",
-      name: "John Doe",
-      certification: "Nivel Avanzado"
-    }
-  }),
-  issuer: "G...",
-  signTransaction: async (xdr, { networkPassphrase }) => {
-    // Firma el XDR con tu wallet
-    return signedXdr;
-  },
-  parentOwner: "G...",             // Propietario de la VC padre
-  parentVcId: "credential-123"    // ID de la VC padre
-});
-\`\`\`
-
 ## revoke
 
-Revoca una credencial.
+Revoca una credencial. La llamada envía el \`owner\` a la API para apuntar a la bóveda correcta.
 
 ### Argumentos
 
 \`\`\`ts
 {
-  owner: string;                   // Vault owner (G o C smart wallet)
+  owner: string;                   // Vault owner (G o C smart wallet); se envía a la API
   vcId: string;                    // ID de credencial a revocar
   signTransaction: Signer;         // Firma del XDR de prepare
   date?: string;                   // Fecha ISO (opcional)
   sourcePublicKey?: string;        // Firmante G explícito (opcional / relay)
+  userSalt?: string;               // Salt de 32 bytes que selecciona una bóveda no predeterminada del propietario (opcional)
   contractId?: string;             // ID de contrato (opcional)
 }
 \`\`\`
@@ -201,8 +146,10 @@ El hook maneja automáticamente la diferencia entre las respuestas de “prepare
 
 ## Notas
 
-- El método \`issue\` almacena automáticamente la credencial en la bóveda y la marca como válida en una sola transacción  
-- El método \`revoke\` requiere que el \`owner\` firme la transacción  
-- La fecha de revocación se establece automáticamente a la fecha actual si no se provee  
+- El método \`issue\` almacena automáticamente la credencial en la bóveda y la marca como válida en una sola transacción
+- El titular es \`credentialSubject.id\` dentro de \`vcData\` (un DID); no hay un campo holder aparte
+- El \`issuerDid\` debe ser un \`did:stellar\` registrado y resoluble; el SDK lo da de alta automáticamente mediante \`getOrCreateIssuerIdentity\`
+- El método \`revoke\` envía el \`owner\` a la API y requiere que el \`owner\` firme la transacción
+- La fecha de revocación se establece automáticamente a la fecha actual si no se provee
     `,
 };

@@ -6,21 +6,23 @@ export const credentials: DocPage = {
   section: "Referencia API",
   tocItems: [
     "Emitir Credencial",
-    "Emitir Credencial Vinculada",
+    "Emisión por Lote",
     "Revocar Credencial",
+    "Requisito de DID del emisor",
+    "Comisiones",
     "Cuerpo de solicitud",
     "Flujo Prepare/Submit",
   ],
   content: `
 # Operaciones de Credenciales
 
-Endpoints para emitir y revocar credenciales verificables. Todos soportan flujo prepare/submit. **Emitir Credencial** (\`POST /contracts/vc/issue\`) y **Emitir Credencial Vinculada** (\`POST /contracts/vc/issue-linked\`) requieren API key; **Revocar Credencial** no requiere autenticación.
+Endpoints para emitir y revocar credenciales verificables. Todos soportan flujo prepare/submit. **Emitir Credencial** (\`POST /contracts/vc/issue\`) y **Emisión por Lote** (\`POST /contracts/vc/batch-issue\`) requieren API key; **Revocar Credencial** no requiere autenticación.
 
 ## Emitir Credencial
 
 ### POST /contracts/vc/issue
 
-Emite una VC: almacena el payload en la bóveda del propietario y escribe el estado de emisión = válido. **Requiere API key.**
+Emite una VC: almacena el payload en la bóveda del owner y escribe el estado de emisión = valid. **Requiere API key.**
 
 **Headers:**
 
@@ -34,14 +36,15 @@ X-ACTA-Key: tu_api_key_aqui
 {
   "owner": "G...",
   "vcId": "credential-123",
-  "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:pkh:stellar:testnet:G...\\",\\"name\\":\\"John Doe\\"}}",
+  "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:stellar:...\\",\\"name\\":\\"John Doe\\"}}",
   "issuer": "G...",
-  "holder": "did:pkh:stellar:testnet:G...",
-  "issuerDid": "did:pkh:stellar:testnet:G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
+  "issuerDid": "did:stellar:...",
+  "userSalt": "00...00",
+  "sourcePublicKey": "G..."
 }
 \`\`\`
+
+El **holder** de la credencial se identifica con \`credentialSubject.id\` (un DID) dentro de \`vcData\`. No existe un campo \`holder\` aparte.
 
 **Cuerpo de solicitud (Submit):**
 
@@ -80,11 +83,11 @@ curl -X POST https://api.testnet.acta.build/contracts/vc/issue \\
     "vcId": "credential-123",
     "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"]}",
     "issuer": "G...",
-    "holder": "did:pkh:stellar:testnet:G...",
+    "issuerDid": "did:stellar:...",
     "sourcePublicKey": "G..."
   }'
 
-# Submit (después de firmar)
+# Submit (tras firmar)
 curl -X POST https://api.testnet.acta.build/contracts/vc/issue \\
   -H "X-ACTA-Key: tu_key" \\
   -H "Content-Type: application/json" \\
@@ -93,32 +96,31 @@ curl -X POST https://api.testnet.acta.build/contracts/vc/issue \\
   }'
 \`\`\`
 
-## Emitir Credencial Vinculada
+## Emisión por Lote
 
-### POST /contracts/vc/issue-linked
+### POST /contracts/vc/batch-issue
 
-Emite una VC vinculada a una VC padre: almacena el payload en la bóveda del propietario con una referencia a la credencial padre. La VC padre debe existir y estar válida. **Requiere API key.**
-
-**Headers:**
-
-\`\`\`
-X-ACTA-Key: tu_api_key_aqui
-\`\`\`
+Emite varias VC en la bóveda del mismo owner en una sola transacción. Cada entrada lleva solo \`vcId\` y \`vcData\`; el holder de cada credencial es \`credentialSubject.id\` dentro de su propio \`vcData\` (**no** hay campo \`holder\`). **Requiere API key.**
 
 **Cuerpo de solicitud (Prepare):**
 
 \`\`\`json
 {
   "owner": "G...",
-  "vcId": "linked-credential-456",
-  "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:pkh:stellar:testnet:G...\\",\\"name\\":\\"John Doe\\"}}",
   "issuer": "G...",
-  "holder": "did:pkh:stellar:testnet:G...",
-  "issuerDid": "did:pkh:stellar:testnet:G...",
+  "issuerDid": "did:stellar:...",
+  "userSalt": "00...00",
   "sourcePublicKey": "G...",
-  "contractId": "C...",
-  "parentOwner": "G...",
-  "parentVcId": "credential-123"
+  "vcs": [
+    {
+      "vcId": "credential-1",
+      "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:stellar:...\\"}}"
+    },
+    {
+      "vcId": "credential-2",
+      "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:stellar:...\\"}}"
+    }
+  ]
 }
 \`\`\`
 
@@ -130,64 +132,23 @@ X-ACTA-Key: tu_api_key_aqui
 }
 \`\`\`
 
-**Respuesta (Prepare):**
-
-\`\`\`json
-{
-  "xdr": "AAAA...",
-  "network": "Test SDF Network ; September 2015"
-}
-\`\`\`
-
-**Respuesta (Submit):**
-
-\`\`\`json
-{
-  "tx_id": "abc123..."
-}
-\`\`\`
-
-**Ejemplo:**
-
-\`\`\`bash
-# Prepare
-curl -X POST https://api.testnet.acta.build/contracts/vc/issue-linked \\
-  -H "X-ACTA-Key: tu_key" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "owner": "G...",
-    "vcId": "linked-credential-456",
-    "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"]}",
-    "issuer": "G...",
-    "holder": "did:pkh:stellar:testnet:G...",
-    "sourcePublicKey": "G...",
-    "parentOwner": "G...",
-    "parentVcId": "credential-123"
-  }'
-
-# Submit (después de firmar)
-curl -X POST https://api.testnet.acta.build/contracts/vc/issue-linked \\
-  -H "X-ACTA-Key: tu_key" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "signedXdr": "AAAA..."
-  }'
-\`\`\`
+**Respuestas:** Prepare devuelve \`{ xdr, network }\`; Submit devuelve \`{ tx_id }\`.
 
 ## Revocar Credencial
 
 ### POST /contracts/vc/revoke
 
-Revoca una VC por ID. No requiere autenticación.
+Revoca una VC por ID en la bóveda de un owner concreto. No requiere autenticación.
 
 **Cuerpo de solicitud (Prepare):**
 
 \`\`\`json
 {
+  "owner": "G...",
   "vcId": "credential-123",
   "date": "2024-01-15T00:00:00.000Z",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
+  "userSalt": "00...00",
+  "sourcePublicKey": "G..."
 }
 \`\`\`
 
@@ -215,6 +176,21 @@ Revoca una VC por ID. No requiere autenticación.
   "tx_id": "abc123..."
 }
 \`\`\`
+
+## Requisito de DID del emisor
+
+El \`issuerDid\` debe ser un **\`did:stellar\`** registrado y resoluble. Las direcciones de wallet "a secas" y los valores \`did:pkh\` **ya no se aceptan**. La API exige una vinculación controlador-DID: el controlador on-chain del DID debe ser igual al \`issuer\` que firma. Si difieren, la solicitud falla con:
+
+\`\`\`json
+{
+  "error": "issuerDid_controller_mismatch",
+  "message": "El controlador del DID del emisor no coincide con el emisor que firma"
+}
+\`\`\`
+
+## Comisiones
+
+La emisión cobra una **comisión on-chain** calculada por la bóveda mediante \`quote_fee\` del factory y **pagada por el emisor** (mainnet: 1 USDC por credencial). La API **no** acepta un override de comisión: hay una única comisión estándar más una comisión personalizada opcional por emisor, ambas resueltas on-chain.
 
 ## Cuerpo de solicitud
 
@@ -222,32 +198,28 @@ Revoca una VC por ID. No requiere autenticación.
 
 - **owner** (requerido): Dirección del propietario de la bóveda (G...)
 - **vcId** (requerido): Identificador de credencial
-- **vcData** (requerido): Payload de datos de credencial (JSON string). Debe incluir \`@context\` con al menos \`"https://www.w3.org/ns/credentials/v2"\`
+- **vcData** (requerido): Payload de datos de la credencial (string JSON). Debe incluir \`@context\` con al menos \`"https://www.w3.org/ns/credentials/v2"\` y \`credentialSubject.id\` (el DID del holder)
 - **issuer** (requerido): Dirección del emisor (G...)
-- **holder** (requerido): DID del titular de la credencial en formato \`did:pkh:stellar:{network}:{address}\`
-- **issuerDid** (opcional): DID del emisor en formato \`did:pkh:stellar:{network}:{address}\`
+- **issuerDid** (requerido): \`did:stellar\` registrado y resoluble cuyo controlador on-chain es igual a \`issuer\`
+- **userSalt** (opcional): salt de 32 bytes que selecciona la bóveda del owner; por defecto 32 bytes en cero
 - **sourcePublicKey** (requerido): Fuente de transacción que firmará (debe ser el emisor)
-- **contractId** (opcional): Sobrescribir ID de contrato ACTA (C...)
 
-### Emitir Credencial Vinculada
+### Emisión por Lote
 
 - **owner** (requerido): Dirección del propietario de la bóveda (G...)
-- **vcId** (requerido): Identificador de credencial
-- **vcData** (requerido): Payload de datos de credencial (JSON string). Debe incluir \`@context\` con al menos \`"https://www.w3.org/ns/credentials/v2"\`
 - **issuer** (requerido): Dirección del emisor (G...)
-- **holder** (requerido): DID del titular de la credencial en formato \`did:pkh:stellar:{network}:{address}\`
-- **issuerDid** (opcional): DID del emisor en formato \`did:pkh:stellar:{network}:{address}\`
+- **issuerDid** (requerido): \`did:stellar\` registrado y resoluble cuyo controlador on-chain es igual a \`issuer\`
+- **vcs** (requerido): Array de \`{ vcId, vcData }\`. Cada \`vcData\` lleva su propio DID de holder en \`credentialSubject.id\`
+- **userSalt** (opcional): salt de 32 bytes que selecciona la bóveda del owner
 - **sourcePublicKey** (requerido): Fuente de transacción que firmará (debe ser el emisor)
-- **contractId** (opcional): Sobrescribir ID de contrato ACTA (C...)
-- **parentOwner** (requerido): Dirección del propietario de la VC padre (G...)
-- **parentVcId** (requerido): Identificador de la VC padre
 
 ### Revocar Credencial
 
+- **owner** (requerido): Dirección del propietario (G...) cuya bóveda contiene la credencial
 - **vcId** (requerido): Identificador de credencial
 - **date** (opcional): Timestamp ISO-8601 (por defecto: ahora)
-- **sourcePublicKey** (requerido): Fuente de transacción que firmará (debe ser propietario de VC o admin del contrato)
-- **contractId** (opcional): Sobrescribir ID de contrato ACTA (C...)
+- **userSalt** (opcional): salt de 32 bytes que selecciona la bóveda del owner
+- **sourcePublicKey** (requerido): Fuente de transacción que firmará (debe ser el owner de la VC o admin del contrato)
 
 ## Flujo Prepare/Submit
 
@@ -255,6 +227,6 @@ Revoca una VC por ID. No requiere autenticación.
 2. **Firmar**: Firma el \`xdr\` devuelto con tu wallet Stellar usando el \`network\` passphrase
 3. **Submit**: Envía solicitud con \`signedXdr\` para ejecutar
 
-**Nota:** El endpoint \`issue\` almacena automáticamente la credencial en la bóveda y la marca como válida en una sola transacción.
+**Nota:** \`issue\` almacena la credencial en la bóveda y la marca como válida en una sola transacción.
     `,
 };

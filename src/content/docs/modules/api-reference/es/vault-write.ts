@@ -6,36 +6,41 @@ export const vaultWrite: DocPage = {
   section: "Referencia API",
   tocItems: [
     "Crear Bóveda",
-    "Autorizar Emisor",
-    "Autorizar Emisores (Múltiples)",
-    "Revocar Emisor",
+    "Bloquear Emisor",
+    "Desbloquear Emisor",
     "Revocar Bóveda",
     "Establecer nuevo propietario",
-    "Migrate",
     "Bóveda patrocinada",
     "Flujo Prepare/Submit",
   ],
   content: `
 # Operaciones de Bóveda (Escritura)
 
-Operaciones de escritura para gestión de bóvedas. Todos los endpoints soportan flujo prepare/submit. **Autenticación:** igual que otros \`/contracts/*\` — \`X-ACTA-Key\` válida (ver Resumen de la API).
+Operaciones de escritura para gestión de bóvedas. Todos los endpoints soportan flujo prepare/submit. **Autenticación:** igual que otros \`/contracts/*\` - \`X-ACTA-Key\` válida (ver Resumen de la API).
+
+Las bóvedas son **mono-inquilino**: cada owner tiene su propio contrato \`vc-vault\`, desplegado de forma determinista por el \`vc-vault-factory\`. La bóveda se identifica por \`owner\` (más un \`userSalt\` opcional); no hay un \`contractId\` por solicitud para sobrescribir la bóveda.
 
 ## Crear Bóveda
 
 ### POST /contracts/vault/create
 
-Crea (inicializa) una bóveda para un propietario.
+Despliega (e inicializa) la bóveda del owner **a través del factory**. El factory deriva la dirección de la bóveda de forma determinista a partir de \`(factory, owner, userSalt)\`, por lo que el mismo owner + salt siempre apunta a la misma bóveda.
 
 **Cuerpo de solicitud (Prepare):**
 
 \`\`\`json
 {
   "owner": "G...",
-  "didUri": "did:pkh:stellar:testnet:G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
+  "didUri": "did:stellar:...",
+  "userSalt": "00...00",
+  "sourcePublicKey": "G..."
 }
 \`\`\`
+
+- **owner** (requerido): Dirección del propietario de la bóveda (G...).
+- **didUri** (requerido): URI del DID almacenado para el owner de la bóveda.
+- **userSalt** (opcional): salt de 32 bytes que selecciona qué bóveda para este owner. Por defecto son 32 bytes en cero (una bóveda canónica por owner).
+- **sourcePublicKey** (requerido): Fuente de transacción que firma el XDR preparado.
 
 **Cuerpo de solicitud (Submit):**
 
@@ -62,11 +67,13 @@ Crea (inicializa) una bóveda para un propietario.
 }
 \`\`\`
 
-## Autorizar Emisor
+## Bloquear Emisor
 
-### POST /contracts/vault/authorize-issuer
+### POST /contracts/vault/deny-issuer
 
-Añade un emisor autorizado a la bóveda de un propietario.
+La emisión está **abierta por defecto**: cualquier emisor puede escribir en la bóveda salvo que el owner lo bloquee. **Bloquear Emisor** bloquea un emisor concreto (lo añade al conjunto de denegados de la bóveda).
+
+> **Retrocompatibilidad:** \`POST /contracts/vault/authorize-issuer\` sigue disponible como alias de esta ruta.
 
 **Cuerpo de solicitud (Prepare):**
 
@@ -74,8 +81,8 @@ Añade un emisor autorizado a la bóveda de un propietario.
 {
   "owner": "G...",
   "issuer": "G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
+  "userSalt": "00...00",
+  "sourcePublicKey": "G..."
 }
 \`\`\`
 
@@ -96,45 +103,13 @@ Añade un emisor autorizado a la bóveda de un propietario.
 }
 \`\`\`
 
-## Autorizar Emisores (Múltiples)
+## Desbloquear Emisor
 
-### POST /contracts/vault/authorize-issuers
+### POST /contracts/vault/allow-issuer
 
-Reemplaza la lista completa de emisores autorizados de la bóveda con el array dado.
+Desbloquea un emisor previamente denegado (lo quita del conjunto de denegados de la bóveda). Como la emisión está abierta por defecto, esto solo hace falta para deshacer un **Bloquear Emisor** anterior.
 
-**Cuerpo de solicitud (Prepare):**
-
-\`\`\`json
-{
-  "owner": "G...",
-  "issuers": ["G...", "G...", "G..."],
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
-}
-\`\`\`
-
-**Respuesta (Prepare):**
-
-\`\`\`json
-{
-  "xdr": "AAAA...",
-  "network": "Test SDF Network ; September 2015"
-}
-\`\`\`
-
-**Respuesta (Submit):**
-
-\`\`\`json
-{
-  "tx_id": "abc123..."
-}
-\`\`\`
-
-## Revocar Emisor
-
-### POST /contracts/vault/revoke-issuer
-
-Revoca la autorización de un emisor de una bóveda.
+> **Retrocompatibilidad:** \`POST /contracts/vault/revoke-issuer\` sigue disponible como alias de esta ruta.
 
 **Cuerpo de solicitud (Prepare):**
 
@@ -142,8 +117,8 @@ Revoca la autorización de un emisor de una bóveda.
 {
   "owner": "G...",
   "issuer": "G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
+  "userSalt": "00...00",
+  "sourcePublicKey": "G..."
 }
 \`\`\`
 
@@ -168,15 +143,15 @@ Revoca la autorización de un emisor de una bóveda.
 
 ### POST /contracts/vault/revoke-vault
 
-Revoca completamente una bóveda.
+Revoca completamente la bóveda del owner.
 
 **Cuerpo de solicitud (Prepare):**
 
 \`\`\`json
 {
   "owner": "G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
+  "userSalt": "00...00",
+  "sourcePublicKey": "G..."
 }
 \`\`\`
 
@@ -209,49 +184,8 @@ Establece el nuevo propietario de la bóveda (admin de bóveda). Debe ser firmad
 {
   "owner": "G...",
   "new_owner": "G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
-}
-\`\`\`
-
-**Respuesta (Prepare):**
-
-\`\`\`json
-{
-  "xdr": "AAAA...",
-  "network": "Test SDF Network ; September 2015"
-}
-\`\`\`
-
-**Respuesta (Submit):**
-
-\`\`\`json
-{
-  "tx_id": "abc123..."
-}
-\`\`\`
-
-## Migrate
-
-### POST /contracts/vault/migrate
-
-Migra los datos heredados de la bóveda de un propietario al formato actual.
-
-**Cuerpo de solicitud (Prepare):**
-
-\`\`\`json
-{
-  "owner": "G...",
-  "sourcePublicKey": "G...",
-  "contractId": "C..."
-}
-\`\`\`
-
-**Cuerpo de solicitud (Submit):**
-
-\`\`\`json
-{
-  "signedXdr": "AAAA..."
+  "userSalt": "00...00",
+  "sourcePublicKey": "G..."
 }
 \`\`\`
 
@@ -274,7 +208,7 @@ Migra los datos heredados de la bóveda de un propietario al formato actual.
 
 ## Bóveda patrocinada
 
-Creación de bóveda en la que un **sponsor** firma \`create_sponsored_vault\` en el contrato vc-vault en lugar de que el propietario firme \`create_vault\`. On-chain el contrato también tiene ajustes solo-admin (\`open-to-all\`, lista de sponsors). La superficie HTTP **pública** es solo **\`POST /contracts/sponsored-vault/create\`** (mismo middleware \`X-ACTA-Key\` que otros escritos públicos \`/contracts/*\`, no rutas de API key admin).
+Despliegue de bóveda en el que un **sponsor** invoca \`deploy_sponsored\` en el **vc-vault-factory** en lugar de que el owner despliegue su propia bóveda. El patrocinio es **abierto**: cualquier sponsor puede desplegar una bóveda patrocinada para un owner. La superficie HTTP pública es **\`POST /contracts/sponsored-vault/create\`** (mismo middleware \`X-ACTA-Key\` que otros escritos públicos \`/contracts/*\`).
 
 Consulta **Bóveda patrocinada (Sponsored Vault)** (\`api-sponsored-vault\`) para semántica del contrato, el endpoint create y \`sponsoredVaultCreate\` en el SDK de credenciales.
 
@@ -288,7 +222,7 @@ Todos los endpoints de escritura siguen el mismo patrón:
 
 **Parámetros comunes:**
 - **owner** (requerido): Dirección del propietario de la bóveda (G...)
+- **userSalt** (opcional): salt de 32 bytes que selecciona la bóveda del owner; por defecto son 32 bytes en cero (una bóveda canónica por owner)
 - **sourcePublicKey** (requerido): Fuente de transacción que firmará (debe ser firmante autorizado)
-- **contractId** (opcional): Sobrescribir ID de contrato ACTA (C...)
     `,
 };

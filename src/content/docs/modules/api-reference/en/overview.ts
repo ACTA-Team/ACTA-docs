@@ -5,11 +5,15 @@ export const overview: DocPage = {
   title: "Overview",
   section: "API Reference",
   tocItems: [
+    "Architecture",
     "Base URLs",
     "Authentication",
     "Request Format",
     "Response Format",
     "Prepare/Submit Flow",
+    "Fees",
+    "Issuer DID requirement",
+    "Network Configuration",
     "Error Handling",
     "Rate Limiting",
     "Try it in Swagger",
@@ -18,6 +22,15 @@ export const overview: DocPage = {
 # API Reference Overview
 
 RESTful API for ACTA credential management on Stellar blockchain. All endpoints support both mainnet and testnet networks.
+
+## Architecture
+
+ACTA vaults are **single-tenant**: each owner has their own \`vc-vault\` contract. Vaults are deployed deterministically by a single **\`vc-vault-factory\`** per network. Because deployment is deterministic, the API and SDK derive an owner's vault address from \`(factory, owner, userSalt)\` without storing it - you only pass the \`owner\`.
+
+- **\`userSalt\`** (optional): 32-byte salt that distinguishes multiple vaults for the same owner. The default is **32 zero bytes**, which yields one canonical vault per owner. Pass a different \`userSalt\` only if you intentionally run more than one vault per owner.
+- **\`vaultContract\`** (optional, reads): the resolved vault contract id (\`C...\`). When omitted, the API resolves it from \`owner\` (and \`userSalt\`) via the factory. Use it to skip resolution if you already know the address.
+
+Most endpoints take \`owner\` (and optionally \`userSalt\`). There is no per-request \`contractId\` override of the vault: the factory owns deployment and address derivation.
 
 ## Base URLs
 
@@ -35,7 +48,7 @@ https://api.mainnet.acta.build
 
 ## Authentication
 
-**Contract routes** (\`/contracts/*\` — vault read/write, sponsored vault, VC operations, contract version, etc.) require a valid API key on every request. Send it in the request header:
+**Contract routes** (\`/contracts/*\` - vault read/write, sponsored vault, VC operations, contract version, etc.) require a valid API key on every request. Send it in the request header:
 
 \`\`\`
 X-ACTA-Key: your_api_key_here
@@ -115,6 +128,42 @@ Submit mode returns the transaction ID:
 1. **Prepare**: Call endpoint with operation parameters (no \`signedXdr\`)
 2. **Sign**: Sign the returned \`xdr\` with your Stellar wallet using the \`network\` passphrase
 3. **Submit**: Call the same endpoint with \`signedXdr\` to execute
+
+## Fees
+
+Issuance fees are charged **on-chain by the vault** via the factory's \`quote_fee\`. The fee is paid by the **issuer** at issuance time (mainnet: 1 USDC per credential). The API **no longer accepts a fee override** in any request body. There are no role-based fee tiers: there is a single standard fee plus an optional per-issuer custom fee, both resolved on-chain.
+
+## Issuer DID requirement
+
+The issuer must be a registered, resolvable **\`did:stellar\`**. Bare wallet addresses and \`did:pkh\` values are **no longer accepted** as the issuer DID. The API enforces a controller-to-DID binding: the DID's on-chain controller must equal the signing issuer, otherwise the request fails with error \`issuerDid_controller_mismatch\`.
+
+The credential **holder** is expressed inside \`vcData\` as \`credentialSubject.id\` (a DID). There is no separate \`holder\` or wallet field on issue requests.
+
+## Network Configuration
+
+### GET /config
+
+Returns public network configuration. Requires an API key (\`X-ACTA-Key\`).
+
+**Response:**
+
+\`\`\`json
+{
+  "rpcUrl": "https://soroban-testnet.stellar.org:443",
+  "networkPassphrase": "Test SDF Network ; September 2015",
+  "networkType": "testnet",
+  "factoryContractId": "C...",
+  "vaultWasmHash": "2bd0323a...",
+  "didStellarRegistryId": "C...",
+  "actaContractId": "C..."
+}
+\`\`\`
+
+- **factoryContractId**: the \`vc-vault-factory\` contract id for this network.
+- **networkType**: \`testnet\` or \`mainnet\`.
+- **vaultWasmHash**: the \`vc-vault\` template WASM hash deployed by the factory.
+- **didStellarRegistryId**: the \`did:stellar\` registry contract id used to resolve issuer DIDs.
+- **actaContractId**: back-compat alias of \`factoryContractId\`.
 
 ## Error Handling
 

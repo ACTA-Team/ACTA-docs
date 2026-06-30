@@ -7,7 +7,7 @@ export const gettingStarted: DocPage = {
   tocItems: [
     "Paso 1: Conectar Wallet",
     "Paso 2: Crear Bóveda",
-    "Paso 3: Autorizar Emisores",
+    "Paso 3: Gestionar Acceso de Emisores",
     "Paso 4: Emitir Credenciales",
     "Siguientes pasos",
   ],
@@ -32,7 +32,7 @@ Una vez conectado, tu dirección de wallet se mostrará en el header.
 
 ## Paso 2: Crear tu Bóveda Personal
 
-Tu bóveda es tu almacenamiento seguro para credenciales. Cada dirección de wallet tiene su propia bóveda aislada.
+Tu bóveda es tu almacenamiento seguro para credenciales. Cada propietario tiene su propio contrato de bóveda dedicado de un solo inquilino, desplegado de forma determinista por un factory tras bambalinas.
 
 1. Navega a la sección **Dashboard** o **Vault**
 2. Si aún no tienes una bóveda, verás una opción para crear una
@@ -42,33 +42,33 @@ Tu bóveda es tu almacenamiento seguro para credenciales. Cada dirección de wal
 
 La creación de la bóveda es una operación única por dirección de wallet.
 
-## Paso 3: Autorizar Emisores
+## Paso 3: Gestionar Acceso de Emisores
 
-Antes de poder recibir credenciales, necesitas autorizar wallets que puedan emitir credenciales a tu bóveda.
+La emisión está **abierta por defecto**: cualquier emisor puede emitir credenciales a tu bóveda sin aprobación previa, así que no necesitas pre-autorizar a nadie. Solo gestionas el acceso cuando quieres detener a un emisor específico.
 
-1. Ve a la sección **Authorize** en el sidebar
-2. Ingresa la dirección de wallet del emisor que quieres autorizar
-3. Haz clic en **Authorize Issuer**
-4. Firma la transacción con tu wallet
-5. El emisor autorizado aparecerá en tu lista de emisores autorizados
+1. Ve a la sección **Issuer Access** en el sidebar
+2. Ingresa el emisor que quieres **bloquear**
+3. Haz clic en **Block Issuer** y firma la transacción con tu wallet
+4. El emisor bloqueado ya no puede emitir credenciales a tu bóveda
+5. Para restaurar el acceso, **desbloquea** al emisor en cualquier momento
 
-**Nota:** Solo los emisores autorizados pueden crear credenciales en tu bóveda. Esto te da control sobre quién puede emitir credenciales para ti.
+**Nota:** Como la emisión está abierta por defecto, el bloqueo es un control de denegación por excepción. Cualquiera puede emitir hacia ti a menos que lo bloquees explícitamente.
 
 ## Paso 4: Emitir Credenciales
 
-Una vez que tengas una bóveda y emisores autorizados, puedes comenzar a emitir credenciales.
+Una vez que tengas una bóveda, puedes comenzar a emitir credenciales. Emitir requiere que el emisor tenga una identidad **did:stellar** registrada y resoluble (no una simple dirección de wallet); el dApp te guía en su configuración. Emitir también cobra una tarifa on-chain pagada por el emisor (en mainnet, 1 USDC por credencial).
 
 1. Navega a la sección **Issue**
 2. Completa el formulario de credencial:
    - **Credential ID** - Identificador único
    - **Credential Data** - La información real de la credencial en formato JSON
-   - **Owner** - La dirección de wallet que recibirá la credencial
-   - **Issuer DID** (opcional) - Tu DID de emisor
+   - **Owner** - La dirección de wallet cuya bóveda recibirá la credencial
+   - **Issuer DID** (opcional) - Tu identidad de emisor did:stellar registrada
 3. Haz clic en **Issue Credential**
 4. Firma la transacción con tu wallet
 5. La credencial se almacenará en la bóveda del propietario y se marcará como válida
 
-La credencial ahora está on-chain y puede ser verificada.
+La bóveda del propietario recibe la credencial, mientras que el titular se identifica mediante un DID (el \`credentialSubject.id\`); no hay un campo separado de wallet o de titular. La credencial ahora está on-chain y puede ser verificada.
 
 ## Siguientes pasos
 

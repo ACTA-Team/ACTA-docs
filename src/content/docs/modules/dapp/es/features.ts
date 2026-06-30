@@ -8,7 +8,7 @@ export const features: DocPage = {
     "Emitir Credenciales",
     "Gestión de Bóveda",
     "Compartir Credenciales",
-    "Autorizar Emisores",
+    "Acceso de Emisores",
     "Gestión de API Keys",
   ],
   content: `
@@ -18,7 +18,7 @@ Vista de las funcionalidades documentadas disponibles en el dApp de ACTA.
 
 ## Emitir Credenciales
 
-Crea y emite credenciales verificables a una dirección de wallet Stellar.
+Crea y emite credenciales verificables a una dirección de wallet Stellar. Emitir requiere una identidad de emisor **did:stellar** registrada y resoluble (no una simple dirección de wallet) y cobra una tarifa on-chain pagada por el emisor (en mainnet, 1 USDC por credencial).
 
 ### Cómo Emitir
 
@@ -26,8 +26,8 @@ Crea y emite credenciales verificables a una dirección de wallet Stellar.
 2. Completa el formulario de credencial:
    - **Credential ID**: Identificador único para la credencial
    - **Credential Data**: Datos JSON que contienen la información de la credencial
-   - **Owner**: Dirección de wallet Stellar (G...) que recibirá la credencial
-   - **Issuer DID** (opcional): Tu identificador DID
+   - **Owner**: Dirección de wallet Stellar (G...) cuya bóveda recibirá la credencial
+   - **Issuer DID** (opcional): Tu identidad de emisor did:stellar registrada
 3. Haz clic en **Issue Credential**
 4. Firma la transacción
 
@@ -67,22 +67,22 @@ Comparte credenciales eligiendo qué campos revelar.
 
 El enlace de compartir contiene los campos seleccionados que necesita el destinatario.
 
-## Autorizar Emisores
+## Acceso de Emisores
 
-Controla quién puede emitir credenciales a tu bóveda.
+La emisión está abierta por defecto: cualquiera puede emitir credenciales a tu bóveda a menos que lo bloquees. Usa esta sección para bloquear a los emisores que quieras detener y desbloquearlos luego para restaurar su acceso.
 
-### Autorizar un Emisor
+### Bloquear un Emisor
 
-1. Ve a la sección **Authorize**
-2. Ingresa la dirección de wallet del emisor
-3. Haz clic en **Authorize Issuer**
+1. Ve a la sección **Issuer Access**
+2. Ingresa el emisor que quieres bloquear
+3. Haz clic en **Block Issuer**
 4. Firma la transacción
 
-### Gestionar Emisores Autorizados
+### Gestionar Emisores Bloqueados
 
-- Ver todos los emisores autorizados
-- Revocar autorización si es necesario
-- Solo los emisores autorizados pueden crear credenciales en tu bóveda
+- Ver todos los emisores bloqueados
+- Desbloquear un emisor para restaurar su acceso
+- Cualquiera puede emitir hacia ti a menos que lo bloquees (denegación por excepción)
 
 ## Gestión de API Keys
 

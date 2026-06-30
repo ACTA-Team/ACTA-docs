@@ -11,14 +11,13 @@ export const useVaultRead: DocPage = {
     "Valor de retorno",
     "Ejemplo",
     "getVc",
-    "getVcParent",
     "verifyVc",
     "Notas",
   ],
   content: `
 # useVaultRead
 
-Hook para leer datos de la bóveda: listar IDs de credenciales, obtener credenciales, obtener info de VC padre, verificar credenciales.
+Hook para leer datos de la bóveda: listar IDs de credenciales, obtener credenciales, verificar credenciales.
 
 ## Función
 
@@ -26,7 +25,6 @@ Hook para leer datos de la bóveda: listar IDs de credenciales, obtener credenci
 useVaultRead(): {
   listVcIds: (args: ListVcIdsArgs) => Promise<string[]>;
   getVc: (args: GetVcArgs) => Promise<unknown | null>;
-  getVcParent: (args: GetVcParentArgs) => Promise<{ owner: string; vc_id: string } | null>;
   verifyVc: (args: VerifyVcArgs) => Promise<VaultVerifyVcResponse>;
 }
 \`\`\`
@@ -40,6 +38,7 @@ Lista los IDs de credenciales de un propietario.
 \`\`\`ts
 {
   owner: string;                   // Clave pública Stellar del propietario
+  userSalt?: string;               // Salt de 32 bytes que selecciona una bóveda no predeterminada del propietario (opcional)
   contractId?: string;             // ID de contrato (opcional, usa el configurado por defecto)
 }
 \`\`\`
@@ -71,6 +70,7 @@ Obtiene una credencial desde la bóveda.
 {
   owner: string;                   // Clave pública Stellar del propietario
   vcId: string;                    // Identificador único de la credencial
+  userSalt?: string;               // Salt de 32 bytes que selecciona una bóveda no predeterminada del propietario (opcional)
   contractId?: string;             // ID de contrato (opcional, usa el configurado por defecto)
 }
 \`\`\`
@@ -98,48 +98,6 @@ if (vc) {
 }
 \`\`\`
 
-## getVcParent
-
-Obtiene la info de la VC padre para una credencial vinculada. Devuelve \`null\` si la credencial no tiene vínculo padre.
-
-### Argumentos
-
-\`\`\`ts
-{
-  owner: string;                   // Clave pública Stellar del propietario
-  vcId: string;                    // Identificador único de la credencial
-  contractId?: string;             // ID de contrato (opcional, usa el configurado por defecto)
-}
-\`\`\`
-
-### Valor de retorno
-
-\`\`\`ts
-Promise<{ owner: string; vc_id: string } | null>
-\`\`\`
-
-- Devuelve un objeto con la dirección \`owner\` de la VC padre y su \`vc_id\`, o \`null\` si la credencial no está vinculada a un padre.
-
-### Ejemplo
-
-\`\`\`ts
-import { useVaultRead } from "@acta-team/credentials";
-
-const { getVcParent } = useVaultRead();
-
-const parent = await getVcParent({
-  owner: "G...",
-  vcId: "linked-credential-456"
-});
-
-if (parent) {
-  console.log("Propietario padre:", parent.owner);
-  console.log("ID de VC padre:", parent.vc_id);
-} else {
-  console.log("Esta credencial no tiene vínculo padre");
-}
-\`\`\`
-
 ## verifyVc
 
 Verifica el estado de una credencial en la bóveda.
@@ -150,6 +108,7 @@ Verifica el estado de una credencial en la bóveda.
 {
   owner: string;                   // Clave pública Stellar del propietario
   vcId: string;                    // Identificador único de la credencial
+  userSalt?: string;               // Salt de 32 bytes que selecciona una bóveda no predeterminada del propietario (opcional)
   contractId?: string;             // ID de contrato (opcional, usa el configurado por defecto)
 }
 \`\`\`
@@ -181,12 +140,12 @@ if (verification.since) {
 }
 \`\`\`
 
-## Notes
+## Notas
 
-- Todas estas operaciones son **solo lectura** y no requieren firmar transacciones  
-- Los métodos manejan automáticamente distintos formatos de respuesta de la API  
-- \`getVc\` devuelve \`null\` si la credencial no existe en la bóveda  
-- \`getVcParent\` devuelve \`null\` si la credencial no tiene vínculo padre
-- \`verifyVc\` siempre devuelve el estado actual de la credencial  
+- Todas estas operaciones son **solo lectura** y no requieren firmar transacciones
+- Los métodos manejan automáticamente distintos formatos de respuesta de la API
+- \`getVc\` devuelve \`null\` si la credencial no existe en la bóveda
+- Pasa \`userSalt\` para leer de una bóveda no predeterminada del propietario
+- \`verifyVc\` siempre devuelve el estado actual de la credencial
     `,
 };

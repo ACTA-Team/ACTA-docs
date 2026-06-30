@@ -11,22 +11,27 @@ export const useVault: DocPage = {
     "Tipo de firmante",
     "Valor de retorno",
     "Ejemplo",
-    "authorizeIssuer",
-    "revokeIssuer",
+    "denyIssuer",
+    "allowIssuer",
     "Flujo de transacción",
   ],
   content: `
 # useVault
 
-Hook para operaciones de bóveda: crear bóveda, autorizar emisor, revocar emisor.
+Hook para operaciones de bóveda: crear bóveda, bloquear (deny) un emisor, desbloquear (allow) un emisor.
+
+La emisión es abierta por defecto, así que solo actúas sobre las excepciones: \`denyIssuer\` bloquea un emisor en la bóveda y \`allowIssuer\` desbloquea uno que fue denegado antes. Los nombres antiguos \`authorizeIssuer\` y \`revokeIssuer\` siguen disponibles como **alias de compatibilidad** (\`authorizeIssuer\` -> \`denyIssuer\`, \`revokeIssuer\` -> \`allowIssuer\`).
 
 ## Función
 
 \`\`\`ts
 useVault(): {
   createVault: (args: CreateVaultArgs) => Promise<{ txId: string }>;
-  authorizeIssuer: (args: AuthorizeIssuerArgs) => Promise<{ txId: string }>;
-  revokeIssuer: (args: RevokeIssuerArgs) => Promise<{ txId: string }>;
+  denyIssuer: (args: DenyIssuerArgs) => Promise<{ txId: string }>;
+  allowIssuer: (args: AllowIssuerArgs) => Promise<{ txId: string }>;
+  // alias de compatibilidad:
+  authorizeIssuer: (args: DenyIssuerArgs) => Promise<{ txId: string }>;  // alias de denyIssuer
+  revokeIssuer: (args: AllowIssuerArgs) => Promise<{ txId: string }>;    // alias de allowIssuer
 }
 \`\`\`
 
@@ -41,10 +46,13 @@ Crea (inicializa) una bóveda para un propietario.
   owner: string;                    // Vault: cuenta G... o wallet contrato C...
   ownerDid: string;                 // DID del propietario
   signTransaction: Signer;
-  sourcePublicKey?: string;         // Opcional — firma cuenta G explícita
+  sourcePublicKey?: string;         // Opcional: firma cuenta G explícita
+  userSalt?: string;                // Salt de 32 bytes; por defecto 32 bytes en cero = una bóveda canónica por propietario
   contractId?: string;
 }
 \`\`\`
+
+La dirección de la bóveda se deriva de \`(factory, owner, userSalt)\`. Omite \`userSalt\` para la bóveda canónica del propietario; pasa un salt distinto de 32 bytes para desplegar una bóveda adicional del mismo propietario.
 
 ### Tipo de firmante
 
@@ -76,16 +84,16 @@ const { txId } = await createVault({
 });
 \`\`\`
 
-## authorizeIssuer
+## denyIssuer
 
-Autoriza un emisor en una bóveda.
+Bloquea un emisor en una bóveda. Como la emisión es abierta por defecto, así es como un propietario impide que un emisor concreto escriba credenciales. También expuesto como \`authorizeIssuer\` por compatibilidad.
 
 ### Argumentos
 
 \`\`\`ts
 {
   owner: string;
-  issuer: string;
+  issuer: string;                   // Emisor a bloquear
   signTransaction: Signer;
   sourcePublicKey?: string;
   contractId?: string;
@@ -94,16 +102,16 @@ Autoriza un emisor en una bóveda.
 
 ### Valor de retorno
 
-- \`Promise<{ txId: string }>\`: ID de la transacción después de enviarse a la red  
+- \`Promise<{ txId: string }>\`: ID de la transacción después de enviarse a la red
 
 ### Ejemplo
 
 \`\`\`ts
 import { useVault } from "@acta-team/credentials";
 
-const { authorizeIssuer } = useVault();
+const { denyIssuer } = useVault();
 
-const { txId } = await authorizeIssuer({
+const { txId } = await denyIssuer({
   owner: "G...",
   issuer: "G...",
   signTransaction: async (xdr, { networkPassphrase }) => {
@@ -113,16 +121,16 @@ const { txId } = await authorizeIssuer({
 });
 \`\`\`
 
-## revokeIssuer
+## allowIssuer
 
-Revoca (elimina) un emisor autorizado de una bóveda.
+Desbloquea un emisor que fue denegado antes, restaurando su capacidad por defecto de escribir credenciales en la bóveda. También expuesto como \`revokeIssuer\` por compatibilidad.
 
 ### Argumentos
 
 \`\`\`ts
 {
   owner: string;
-  issuer: string;
+  issuer: string;                   // Emisor a desbloquear
   signTransaction: Signer;
   sourcePublicKey?: string;
   contractId?: string;
@@ -131,16 +139,16 @@ Revoca (elimina) un emisor autorizado de una bóveda.
 
 ### Valor de retorno
 
-- \`Promise<{ txId: string }>\`: ID de la transacción después de enviarse a la red  
+- \`Promise<{ txId: string }>\`: ID de la transacción después de enviarse a la red
 
 ### Ejemplo
 
 \`\`\`ts
 import { useVault } from "@acta-team/credentials";
 
-const { revokeIssuer } = useVault();
+const { allowIssuer } = useVault();
 
-const { txId } = await revokeIssuer({
+const { txId } = await allowIssuer({
   owner: "G...",
   issuer: "G...",
   signTransaction: async (xdr, { networkPassphrase }) => {

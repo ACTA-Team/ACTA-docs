@@ -6,9 +6,12 @@ export const vaultRead: DocPage = {
   section: "API Reference",
   tocItems: [
     "List VC IDs",
+    "VC Count",
     "Get VC",
-    "Get VC Parent",
     "Verify VC",
+    "Vault Metadata",
+    "Denied Issuers",
+    "Denied Issuer Count",
     "Request Body",
     "Responses",
   ],
@@ -16,6 +19,8 @@ export const vaultRead: DocPage = {
 # Vault Operations (Read)
 
 Read-only operations for vault data. No authentication required.
+
+Reads identify the vault by **\`owner\`** (plus an optional **\`userSalt\`**). You may also pass **\`vaultContract\`** (the resolved \`C...\` address) to skip factory resolution. There is no \`contractId\` override.
 
 ## List VC IDs
 
@@ -28,7 +33,7 @@ Lists verifiable credential (VC) IDs stored in an owner's vault.
 \`\`\`json
 {
   "owner": "G...",
-  "contractId": "C..."
+  "userSalt": "00...00"
 }
 \`\`\`
 
@@ -48,6 +53,29 @@ curl -X POST https://api.testnet.acta.build/contracts/vault/list-vc-ids \\
   }'
 \`\`\`
 
+## VC Count
+
+### POST /contracts/vault/vc-count
+
+Returns the number of VCs stored in an owner's vault.
+
+**Request Body:**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "userSalt": "00...00"
+}
+\`\`\`
+
+**Response:**
+
+\`\`\`json
+{
+  "count": 3
+}
+\`\`\`
+
 ## Get VC
 
 ### POST /contracts/vault/get-vc
@@ -60,7 +88,7 @@ Gets a specific verifiable credential from a vault.
 {
   "owner": "G...",
   "vcId": "credential-123",
-  "contractId": "C..."
+  "userSalt": "00...00"
 }
 \`\`\`
 
@@ -75,7 +103,7 @@ Gets a specific verifiable credential from a vault.
     ],
     "type": ["VerifiableCredential"],
     "credentialSubject": {
-      "id": "did:pkh:stellar:testnet:G...",
+      "id": "did:stellar:...",
       "name": "John Doe"
     }
   }
@@ -93,52 +121,6 @@ curl -X POST https://api.testnet.acta.build/contracts/vault/get-vc \\
   }'
 \`\`\`
 
-## Get VC Parent
-
-### POST /contracts/vault/get-vc-parent
-
-Gets the parent VC info for a linked credential. Returns \`null\` if the credential has no parent link. No authentication required.
-
-**Request Body:**
-
-\`\`\`json
-{
-  "owner": "G...",
-  "vcId": "linked-credential-456",
-  "contractId": "C..."
-}
-\`\`\`
-
-**Response (with parent):**
-
-\`\`\`json
-{
-  "parent": {
-    "owner": "G...",
-    "vc_id": "credential-123"
-  }
-}
-\`\`\`
-
-**Response (no parent):**
-
-\`\`\`json
-{
-  "parent": null
-}
-\`\`\`
-
-**Example:**
-
-\`\`\`bash
-curl -X POST https://api.testnet.acta.build/contracts/vault/get-vc-parent \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "owner": "G...",
-    "vcId": "linked-credential-456"
-  }'
-\`\`\`
-
 ## Verify VC
 
 ### POST /contracts/vault/verify-vc
@@ -151,7 +133,7 @@ Verifies a VC by checking it exists in the owner's vault and returning its issua
 {
   "owner": "G...",
   "vcId": "credential-123",
-  "contractId": "C..."
+  "userSalt": "00...00"
 }
 \`\`\`
 
@@ -184,17 +166,74 @@ curl -X POST https://api.testnet.acta.build/contracts/vault/verify-vc \\
   }'
 \`\`\`
 
+## Vault Metadata
+
+### GET /contracts/vault/:owner
+
+Returns metadata for the owner's vault. Accepts an optional \`userSalt\` query parameter to select a non-default vault.
+
+**Response:**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "vault_address": "C...",
+  "did_uri": "did:stellar:...",
+  "version": "0.4.0",
+  "vc_count": 3,
+  "denied_issuer_count": 1
+}
+\`\`\`
+
+**Example:**
+
+\`\`\`bash
+curl "https://api.testnet.acta.build/contracts/vault/G..."
+\`\`\`
+
+## Denied Issuers
+
+### GET /contracts/vault/:owner/issuers/denied
+
+Lists the issuer addresses currently blocked (denied) for the owner's vault. Issuance is open by default, so this is the set of explicit exceptions.
+
+**Response:**
+
+\`\`\`json
+["G...", "G..."]
+\`\`\`
+
+## Denied Issuer Count
+
+### GET /contracts/vault/:owner/issuers/denied/count
+
+Returns the number of denied issuers for the owner's vault.
+
+**Response:**
+
+\`\`\`json
+{
+  "count": 1
+}
+\`\`\`
+
 ## Request Body
 
-All endpoints require:
+POST reads require:
 - **owner** (required): Vault owner address (G...)
-- **vcId** (required for get-vc, get-vc-parent, and verify-vc): Credential identifier
-- **contractId** (optional): Override ACTA contract ID (C...)
+- **vcId** (required for get-vc and verify-vc): Credential identifier
+- **userSalt** (optional): 32-byte salt selecting the owner's vault; defaults to 32 zero bytes (one canonical vault per owner)
+- **vaultContract** (optional): Resolved vault address (C...) to skip factory resolution
+
+GET reads take \`owner\` as a path segment and accept \`userSalt\` as a query parameter.
 
 ## Responses
 
 - **List VC IDs**: Array of credential ID strings
+- **VC Count**: \`{ count }\`
 - **Get VC**: Credential data object or null if not found
 - **Verify VC**: Status object with \`status\` ("valid" | "revoked") and optional \`since\` timestamp
+- **Vault Metadata**: \`{ owner, vault_address, did_uri, version, vc_count, denied_issuer_count }\`
+- **Denied Issuers**: Array of issuer addresses; **Denied Issuer Count**: \`{ count }\`
     `,
 };

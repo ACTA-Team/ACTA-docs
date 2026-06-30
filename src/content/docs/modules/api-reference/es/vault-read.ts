@@ -6,9 +6,12 @@ export const vaultRead: DocPage = {
   section: "Referencia API",
   tocItems: [
     "Listar IDs de VC",
+    "Conteo de VC",
     "Obtener VC",
-    "Obtener VC Padre",
     "Verificar VC",
+    "Metadatos de la Bóveda",
+    "Emisores Bloqueados",
+    "Conteo de Emisores Bloqueados",
     "Cuerpo de solicitud",
     "Respuestas",
   ],
@@ -16,6 +19,8 @@ export const vaultRead: DocPage = {
 # Operaciones de Bóveda (Lectura)
 
 Operaciones de solo lectura para datos de bóveda. No requiere autenticación.
+
+Las lecturas identifican la bóveda por **\`owner\`** (más un **\`userSalt\`** opcional). También puedes pasar **\`vaultContract\`** (la dirección \`C...\` ya resuelta) para saltarte la resolución vía factory. No hay override de \`contractId\`.
 
 ## Listar IDs de VC
 
@@ -28,7 +33,7 @@ Lista los IDs de credenciales verificables (VC) almacenados en la bóveda de un 
 \`\`\`json
 {
   "owner": "G...",
-  "contractId": "C..."
+  "userSalt": "00...00"
 }
 \`\`\`
 
@@ -48,6 +53,29 @@ curl -X POST https://api.testnet.acta.build/contracts/vault/list-vc-ids \\
   }'
 \`\`\`
 
+## Conteo de VC
+
+### POST /contracts/vault/vc-count
+
+Devuelve el número de VC almacenadas en la bóveda de un propietario.
+
+**Cuerpo de solicitud:**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "userSalt": "00...00"
+}
+\`\`\`
+
+**Respuesta:**
+
+\`\`\`json
+{
+  "count": 3
+}
+\`\`\`
+
 ## Obtener VC
 
 ### POST /contracts/vault/get-vc
@@ -60,7 +88,7 @@ Obtiene una credencial verificable específica de una bóveda.
 {
   "owner": "G...",
   "vcId": "credential-123",
-  "contractId": "C..."
+  "userSalt": "00...00"
 }
 \`\`\`
 
@@ -75,7 +103,7 @@ Obtiene una credencial verificable específica de una bóveda.
     ],
     "type": ["VerifiableCredential"],
     "credentialSubject": {
-      "id": "did:pkh:stellar:testnet:G...",
+      "id": "did:stellar:...",
       "name": "John Doe"
     }
   }
@@ -93,52 +121,6 @@ curl -X POST https://api.testnet.acta.build/contracts/vault/get-vc \\
   }'
 \`\`\`
 
-## Obtener VC Padre
-
-### POST /contracts/vault/get-vc-parent
-
-Obtiene la info de la VC padre para una credencial vinculada. Devuelve \`null\` si la credencial no tiene vínculo padre. No requiere autenticación.
-
-**Cuerpo de solicitud:**
-
-\`\`\`json
-{
-  "owner": "G...",
-  "vcId": "linked-credential-456",
-  "contractId": "C..."
-}
-\`\`\`
-
-**Respuesta (con padre):**
-
-\`\`\`json
-{
-  "parent": {
-    "owner": "G...",
-    "vc_id": "credential-123"
-  }
-}
-\`\`\`
-
-**Respuesta (sin padre):**
-
-\`\`\`json
-{
-  "parent": null
-}
-\`\`\`
-
-**Ejemplo:**
-
-\`\`\`bash
-curl -X POST https://api.testnet.acta.build/contracts/vault/get-vc-parent \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "owner": "G...",
-    "vcId": "linked-credential-456"
-  }'
-\`\`\`
-
 ## Verificar VC
 
 ### POST /contracts/vault/verify-vc
@@ -151,7 +133,7 @@ Verifica una VC comprobando que existe en la bóveda del propietario y devolvien
 {
   "owner": "G...",
   "vcId": "credential-123",
-  "contractId": "C..."
+  "userSalt": "00...00"
 }
 \`\`\`
 
@@ -184,17 +166,74 @@ curl -X POST https://api.testnet.acta.build/contracts/vault/verify-vc \\
   }'
 \`\`\`
 
+## Metadatos de la Bóveda
+
+### GET /contracts/vault/:owner
+
+Devuelve los metadatos de la bóveda del owner. Acepta un parámetro de consulta \`userSalt\` opcional para seleccionar una bóveda no predeterminada.
+
+**Respuesta:**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "vault_address": "C...",
+  "did_uri": "did:stellar:...",
+  "version": "0.4.0",
+  "vc_count": 3,
+  "denied_issuer_count": 1
+}
+\`\`\`
+
+**Ejemplo:**
+
+\`\`\`bash
+curl "https://api.testnet.acta.build/contracts/vault/G..."
+\`\`\`
+
+## Emisores Bloqueados
+
+### GET /contracts/vault/:owner/issuers/denied
+
+Lista las direcciones de emisores actualmente bloqueados (denegados) para la bóveda del owner. La emisión está abierta por defecto, así que este es el conjunto de excepciones explícitas.
+
+**Respuesta:**
+
+\`\`\`json
+["G...", "G..."]
+\`\`\`
+
+## Conteo de Emisores Bloqueados
+
+### GET /contracts/vault/:owner/issuers/denied/count
+
+Devuelve el número de emisores bloqueados para la bóveda del owner.
+
+**Respuesta:**
+
+\`\`\`json
+{
+  "count": 1
+}
+\`\`\`
+
 ## Cuerpo de solicitud
 
-Todos los endpoints requieren:
+Las lecturas POST requieren:
 - **owner** (requerido): Dirección del propietario de la bóveda (G...)
 - **vcId** (requerido para get-vc y verify-vc): Identificador de credencial
-- **contractId** (opcional): Sobrescribir ID de contrato ACTA (C...)
+- **userSalt** (opcional): salt de 32 bytes que selecciona la bóveda del owner; por defecto son 32 bytes en cero (una bóveda canónica por owner)
+- **vaultContract** (opcional): Dirección de bóveda resuelta (C...) para saltarse la resolución vía factory
+
+Las lecturas GET reciben \`owner\` como segmento de ruta y aceptan \`userSalt\` como parámetro de consulta.
 
 ## Respuestas
 
 - **Listar IDs de VC**: Array de cadenas de ID de credenciales
+- **Conteo de VC**: \`{ count }\`
 - **Obtener VC**: Objeto de datos de credencial o null si no se encuentra
 - **Verificar VC**: Objeto de estado con \`status\` ("valid" | "revoked") y timestamp opcional \`since\`
+- **Metadatos de la Bóveda**: \`{ owner, vault_address, did_uri, version, vc_count, denied_issuer_count }\`
+- **Emisores Bloqueados**: Array de direcciones de emisores; **Conteo de Emisores Bloqueados**: \`{ count }\`
     `,
 };
