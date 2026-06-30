@@ -19,6 +19,8 @@ export const didStellarOverview: DocPage = {
 
 \`did:stellar\` es el método de Identificador Descentralizado de ACTA para la blockchain de Stellar. Provee una capa de identidad compatible con W3C DID Core 1.1 anclada en contratos inteligentes Soroban.
 
+> **Requerido para emitir:** la emisión de credenciales de ACTA ahora requiere que el **emisor controle un \`did:stellar\` registrado**. La API exige un vínculo controlador↔emisor — el controlador on-chain del DID debe ser igual a la cuenta emisora que firma. \`did:pkh\` y las direcciones de wallet planas ya no se aceptan como DID del emisor.
+
 ## Qué es did:stellar
 
 Un identificador \`did:stellar\` es una identidad globalmente única y auto-soberana vinculada a la blockchain de Stellar. A diferencia de \`did:pkh\` (que derivaba el DID de una dirección de wallet), \`did:stellar\` usa un **identificador aleatorio de 128 bits** registrado on-chain a través de un contrato registry en Soroban. Esto permite:

@@ -6,9 +6,11 @@ export const overview: DocPage = {
   section: "API Reference",
   tocItems: [
     "Base URLs",
+    "Architecture: factory + single-tenant vaults",
     "Authentication",
     "Request Format",
     "Response Format",
+    "Network Configuration",
     "Prepare/Submit Flow",
     "Error Handling",
     "Rate Limiting",
@@ -32,6 +34,21 @@ https://api.testnet.acta.build
 \`\`\`
 https://api.mainnet.acta.build
 \`\`\`
+
+## Architecture: factory + single-tenant vaults
+
+As of v0.4.0 vaults are **single-tenant**: each owner has their **own** \`vc-vault\` contract, deployed deterministically by a **\`vc-vault-factory\`**. There is one factory per network.
+
+- The API/SDK **derive** an owner's vault address from \`(factory, owner, userSalt)\` — you never pass a vault \`contractId\` for normal operations.
+- The default **\`userSalt\`** is 32 zero bytes, giving exactly **one canonical vault per owner**. Pass a different \`userSalt\` (or an explicit \`vaultContract\`) only if an owner runs multiple vaults.
+- **Fees** are charged **on-chain** by the vault via the factory's \`quote_fee\` at issuance time (default **1 USDC per credential, paid by the issuer**). The API no longer accepts a fee override, and the old role-based fee tiers (admin / early / standard) are gone — the factory has a single standard fee plus an optional per-issuer custom fee.
+- **Issuance is open by default** (deny-by-exception): owners do not authorize issuers; they **block** (\`deny-issuer\`) and **unblock** (\`allow-issuer\`).
+- The issuer must control a **registered, resolvable \`did:stellar\`**. \`did:pkh\` and bare wallet addresses are no longer accepted as the issuer DID, and the API enforces a controller↔DID binding (the DID's on-chain controller must equal the signing issuer; mismatches return \`issuerDid_controller_mismatch\`).
+
+**Optional parameters** accepted by vault/credential routes:
+
+- **\`userSalt\`** (optional): 32-byte salt (hex) selecting which of an owner's vaults to target. Defaults to all-zero.
+- **\`vaultContract\`** (optional, read routes): explicit vault \`C...\` id, bypassing derivation.
 
 ## Authentication
 
@@ -109,6 +126,28 @@ Submit mode returns the transaction ID:
   "message": "Human readable error message"
 }
 \`\`\`
+
+## Network Configuration
+
+\`GET /config\` (requires \`X-ACTA-Key\`) returns the network and contract wiring for the current host:
+
+\`\`\`json
+{
+  "rpcUrl": "https://soroban-testnet.stellar.org:443",
+  "networkPassphrase": "Test SDF Network ; September 2015",
+  "networkType": "testnet",
+  "factoryContractId": "C...",
+  "vaultWasmHash": "2bd0323a...",
+  "didStellarRegistryId": "C...",
+  "actaContractId": "C..."
+}
+\`\`\`
+
+- **\`factoryContractId\`**: the \`vc-vault-factory\` for this network (used to derive vault addresses).
+- **\`networkType\`**: \`"testnet"\` or \`"mainnet"\`.
+- **\`vaultWasmHash\`**: the vault template Wasm hash the factory deploys.
+- **\`didStellarRegistryId\`**: the \`did-stellar-registry\` contract used to resolve issuer DIDs.
+- **\`actaContractId\`**: back-compat alias of \`factoryContractId\`.
 
 ## Prepare/Submit Flow
 

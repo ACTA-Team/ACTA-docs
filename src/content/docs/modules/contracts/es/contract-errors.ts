@@ -8,6 +8,7 @@ export const contractErrors: DocPage = {
     "En un minuto",
     "Cuándo los ves",
     "Bóveda (vc-vault)",
+    "Errores a nivel de API",
     "Registro de emisores",
     "Registro DID (did-stellar-registry)",
     "Para desarrolladores",
@@ -17,9 +18,11 @@ export const contractErrors: DocPage = {
 
 Si algo falla dentro del contrato Soroban, Stellar muestra **\`Error(Contract, #N)\`** — **N** es solo un número. **Importante:** el mismo **N** puede significar cosas distintas en el contrato **bóveda**, el **registro de emisores** o el **registro DID**. Siempre cruza el código con el contrato que invocaste.
 
+> **v0.4.0:** las bóvedas son mono-inquilino y las despliega el \`vc-vault-factory\`. La emisión es **abierta por defecto** — los propietarios **bloquean** emisores (denegar-por-excepción) en vez de autorizarlos. Los antiguos códigos de lista de autorizados y de VC vinculada ya no aplican.
+
 ## En un minuto
 
-- **Bóveda** — Guarda credenciales por owner: crear bóveda, emitir, revocar, flujos patrocinados y operaciones relacionadas.
+- **Bóveda** — Una \`vc-vault\` mono-inquilino (una por propietario) desplegada por el factory: emitir, revocar, bloquear/desbloquear emisor y operaciones relacionadas.
 - **Registro de emisores** — Otro contrato para metadatos de emisores; sus códigos de error están en la sección de abajo.
 - **Registro DID** — El contrato de registro de identidad \`did:stellar\`; gestiona registro, actualizaciones, transferencias y desactivación de DIDs.
 
@@ -34,27 +37,32 @@ Los códigos de abajo son **solo** de \`vc-vault\`.
 
 | Error | Qué pasó y qué probar |
 |-------|----------------------|
-| **#1** · Bóveda ya existe | La bóveda ya existe para ese owner — p. ej. \`create_vault\` / \`create_sponsored_vault\` dos veces para el mismo owner. **Prueba:** comprobar si existe bóveda antes; no repetir init. |
-| **#2** · Emisor no autorizado | Ese emisor no está en la lista permitida de la bóveda para esta operación. **Prueba:** autorizar antes o usar la dirección de emisor correcta. |
-| **#3** · Emisor ya autorizado | Añadiste un emisor que ya estaba permitido. **Prueba:** omitir duplicado o refrescar la lista antes de cambiar. |
-| **#4** · Bóveda revocada | La bóveda de ese owner está revocada — no se permiten escrituras que exijan bóveda activa. **Prueba:** no emitir más ahí; recuperación off-chain si aplica. |
-| **#6** · VC no encontrada | No hay credencial con ese \`vc_id\` para ese owner (typo, red o contrato equivocado). **Prueba:** listar ids, revisar \`owner\` + \`vc_id\`. |
+| **#1** · Bóveda ya existe | Ya existe una bóveda para ese owner con este \`userSalt\` — p. ej. desplegar dos veces para el mismo owner. **Prueba:** comprobar si existe bóveda antes; no repetir el deploy. |
+| **#2** · Emisor bloqueado | Ese emisor fue **bloqueado** en la bóveda (denegar-por-excepción). **Prueba:** el propietario puede \`allow_issuer\` para desbloquear, o emitir desde una cuenta no bloqueada. |
+| **#3** · Emisor ya en ese estado | Bloqueaste un emisor ya bloqueado, o desbloqueaste uno que no lo estaba. **Prueba:** refrescar la lista de bloqueados antes de cambiarla. |
+| **#4** · Bóveda revocada / inactiva | La bóveda de ese owner está revocada o inactiva — no se permiten escrituras que exijan bóveda activa. **Prueba:** no emitir más ahí; recuperación off-chain si aplica. |
+| **#6** · VC no encontrada | No hay credencial con ese \`vc_id\` para ese owner (typo, red o bóveda equivocada). **Prueba:** listar ids, revisar \`owner\` + \`vc_id\` + \`userSalt\`. |
 | **#7** · VC ya revocada | Actuaste sobre una credencial ya revocada (p. ej. revocar dos veces). **Prueba:** refrescar estado on-chain; tratar la VC como inválida. |
-| **#8** · Bóveda no inicializada | Aún no hay bóveda para ese owner. **Prueba:** crear bóveda (normal o patrocinada) antes de emitir. |
-| **#9** · No inicializado | La instancia del contrato nunca se arrancó (sin admin). **Prueba:** flujo de init del despliegue; confirmar el id \`C...\` correcto en esa red. |
-| **#10** · Contrato de bóveda inválido | Un parámetro debía apuntar a **esta** bóveda y apunta a otro contrato. **Prueba:** usar el id de bóveda correcto para tu red. |
-| **#11** · Sponsor no autorizado | Bóveda patrocinada: el sponsor no es admin ni está en la lista y el modo "abierto a todos" está apagado. **Prueba:** que un admin añada sponsor, active modo abierto, o uses un sponsor permitido. |
+| **#8** · Bóveda no inicializada | Aún no hay bóveda para ese owner. **Prueba:** desplegar bóveda (normal o patrocinada) antes de emitir. |
+| **#9** · No inicializado | La instancia del contrato nunca se arrancó (sin admin). **Prueba:** flujo de init del despliegue; confirmar el id correcto del factory/bóveda en esa red. |
+| **#10** · Contrato de bóveda inválido | Un parámetro debía apuntar a **esta** bóveda y apunta a otro contrato. **Prueba:** usar el id de bóveda correcto para tu red, o derivarlo de \`(factory, owner, userSalt)\`. |
 | **#12** · VC ya existe | Emisión con un \`vc_id\` que ya existe para ese owner. **Prueba:** nuevo \`vc_id\` o tratar como ya emitida. |
 | **#13** · Sin admin pendiente | Aceptar traspaso de admin sin nominación previa. **Prueba:** completar \`set_contract_admin\` (o equivalente) antes; no aceptar dos veces. |
-| **#14** · VC padre inválida | Emisión vinculada: la VC padre falta, es errónea o está revocada. **Prueba:** revisar \`owner\` + \`vc_id\` del padre y que siga activa. |
 | **#15** · Bóveda llena | La bóveda alcanzó el número máximo de VCs activas. **Prueba:** revocar VCs no usadas o usar una nueva bóveda. |
 | **#16** · Límite muy grande | El \`limit\` de paginación excede \`MAX_LIST_LIMIT\`. **Prueba:** usar un tamaño de página menor. |
 | **#17** · Lote muy grande | La solicitud de emisión por lote excede \`MAX_BATCH_SIZE\`. **Prueba:** dividir en lotes más pequeños. |
 | **#18** · Lote vacío | Emisión por lote llamada con lista \`vcs\` vacía. **Prueba:** incluir al menos una VC en el lote. |
 | **#19** · Input muy largo | Un campo de texto excede su longitud máxima por campo. **Prueba:** acortar el valor del campo. |
-| **#20** · Lista de emisores muy larga | \`authorize_issuers\` con lista mayor que \`MAX_ISSUERS_LIST\`. **Prueba:** dividir en llamadas más pequeñas. |
 | **#22** · Monto de fee inválido | El monto del fee es negativo. **Prueba:** usar un valor de fee no negativo. |
-| **#23** · Fee fuera de rango | El monto del fee excede \`MAX_FEE_AMOUNT\`. **Prueba:** usar un fee menor. |
+| **#23** · Fee fuera de rango | El monto del fee excede \`MAX_FEE_AMOUNT\`. **Prueba:** usar un fee menor, o apoyarte en la tarifa estándar del factory. |
+
+## Errores a nivel de API
+
+Algunos errores vienen de la **API de ACTA** antes de que la transacción llegue al contrato — son códigos de texto, no \`Error(Contract, #N)\`:
+
+| Error | Qué pasó y qué probar |
+|-------|----------------------|
+| **\`issuerDid_controller_mismatch\`** | El controlador on-chain del \`issuerDid\` no es igual al emisor que firma. La API exige este vínculo controlador↔DID al emitir. **Prueba:** emitir con el DID que realmente controlas, o transferir el controlador del DID a tu cuenta emisora. |
 
 ## Registro de emisores
 
@@ -97,6 +105,6 @@ Los códigos **1–20** son **solo** de \`did-stellar-registry\` — el registro
 
 ## Para desarrolladores
 
-Los enums oficiales están en **contracts-acta**: \`contracts/vc-vault/src/error.rs\`, \`contracts/vc-issuer-registry/src/error.rs\` y \`contracts/did-stellar-registry/src/errors.rs\`.
+Los enums oficiales están en **contracts-acta**: \`contracts/vc-vault-factory/src/error.rs\`, \`contracts/vc-vault/src/error.rs\`, \`contracts/vc-issuer-registry/src/error.rs\` y \`contracts/did-stellar-registry/src/errors.rs\`. El código \`issuerDid_controller_mismatch\` se aplica en la API de ACTA, no en el contrato.
     `,
 };

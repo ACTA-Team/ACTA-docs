@@ -6,9 +6,11 @@ export const overview: DocPage = {
   section: "Referencia API",
   tocItems: [
     "URLs base",
+    "Arquitectura: factory + bóvedas mono-inquilino",
     "Autenticación",
     "Formato de solicitud",
     "Formato de respuesta",
+    "Configuración de red",
     "Flujo Prepare/Submit",
     "Manejo de errores",
     "Límites de tasa",
@@ -32,6 +34,21 @@ https://api.testnet.acta.build
 \`\`\`
 https://api.mainnet.acta.build
 \`\`\`
+
+## Arquitectura: factory + bóvedas mono-inquilino
+
+Desde v0.4.0 las bóvedas son **mono-inquilino**: cada propietario tiene su **propio** contrato \`vc-vault\`, desplegado de forma determinista por un **\`vc-vault-factory\`**. Hay un factory por red.
+
+- La API/SDK **derivan** la dirección de la bóveda de un propietario a partir de \`(factory, owner, userSalt)\` — nunca pasas un \`contractId\` de bóveda en operaciones normales.
+- El **\`userSalt\`** por defecto son 32 bytes en cero, dando exactamente **una bóveda canónica por propietario**. Usa un \`userSalt\` distinto (o un \`vaultContract\` explícito) solo si un propietario maneja varias bóvedas.
+- Las **tarifas** se cobran **on-chain** por la bóveda mediante el \`quote_fee\` del factory al momento de emitir (por defecto **1 USDC por credencial, pagada por el emisor**). La API ya no acepta sobrescritura de tarifa, y los antiguos niveles de tarifa por rol (admin / early / standard) desaparecieron — el factory tiene una sola tarifa estándar más una tarifa personalizada opcional por emisor.
+- La **emisión es abierta por defecto** (denegar-por-excepción): los propietarios no autorizan emisores; los **bloquean** (\`deny-issuer\`) y **desbloquean** (\`allow-issuer\`).
+- El emisor debe controlar un **\`did:stellar\` registrado y resoluble**. \`did:pkh\` y direcciones de wallet planas ya no se aceptan como DID del emisor, y la API exige un vínculo controlador↔DID (el controlador on-chain del DID debe ser igual al emisor que firma; las discrepancias devuelven \`issuerDid_controller_mismatch\`).
+
+**Parámetros opcionales** aceptados por las rutas de bóveda/credenciales:
+
+- **\`userSalt\`** (opcional): salt de 32 bytes (hex) que selecciona cuál de las bóvedas del propietario se usa. Por defecto todo en cero.
+- **\`vaultContract\`** (opcional, rutas de lectura): id de bóveda \`C...\` explícito, omitiendo la derivación.
 
 ## Autenticación
 
@@ -109,6 +126,28 @@ El modo submit devuelve el ID de la transacción:
   "message": "Mensaje de error legible"
 }
 \`\`\`
+
+## Configuración de red
+
+\`GET /config\` (requiere \`X-ACTA-Key\`) devuelve la configuración de red y contratos del host actual:
+
+\`\`\`json
+{
+  "rpcUrl": "https://soroban-testnet.stellar.org:443",
+  "networkPassphrase": "Test SDF Network ; September 2015",
+  "networkType": "testnet",
+  "factoryContractId": "C...",
+  "vaultWasmHash": "2bd0323a...",
+  "didStellarRegistryId": "C...",
+  "actaContractId": "C..."
+}
+\`\`\`
+
+- **\`factoryContractId\`**: el \`vc-vault-factory\` de esta red (usado para derivar direcciones de bóveda).
+- **\`networkType\`**: \`"testnet"\` o \`"mainnet"\`.
+- **\`vaultWasmHash\`**: el hash Wasm de la plantilla de bóveda que despliega el factory.
+- **\`didStellarRegistryId\`**: el contrato \`did-stellar-registry\` usado para resolver los DID de los emisores.
+- **\`actaContractId\`**: alias retrocompatible de \`factoryContractId\`.
 
 ## Flujo Prepare/Submit
 

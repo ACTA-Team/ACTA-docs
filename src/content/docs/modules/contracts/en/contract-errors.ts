@@ -8,6 +8,7 @@ export const contractErrors: DocPage = {
     "In one minute",
     "When you see this",
     "Vault (vc-vault)",
+    "API-level errors",
     "Issuer registry",
     "DID registry (did-stellar-registry)",
     "For developers",
@@ -17,9 +18,11 @@ export const contractErrors: DocPage = {
 
 If something goes wrong inside the Soroban contract, Stellar surfaces **\`Error(Contract, #N)\`** — **N** is just a number. **Important:** the same **N** can mean different things on the **vault** contract, the **issuer registry**, or the **DID registry**. Always match the code to the contract you invoked.
 
+> **v0.4.0:** vaults are single-tenant and deployed by the \`vc-vault-factory\`. Issuance is **open by default** — owners **block** issuers (deny-by-exception) rather than authorizing them. The old allow-list and linked-VC error codes no longer apply.
+
 ## In one minute
 
-- **Vault** — Holds credentials per owner: create vault, issue, revoke, sponsored flows, and related operations.
+- **Vault** — A single-tenant \`vc-vault\` (one per owner) deployed by the factory: issue, revoke, deny/allow issuer, and related operations.
 - **Issuer registry** — A separate contract for issuer metadata; it has its own error codes in the section below.
 - **DID registry** — The \`did:stellar\` identity registry contract; manages DID registration, updates, transfers, and deactivation.
 
@@ -34,27 +37,32 @@ Codes below are **only** for \`vc-vault\`.
 
 | Error | What happened & what to try |
 |-------|----------------------------|
-| **#1** · Vault already exists | Vault already exists for this owner — e.g. \`create_vault\` / \`create_sponsored_vault\` twice for the same owner. **Try:** check the vault exists first; do not replay init. |
-| **#2** · Issuer not authorized | This issuer is not on the vault's allow list for the operation. **Try:** authorize the issuer first, or use the correct issuer address. |
-| **#3** · Issuer already authorized | You added an issuer who is already allowed. **Try:** skip the duplicate or refresh the list before changing. |
-| **#4** · Vault revoked | This owner's vault is revoked — writes that need an active vault are blocked. **Try:** stop issuing for this vault; handle recovery off-chain if needed. |
-| **#6** · VC not found | No credential with that \`vc_id\` for this owner (typo, wrong network, or wrong contract id). **Try:** list VC ids, double-check \`owner\` + \`vc_id\`. |
+| **#1** · Vault already exists | A vault already exists for this owner at this \`userSalt\` — e.g. deploying twice for the same owner. **Try:** check the vault exists first; do not replay the deploy. |
+| **#2** · Issuer denied | This issuer has been **blocked** on the vault (deny-by-exception). **Try:** the owner can \`allow_issuer\` to unblock, or issue from an unblocked account. |
+| **#3** · Issuer already in that state | You blocked an issuer already blocked, or unblocked one that wasn't blocked. **Try:** refresh the denied-issuer list before changing it. |
+| **#4** · Vault revoked / not active | This owner's vault is revoked or inactive — writes that need an active vault are blocked. **Try:** stop issuing for this vault; handle recovery off-chain if needed. |
+| **#6** · VC not found | No credential with that \`vc_id\` for this owner (typo, wrong network, or wrong vault). **Try:** list VC ids, double-check \`owner\` + \`vc_id\` + \`userSalt\`. |
 | **#7** · VC already revoked | You acted on a credential that is already revoked (e.g. revoke twice). **Try:** refresh state from chain; treat the VC as invalid. |
-| **#8** · Vault not initialized | There is no vault yet for this owner. **Try:** create the vault (normal or sponsored flow) before issuing. |
-| **#9** · Not initialized | The contract instance was never bootstrapped (no admin). **Try:** run the deploy init flow; confirm the contract id is the right vault for this network. |
-| **#10** · Invalid vault contract | A parameter must point at **this** vault contract but points elsewhere. **Try:** pass the correct \`C...\` vault id for your network. |
-| **#11** · Not authorized sponsor | Sponsored vault: sponsor isn't admin and isn't on the sponsor list while "open to all" is off. **Try:** admin adds sponsor, enables open mode, or you use an allowed sponsor. |
+| **#8** · Vault not initialized | There is no vault yet for this owner. **Try:** deploy the vault (normal or sponsored flow) before issuing. |
+| **#9** · Not initialized | The contract instance was never bootstrapped (no admin). **Try:** run the deploy init flow; confirm the id is the right factory/vault for this network. |
+| **#10** · Invalid vault contract | A parameter must point at **this** vault contract but points elsewhere. **Try:** pass the correct \`C...\` vault id for your network, or derive it from \`(factory, owner, userSalt)\`. |
 | **#12** · VC already exists | Issue used a \`vc_id\` that already exists for this owner. **Try:** pick a new \`vc_id\` or treat the credential as already issued. |
 | **#13** · No pending admin | Accepting admin transfer but no transfer was nominated. **Try:** complete \`set_contract_admin\` (or equivalent) first; don't accept twice. |
-| **#14** · Parent VC invalid | Linked issue: parent VC missing, wrong, or revoked. **Try:** verify parent \`owner\` + \`vc_id\` and that the parent is still active. |
 | **#15** · Vault full | Vault has reached the maximum number of active VCs. **Try:** revoke unused VCs or use a new vault. |
 | **#16** · Limit too large | Pagination \`limit\` exceeds \`MAX_LIST_LIMIT\`. **Try:** use a smaller page size. |
 | **#17** · Batch too large | Batch issuance request exceeds \`MAX_BATCH_SIZE\`. **Try:** split into smaller batches. |
 | **#18** · Batch empty | Batch issuance called with an empty \`vcs\` list. **Try:** provide at least one VC in the batch. |
 | **#19** · Input too long | A string input exceeds its per-field maximum length. **Try:** shorten the field value. |
-| **#20** · Issuer list too long | \`authorize_issuers\` called with a list larger than \`MAX_ISSUERS_LIST\`. **Try:** split into smaller authorization calls. |
 | **#22** · Invalid fee amount | Fee amount is negative. **Try:** use a non-negative fee value. |
-| **#23** · Fee out of bounds | Fee amount exceeds \`MAX_FEE_AMOUNT\`. **Try:** use a smaller fee. |
+| **#23** · Fee out of bounds | Fee amount exceeds \`MAX_FEE_AMOUNT\`. **Try:** use a smaller fee, or rely on the factory's standard fee. |
+
+## API-level errors
+
+Some errors come from the **ACTA API** before a transaction reaches the contract — they are string codes, not \`Error(Contract, #N)\`:
+
+| Error | What happened & what to try |
+|-------|----------------------------|
+| **\`issuerDid_controller_mismatch\`** | The on-chain controller of the \`issuerDid\` does not equal the signing issuer. The API enforces this controller↔DID binding at issuance. **Try:** issue with the DID you actually control, or transfer the DID's controller to your issuing account. |
 
 ## Issuer registry
 
@@ -97,6 +105,6 @@ Codes **1–20** here belong **only** to \`did-stellar-registry\` — the on-cha
 
 ## For developers
 
-Authoritative enums live in **contracts-acta**: \`contracts/vc-vault/src/error.rs\`, \`contracts/vc-issuer-registry/src/error.rs\`, and \`contracts/did-stellar-registry/src/errors.rs\`.
+Authoritative enums live in **contracts-acta**: \`contracts/vc-vault-factory/src/error.rs\`, \`contracts/vc-vault/src/error.rs\`, \`contracts/vc-issuer-registry/src/error.rs\`, and \`contracts/did-stellar-registry/src/errors.rs\`. The \`issuerDid_controller_mismatch\` code is enforced in the ACTA API, not the contract.
     `,
 };

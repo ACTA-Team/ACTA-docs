@@ -8,9 +8,9 @@ export const sponsoredVault: DocPage = {
   content: `
 # sponsoredVault
 
-\`ActaClient.sponsoredVaultCreate\` wraps **\`POST /contracts/sponsored-vault/create\`** (prepare/submit for \`create_sponsored_vault\`), accessed with \`useActaClient()\` inside \`ActaConfig\`.
+\`ActaClient.sponsoredVaultCreate\` wraps **\`POST /contracts/sponsored-vault/create\`** (prepare/submit for the factory's \`deploy_sponsored\`), accessed with \`useActaClient()\` inside \`ActaConfig\`.
 
-Soroban semantics, authorization modes, and request JSON are documented under **API Reference → Sponsored Vault** (\`api-sponsored-vault\`). This page documents **TypeScript usage** for the public surface only.
+Sponsored deploy is **open** — any sponsor may deploy a single-tenant vault for an owner; there is no sponsor whitelist. Soroban semantics and request JSON are documented under **API Reference → Sponsored Vault** (\`api-sponsored-vault\`). This page documents **TypeScript usage** for the public surface only.
 
 ## Client
 
@@ -30,7 +30,7 @@ client.sponsoredVaultCreate(
         owner: string;
         didUri: string;
         sourcePublicKey: string;
-        contractId?: string;
+        userSalt?: string;   // 32-byte salt (hex) selecting the vault; defaults to all-zero
       }
     | { signedXdr: string }
 ): Promise<SponsoredVaultCreateResponse>

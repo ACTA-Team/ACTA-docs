@@ -6,42 +6,42 @@ export const architecture: DocPage = {
   section: "Welcome",
   tocItems: [
     "System Components",
-    "Issuance Contract",
-    "Vault Contract",
+    "Vault Factory",
+    "Single-tenant Vault",
     "API Layer",
     "Storage",
     "Identity Model (did:stellar)",
+    "Contract IDs",
     "Credential Flow",
     "Network Support",
   ],
   content: `
 # Architecture
 
-Technical overview of ACTA's system architecture and components.
+Technical overview of ACTA's system architecture and components (v0.4.0).
 
 ## System Components
 
-### Issuance Contract (Soroban)
+ACTA's on-chain layer is a **\`vc-vault-factory\`** plus per-owner **\`vc-vault\`** contracts. There is one factory per network; each owner gets their own vault, deployed deterministically by the factory.
 
-Handles credential lifecycle on-chain:
+### Vault Factory (Soroban)
 
-- **Issue**: Creates new credentials and anchors hash on-chain
-- **Verify**: Public verification of credential status
-- **Revoke**: Revokes credentials with optional revocation date
+The **\`vc-vault-factory\`** deploys and tracks single-tenant vaults:
 
-Contract functions are exposed via API endpoints. See API Reference for details.
+- **Deploy**: Deterministically deploys a vault for an owner from \`(factory, owner, userSalt)\`; the default \`userSalt\` (32 zero bytes) yields one canonical vault per owner.
+- **Sponsored deploy**: \`deploy_sponsored\` lets any sponsor deploy a vault for an owner (open, no whitelist).
+- **Fees**: \`quote_fee\` resolves the issuance fee charged on-chain (default 1 USDC per credential, paid by the issuer). A single standard fee applies, with an optional per-issuer custom fee (with optional expiry).
 
-### Vault Contract (Soroban)
+### Single-tenant Vault (Soroban)
 
-Multi-tenant credential storage repository:
+Each owner's **\`vc-vault\`** is an immutable, single-tenant credential store:
 
-- **Initialize**: Creates a new vault for a user
-- **Store**: Stores encrypted credentials in the user's vault
-- **List/Get**: Retrieves credential IDs and data
-- **Verify**: Verifies credentials via issuance contract delegation
-- **Authorization**: Manages issuer authorization lists
+- **Issue / Batch issue**: Stores credentials and marks them valid; charges the fee via the factory.
+- **List / Get / Verify / Count**: Reads credential IDs, data, status, and counts.
+- **Revoke**: Revokes a credential with an optional date.
+- **Issuer access (deny-by-exception)**: Issuance is **open by default**. The owner can **block** issuers (\`deny_issuer\`) and **unblock** them (\`allow_issuer\`); there is no allow-list.
 
-Each user has an isolated vault with independent admin controls and issuer authorization.
+Issuers must control a registered, resolvable \`did:stellar\` (the DID's on-chain controller must equal the issuing account).
 
 ### API Layer
 
@@ -71,6 +71,25 @@ did:stellar:{network}:{didId}
 - **didId**: 26-character base32 identifier (128-bit random, registered on-chain)
 
 Key capabilities: key rotation, multiple verification keys, service endpoints, controller transfer, and irreversible deactivation. See the [DID:Stellar documentation](#did-stellar-overview) for full details.
+
+## Contract IDs
+
+**Mainnet:**
+
+| Contract | ID |
+|----------|----|
+| \`vc-vault-factory\` | \`CCWNZ6UMUXCDOVP2TWOPVLI4KP4VY4YF7VKPN6XLYVHNFAT24NDB33CX\` |
+| \`did-stellar-registry\` | \`CD6LSWW5ZSXOO5WAIHKQLQ262TW7BPI37PNEVMMA273BAPC65NN2AYXQ\` |
+| Vault template Wasm hash | \`2bd0323a98acb8469606808368da6c79824f2dd8391494b94ddbeb3d22c1a957\` |
+
+Mainnet issuance fee: **1 USDC per credential**, paid by the issuer.
+
+**Testnet:**
+
+| Contract | ID |
+|----------|----|
+| \`vc-vault-factory\` | \`CDRFQRIP4FA3WMPWCSAM3XEY6EM6EGKRYZRSCSVZ5NHCF6AGEVR2XEPQ\` |
+| \`did-stellar-registry\` | \`CBUNQ3GX3ZQ4MF64H7JCYZMXLGOS47VPIQQS7NCR6V3KX6YP7O72L5QF\` |
 
 ## Credential Flow
 
