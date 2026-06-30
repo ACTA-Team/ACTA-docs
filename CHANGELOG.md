@@ -6,7 +6,7 @@ Contracts, and MCP docs for ACTA on Stellar.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] - 2026-06-30 - vc-vault-factory v0.4.0 + did:stellar
+## [0.1.0] - 2026-06-30 - vc-vault-factory v0.4.0 + did:stellar
 
 Brings every doc module from the legacy multi-tenant `vc-vault` (v0.3.0) model
 to the v0.4.0 `vc-vault-factory` + single-tenant vault architecture, with
