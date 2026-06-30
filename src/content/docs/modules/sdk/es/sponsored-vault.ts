@@ -8,9 +8,9 @@ export const sponsoredVault: DocPage = {
   content: `
 # sponsoredVault
 
-\`ActaClient.sponsoredVaultCreate\` envuelve **\`POST /contracts/sponsored-vault/create\`** (prepare/submit de \`create_sponsored_vault\`), obtenido con \`useActaClient()\` dentro de \`ActaConfig\`.
+\`ActaClient.sponsoredVaultCreate\` envuelve **\`POST /contracts/sponsored-vault/create\`** (prepare/submit del \`deploy_sponsored\` del factory), obtenido con \`useActaClient()\` dentro de \`ActaConfig\`.
 
-Semántica Soroban, modos de autorización y JSON de petición están en **Referencia API → Bóveda patrocinada** (\`api-sponsored-vault\`). Esta página documenta el **uso en TypeScript** solo de la superficie pública.
+El despliegue patrocinado es **abierto** - cualquier sponsor puede desplegar una bóveda mono-inquilino para un propietario; no hay lista blanca de sponsors. La semántica Soroban y el JSON de petición están en **Referencia API → Bóveda patrocinada** (\`api-sponsored-vault\`). Esta página documenta el **uso en TypeScript** solo de la superficie pública.
 
 ## Cliente
 
@@ -30,7 +30,7 @@ client.sponsoredVaultCreate(
         owner: string;
         didUri: string;
         sourcePublicKey: string;
-        contractId?: string;
+        userSalt?: string;   // salt de 32 bytes (hex) que selecciona la bóveda; por defecto todo en cero
       }
     | { signedXdr: string }
 ): Promise<SponsoredVaultCreateResponse>

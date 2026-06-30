@@ -37,7 +37,7 @@ curl https://api.testnet.acta.build/health
 
 ### GET /config
 
-Obtiene la configuración pública de red (URL RPC, passphrase, ID de contrato). Requiere API key.
+Obtiene la configuración pública de red (URL RPC, passphrase, IDs de contrato del factory y del registro). Requiere API key.
 
 **Headers:**
 
@@ -51,9 +51,19 @@ X-ACTA-Key: tu_api_key_aqui
 {
   "rpcUrl": "https://soroban-testnet.stellar.org:443",
   "networkPassphrase": "Test SDF Network ; September 2015",
+  "networkType": "testnet",
+  "factoryContractId": "C...",
+  "vaultWasmHash": "2bd0323a...",
+  "didStellarRegistryId": "C...",
   "actaContractId": "C..."
 }
 \`\`\`
+
+- **\`factoryContractId\`**: el \`vc-vault-factory\` de esta red.
+- **\`networkType\`**: \`"testnet"\` o \`"mainnet"\`.
+- **\`vaultWasmHash\`**: el hash Wasm de la plantilla de bóveda que despliega el factory.
+- **\`didStellarRegistryId\`**: el \`did-stellar-registry\` usado para resolver los DID de los emisores.
+- **\`actaContractId\`**: alias retrocompatible de \`factoryContractId\`.
 
 **Ejemplo:**
 

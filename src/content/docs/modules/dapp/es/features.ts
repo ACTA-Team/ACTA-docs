@@ -8,7 +8,7 @@ export const features: DocPage = {
     "Emitir Credenciales",
     "Gestión de Bóveda",
     "Compartir Credenciales",
-    "Autorizar Emisores",
+    "Acceso de Emisores",
     "Gestión de API Keys",
   ],
   content: `
@@ -18,7 +18,7 @@ Vista de las funcionalidades documentadas disponibles en el dApp de ACTA.
 
 ## Emitir Credenciales
 
-Crea y emite credenciales verificables a una dirección de wallet Stellar.
+Crea y emite credenciales verificables a una dirección de wallet Stellar. Emitir requiere un \`did:stellar\` registrado y resoluble cuyo controlador on-chain sea tu wallet emisora.
 
 ### Cómo Emitir
 
@@ -26,19 +26,19 @@ Crea y emite credenciales verificables a una dirección de wallet Stellar.
 2. Completa el formulario de credencial:
    - **Credential ID**: Identificador único para la credencial
    - **Credential Data**: Datos JSON que contienen la información de la credencial
-   - **Owner**: Dirección de wallet Stellar (G...) que recibirá la credencial
-   - **Issuer DID** (opcional): Tu identificador DID
+   - **Owner**: Dirección de wallet Stellar (G...) cuya bóveda recibirá la credencial
+   - **Issuer DID**: Tu \`did:stellar\` registrado
 3. Haz clic en **Issue Credential**
-4. Firma la transacción
+4. Firma la transacción (se te cobra una tarifa on-chain, por defecto 1 USDC, como emisor)
 
 La credencial se:
-- Almacena automáticamente en la bóveda del propietario
+- Almacena automáticamente en la bóveda mono-inquilino del propietario
 - Marca como válida on-chain
 - Hace disponible para verificación
 
 ## Gestión de Bóveda
 
-Tu bóveda es tu almacenamiento personal de credenciales. Cada wallet tiene una bóveda aislada.
+Tu bóveda es tu almacenamiento personal de credenciales. Cada propietario tiene su propia bóveda mono-inquilino, desplegada por el \`vc-vault-factory\`.
 
 ### Ver Credenciales
 
@@ -67,22 +67,22 @@ Comparte credenciales eligiendo qué campos revelar.
 
 El enlace de compartir contiene los campos seleccionados que necesita el destinatario.
 
-## Autorizar Emisores
+## Acceso de Emisores
 
-Controla quién puede emitir credenciales a tu bóveda.
+La emisión es **abierta por defecto** - cualquiera con un \`did:stellar\` registrado puede emitir a tu bóveda. Controlas el acceso **bloqueando** a los emisores que no quieres (denegar-por-excepción).
 
-### Autorizar un Emisor
+### Bloquear un Emisor
 
-1. Ve a la sección **Authorize**
+1. Ve a la sección **Acceso de emisores**
 2. Ingresa la dirección de wallet del emisor
-3. Haz clic en **Authorize Issuer**
+3. Haz clic en **Block Issuer**
 4. Firma la transacción
 
-### Gestionar Emisores Autorizados
+### Gestionar Emisores Bloqueados
 
-- Ver todos los emisores autorizados
-- Revocar autorización si es necesario
-- Solo los emisores autorizados pueden crear credenciales en tu bóveda
+- Ver todos los emisores bloqueados
+- **Desbloquear** un emisor para restaurar su acceso (por defecto)
+- Los emisores bloqueados no pueden crear credenciales en tu bóveda; el resto puede emitir libremente
 
 ## Gestión de API Keys
 

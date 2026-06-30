@@ -11,38 +11,43 @@ export const useVault: DocPage = {
     "Signer Type",
     "Return Value",
     "Example",
-    "authorizeIssuer",
-    "revokeIssuer",
+    "denyIssuer",
+    "allowIssuer",
     "Transaction Flow",
   ],
   content: `
 # useVault
 
-Hook for vault operations: create vault, authorize issuer, revoke issuer.
+Hook for vault operations: create vault, block (deny) an issuer, unblock (allow) an issuer.
+
+> **Deny-by-exception (v0.4.0):** issuance is open by default. Owners no longer authorize issuers - they **block** them with \`denyIssuer\` and **unblock** them with \`allowIssuer\`. \`authorizeIssuer\` / \`revokeIssuer\` still exist as **aliases** (authorize→allow, revoke→deny) for backward compatibility.
 
 ## Function
 
 \`\`\`ts
 useVault(): {
   createVault: (args: CreateVaultArgs) => Promise<{ txId: string }>;
-  authorizeIssuer: (args: AuthorizeIssuerArgs) => Promise<{ txId: string }>;
-  revokeIssuer: (args: RevokeIssuerArgs) => Promise<{ txId: string }>;
+  denyIssuer: (args: DenyIssuerArgs) => Promise<{ txId: string }>;
+  allowIssuer: (args: AllowIssuerArgs) => Promise<{ txId: string }>;
+  // aliases (back-compat):
+  authorizeIssuer: (args: AllowIssuerArgs) => Promise<{ txId: string }>;  // → allowIssuer
+  revokeIssuer: (args: DenyIssuerArgs) => Promise<{ txId: string }>;      // → denyIssuer
 }
 \`\`\`
 
 ## createVault
 
-Creates (initializes) a vault for an owner.
+Deploys a single-tenant vault for an owner via the factory.
 
 ### Arguments
 
 \`\`\`ts
 {
   owner: string;                    // Vault owner: classic account (G...) or smart-wallet contract (C...)
-  ownerDid: string;                  // DID URI associated with the owner
+  ownerDid: string;                 // DID URI associated with the owner
   signTransaction: Signer;          // Function that signs prepare XDR payloads
-  sourcePublicKey?: string;          // Explicit G signer; defaults to owner for G vaults when omitted (C vaults rely on relay per API rules)
-  contractId?: string;              // Contract ID (optional, uses the configured default)
+  userSalt?: string;                // 32-byte salt (hex) selecting the vault; defaults to all-zero (canonical vault)
+  sourcePublicKey?: string;         // Explicit G signer; defaults to owner for G vaults when omitted
 }
 \`\`\`
 
@@ -68,27 +73,28 @@ const { createVault } = useVault();
 
 const { txId } = await createVault({
   owner: "G...",
-  ownerDid: "did:stellar:G...",
+  ownerDid: "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
   signTransaction: async (xdr, { networkPassphrase }) => {
     // Sign the XDR with your wallet
     return signedXdr;
   }
+  // userSalt omitted → canonical vault for this owner
 });
 \`\`\`
 
-## authorizeIssuer
+## denyIssuer
 
-Authorizes an issuer in a vault.
+Blocks an issuer so it can no longer write to the owner's vault.
 
 ### Arguments
 
 \`\`\`ts
 {
   owner: string;                    // Vault owner (G or C)
-  issuer: string;                   // Issuer account to authorize
+  issuer: string;                   // Issuer account to block
   signTransaction: Signer;
+  userSalt?: string;                // Selects the vault; defaults to all-zero
   sourcePublicKey?: string;
-  contractId?: string;
 }
 \`\`\`
 
@@ -101,9 +107,9 @@ Authorizes an issuer in a vault.
 \`\`\`ts
 import { useVault } from "@acta-team/credentials";
 
-const { authorizeIssuer } = useVault();
+const { denyIssuer } = useVault();
 
-const { txId } = await authorizeIssuer({
+const { txId } = await denyIssuer({
   owner: "G...",
   issuer: "G...",
   signTransaction: async (xdr, { networkPassphrase }) => {
@@ -113,19 +119,19 @@ const { txId } = await authorizeIssuer({
 });
 \`\`\`
 
-## revokeIssuer
+## allowIssuer
 
-Revokes (removes) an authorized issuer from a vault.
+Removes an issuer from the deny list, restoring its (default) ability to issue.
 
 ### Arguments
 
 \`\`\`ts
 {
   owner: string;                    // Vault owner (G or C)
-  issuer: string;                   // Issuer to revoke
+  issuer: string;                   // Issuer to unblock
   signTransaction: Signer;
+  userSalt?: string;                // Selects the vault; defaults to all-zero
   sourcePublicKey?: string;
-  contractId?: string;
 }
 \`\`\`
 
@@ -138,9 +144,9 @@ Revokes (removes) an authorized issuer from a vault.
 \`\`\`ts
 import { useVault } from "@acta-team/credentials";
 
-const { revokeIssuer } = useVault();
+const { allowIssuer } = useVault();
 
-const { txId } = await revokeIssuer({
+const { txId } = await allowIssuer({
   owner: "G...",
   issuer: "G...",
   signTransaction: async (xdr, { networkPassphrase }) => {

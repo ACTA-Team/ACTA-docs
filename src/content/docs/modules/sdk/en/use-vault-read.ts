@@ -11,14 +11,15 @@ export const useVaultRead: DocPage = {
     "Return Value",
     "Example",
     "getVc",
-    "getVcParent",
     "verifyVc",
     "Notes",
   ],
   content: `
 # useVaultRead
 
-Hook for reading vault data: list credential IDs, get credentials, get parent VC info, verify credentials.
+Hook for reading vault data: list credential IDs, get credentials, verify credentials.
+
+> **Single-tenant vaults (v0.4.0):** read methods take \`owner\` and derive the vault. Pass the optional \`userSalt\` (32-byte hex, default all-zero) to target a non-canonical vault.
 
 ## Function
 
@@ -26,7 +27,6 @@ Hook for reading vault data: list credential IDs, get credentials, get parent VC
 useVaultRead(): {
   listVcIds: (args: ListVcIdsArgs) => Promise<string[]>;
   getVc: (args: GetVcArgs) => Promise<unknown | null>;
-  getVcParent: (args: GetVcParentArgs) => Promise<{ owner: string; vc_id: string } | null>;
   verifyVc: (args: VerifyVcArgs) => Promise<VaultVerifyVcResponse>;
 }
 \`\`\`
@@ -39,8 +39,8 @@ Lists credential IDs owned by an owner.
 
 \`\`\`ts
 {
-  owner: string;                   // Stellar public key of the owner
-  contractId?: string;             // Contract ID (optional, uses the configured default)
+  owner: string;                   // Stellar public key of the owner (vault derived from it)
+  userSalt?: string;               // 32-byte salt (hex) selecting the owner's vault; defaults to all-zero
 }
 \`\`\`
 
@@ -69,9 +69,9 @@ Gets a credential from the vault.
 
 \`\`\`ts
 {
-  owner: string;                   // Stellar public key of the owner
+  owner: string;                   // Stellar public key of the owner (vault derived from it)
   vcId: string;                    // Unique credential identifier
-  contractId?: string;             // Contract ID (optional, uses the configured default)
+  userSalt?: string;               // 32-byte salt (hex) selecting the owner's vault; defaults to all-zero
 }
 \`\`\`
 
@@ -98,48 +98,6 @@ if (vc) {
 }
 \`\`\`
 
-## getVcParent
-
-Gets the parent VC info for a linked credential. Returns \`null\` if the credential has no parent link.
-
-### Arguments
-
-\`\`\`ts
-{
-  owner: string;                   // Stellar public key of the owner
-  vcId: string;                    // Unique credential identifier
-  contractId?: string;             // Contract ID (optional, uses the configured default)
-}
-\`\`\`
-
-### Return Value
-
-\`\`\`ts
-Promise<{ owner: string; vc_id: string } | null>
-\`\`\`
-
-- Returns an object with the parent VC's \`owner\` address and \`vc_id\`, or \`null\` if the credential is not linked to a parent.
-
-### Example
-
-\`\`\`ts
-import { useVaultRead } from "@acta-team/credentials";
-
-const { getVcParent } = useVaultRead();
-
-const parent = await getVcParent({
-  owner: "G...",
-  vcId: "linked-credential-456"
-});
-
-if (parent) {
-  console.log("Parent owner:", parent.owner);
-  console.log("Parent VC ID:", parent.vc_id);
-} else {
-  console.log("This credential has no parent link");
-}
-\`\`\`
-
 ## verifyVc
 
 Verifies the status of a credential in the vault.
@@ -148,9 +106,9 @@ Verifies the status of a credential in the vault.
 
 \`\`\`ts
 {
-  owner: string;                   // Stellar public key of the owner
+  owner: string;                   // Stellar public key of the owner (vault derived from it)
   vcId: string;                    // Unique credential identifier
-  contractId?: string;             // Contract ID (optional, uses the configured default)
+  userSalt?: string;               // 32-byte salt (hex) selecting the owner's vault; defaults to all-zero
 }
 \`\`\`
 
@@ -186,7 +144,6 @@ if (verification.since) {
 - All these operations are **read-only** and do not require signing transactions
 - Methods automatically handle different API response formats
 - \`getVc\` returns \`null\` if the credential does not exist in the vault
-- \`getVcParent\` returns \`null\` if the credential has no parent link
 - \`verifyVc\` always returns a result with the current status of the credential
     `,
 };

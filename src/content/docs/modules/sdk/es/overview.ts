@@ -6,6 +6,7 @@ export const overview: DocPage = {
   section: "Credentials SDK",
   tocItems: [
     "Instalación",
+    "Bóvedas mono-inquilino (v0.4.0)",
     "Exports",
     "Provider (ActaConfig)",
     "Variables de entorno",
@@ -14,9 +15,18 @@ export const overview: DocPage = {
     "sponsoredVault",
   ],
   content: `
-# SDK de credenciales — Resumen
+# SDK de credenciales - Resumen
 
 Paquete publicado: **\`@acta-team/credentials\`** (instalable con npm, pnpm o yarn). Si ves referencias viejas a **\`@acta-team/acta-sdk\`** es la misma pieza de integración renombrada: el provider React **\`ActaConfig\`** crea el **\`ActaClient\`** en contexto (accedes con **\`useActaClient()\`**), más hooks para lectura/escritura de bóveda y credenciales. La red viene de **\`baseURL\`** (\`mainNet\` o \`testNet\`).
+
+## Bóvedas mono-inquilino (v0.4.0)
+
+Cada propietario tiene su **propia** \`vc-vault\`, desplegada de forma determinista por un **\`vc-vault-factory\`**. El SDK deriva la bóveda del propietario a partir de \`(factory, owner, userSalt)\`, por lo que pasas **\`owner\`** en lugar de un id de contrato de bóveda.
+
+- El **\`userSalt\`** opcional (hex de 32 bytes, por defecto todo en cero) selecciona cuál de las bóvedas del propietario se usa; la mayoría de apps nunca lo configuran.
+- La **emisión es abierta por defecto** (denegar-por-excepción): los propietarios **bloquean** emisores con \`denyIssuer\` y los **desbloquean** con \`allowIssuer\` (la antigua lista de autorizados desapareció, aunque \`authorizeIssuer\`/\`revokeIssuer\` siguen como alias).
+- El emisor debe controlar un **\`did:stellar\` registrado y resoluble**; el SDK puede crearlo automáticamente vía \`getOrCreateIssuerIdentity\` (ver \`useCredential\`). Las direcciones de wallet planas / \`did:pkh\` ya no se aceptan como DID del emisor.
+- Las **tarifas** se cobran on-chain al emitir (por defecto 1 USDC/credencial pagada por el emisor); no hay sobrescritura de tarifa en el SDK.
 
 ## Instalación
 
@@ -26,7 +36,7 @@ npm install @acta-team/credentials
 
 ## Exports
 
-- **\`ActaConfig\`**: provider — \`baseURL\` obligatorio; \`apiKey\` opcional.
+- **\`ActaConfig\`**: provider - \`baseURL\` obligatorio; \`apiKey\` opcional.
 - **\`useActaClient\`**: devuelve el \`ActaClient\` del contexto (hijo de \`ActaConfig\`).
 - **Hooks**: \`useVault\`, \`useCredential\`, \`useVaultRead\`.
 - **\`ActaClient\`**: \`sponsoredVaultCreate\` para el flujo público **create** de bóveda patrocinada (prepare/submit); ver **sponsoredVault**.
@@ -64,14 +74,17 @@ import { useActaClient } from "@acta-team/credentials";
 
 const client = useActaClient();
 const config = await client.getConfig();
-// config: { rpcUrl, networkPassphrase, actaContractId }
+// ConfigResponse: { rpcUrl, networkPassphrase, networkType,
+//   factoryContractId, vaultWasmHash, didStellarRegistryId, actaContractId }
 \`\`\`
+
+El \`ConfigResponse\` ahora expone \`networkType\`, \`factoryContractId\`, \`vaultWasmHash\` y \`didStellarRegistryId\`; \`actaContractId\` se mantiene como alias retrocompatible de \`factoryContractId\`.
 
 ## Resumen de hooks
 
-- **\`useVault\`** — \`createVault\`, \`authorizeIssuer\`, \`revokeIssuer\`.
-- **\`useCredential\`** — \`issue\`, \`issueLinked\`, \`revoke\`.
-- **\`useVaultRead\`** — \`listVcIds\`, \`getVc\`, \`getVcParent\`, \`verifyVc\`.
+- **\`useVault\`** - \`createVault\` (\`userSalt\` opcional), \`denyIssuer\`, \`allowIssuer\` (\`authorizeIssuer\`/\`revokeIssuer\` se mantienen como alias).
+- **\`useCredential\`** - \`issue\` (\`userSalt\` opcional), \`revoke\` (envía \`owner\`).
+- **\`useVaultRead\`** - \`listVcIds\`, \`getVc\`, \`verifyVc\`.
 
 ## sponsoredVault
 

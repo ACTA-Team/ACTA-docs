@@ -8,7 +8,7 @@ export const features: DocPage = {
     "Issue Credentials",
     "Vault Management",
     "Share Credentials",
-    "Authorize Issuers",
+    "Issuer Access",
     "API Key Management",
   ],
   content: `
@@ -18,7 +18,7 @@ Detailed overview of the documented features available in the ACTA dApp.
 
 ## Issue Credentials
 
-Create and issue verifiable credentials to a Stellar wallet address.
+Create and issue verifiable credentials to a Stellar wallet address. Issuing requires a registered, resolvable \`did:stellar\` whose on-chain controller is your issuing wallet.
 
 ### How to Issue
 
@@ -26,19 +26,19 @@ Create and issue verifiable credentials to a Stellar wallet address.
 2. Fill in the credential form:
    - **Credential ID**: Unique identifier for the credential
    - **Credential Data**: JSON data containing the credential information
-   - **Owner**: Stellar wallet address (G...) that will receive the credential
-   - **Issuer DID** (optional): Your DID identifier
+   - **Owner**: Stellar wallet address (G...) whose vault will receive the credential
+   - **Issuer DID**: Your registered \`did:stellar\`
 3. Click **Issue Credential**
-4. Sign the transaction
+4. Sign the transaction (an on-chain fee, default 1 USDC, is charged to you as the issuer)
 
 The credential is automatically:
-- Stored in the owner's vault
+- Stored in the owner's single-tenant vault
 - Marked as valid on-chain
 - Available for verification
 
 ## Vault Management
 
-Your vault is your personal credential storage. Each wallet has an isolated vault.
+Your vault is your personal credential storage. Each owner has their own single-tenant vault, deployed by the \`vc-vault-factory\`.
 
 ### View Credentials
 
@@ -67,22 +67,22 @@ Share credentials by choosing which fields to reveal.
 
 The share link contains the selected revealed fields needed by the recipient.
 
-## Authorize Issuers
+## Issuer Access
 
-Control who can issue credentials to your vault.
+Issuance is **open by default** - anyone with a registered \`did:stellar\` can issue to your vault. You control access by **blocking** issuers you do not want (deny-by-exception).
 
-### Authorize an Issuer
+### Block an Issuer
 
-1. Go to **Authorize** section
+1. Go to the **Issuer access** section
 2. Enter the wallet address of the issuer
-3. Click **Authorize Issuer**
+3. Click **Block Issuer**
 4. Sign the transaction
 
-### Manage Authorized Issuers
+### Manage Blocked Issuers
 
-- View all authorized issuers
-- Revoke authorization if needed
-- Only authorized issuers can create credentials in your vault
+- View all blocked issuers
+- **Unblock** an issuer to restore its (default) access
+- Blocked issuers cannot create credentials in your vault; everyone else can issue freely
 
 ## API Key Management
 

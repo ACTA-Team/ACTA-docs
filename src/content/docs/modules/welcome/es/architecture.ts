@@ -6,42 +6,42 @@ export const architecture: DocPage = {
   section: "Bienvenida",
   tocItems: [
     "Componentes del sistema",
-    "Contrato de emisión",
-    "Contrato de bóveda",
+    "Factory de bóvedas",
+    "Bóveda mono-inquilino",
     "Capa de API",
     "Almacenamiento",
     "Modelo de identidad (did:stellar)",
+    "IDs de contratos",
     "Flujo de credenciales",
     "Soporte de red",
   ],
   content: `
 # Arquitectura
 
-Vista técnica de la arquitectura de ACTA y sus componentes.
+Vista técnica de la arquitectura de ACTA y sus componentes (v0.4.0).
 
 ## Componentes del sistema
 
-### Contrato de emisión (Soroban)
+La capa on-chain de ACTA es un **\`vc-vault-factory\`** más contratos **\`vc-vault\`** por propietario. Hay un factory por red; cada propietario obtiene su propia bóveda, desplegada de forma determinista por el factory.
 
-Gestiona el ciclo de vida de la credencial on-chain:
+### Factory de bóvedas (Soroban)
 
-- **Emitir**: Crea nuevas credenciales y ancla el hash on-chain  
-- **Verificar**: Verificación pública del estado de la credencial  
-- **Revocar**: Revoca credenciales con fecha de revocación opcional  
+El **\`vc-vault-factory\`** despliega y rastrea bóvedas mono-inquilino:
 
-Las funciones del contrato se exponen vía endpoints de la API. Revisa la referencia de API para más detalles.
+- **Deploy**: Despliega de forma determinista una bóveda para un propietario a partir de \`(factory, owner, userSalt)\`; el \`userSalt\` por defecto (32 bytes en cero) da una bóveda canónica por propietario.
+- **Deploy patrocinado**: \`deploy_sponsored\` permite que cualquier sponsor despliegue una bóveda para un propietario (abierto, sin lista blanca).
+- **Tarifas**: \`quote_fee\` resuelve la tarifa de emisión cobrada on-chain (por defecto 1 USDC por credencial, pagada por el emisor). Aplica una sola tarifa estándar, con una tarifa personalizada opcional por emisor (con expiración opcional).
 
-### Contrato de bóveda (Soroban)
+### Bóveda mono-inquilino (Soroban)
 
-Repositorio multi-tenant de almacenamiento de credenciales:
+La **\`vc-vault\`** de cada propietario es un almacén de credenciales inmutable y mono-inquilino:
 
-- **Inicializar**: Crea una nueva bóveda para un usuario  
-- **Almacenar**: Guarda credenciales cifradas en la bóveda del usuario  
-- **Listar/Obtener**: Recupera IDs y datos de credenciales  
-- **Verificar**: Verifica credenciales delegando al contrato de emisión  
-- **Autorización**: Gestiona las listas de emisores autorizados
+- **Emitir / Emisión por lote**: Almacena credenciales y las marca como válidas; cobra la tarifa vía el factory.
+- **Listar / Obtener / Verificar / Conteo**: Lee IDs, datos, estado y conteos de credenciales.
+- **Revocar**: Revoca una credencial con fecha opcional.
+- **Acceso de emisores (denegar-por-excepción)**: La emisión es **abierta por defecto**. El propietario puede **bloquear** emisores (\`deny_issuer\`) y **desbloquearlos** (\`allow_issuer\`); no hay lista de autorizados.
 
-Cada usuario tiene una bóveda aislada con controles de administración e autorización de emisores independientes.
+Los emisores deben controlar un \`did:stellar\` registrado y resoluble (el controlador on-chain del DID debe ser igual a la cuenta emisora).
 
 ### Capa de API
 
@@ -61,7 +61,7 @@ Todos los endpoints soportan automáticamente mainnet y testnet vía la configur
 
 ## Modelo de identidad
 
-Usa el método \`did:stellar\` — una identidad compatible con W3C DID Core 1.1 anclada en un contrato registry de Soroban:
+Usa el método \`did:stellar\` - una identidad compatible con W3C DID Core 1.1 anclada en un contrato registry de Soroban:
 
 \`\`\`
 did:stellar:{network}:{didId}
@@ -71,6 +71,25 @@ did:stellar:{network}:{didId}
 - **didId**: identificador base32 de 26 caracteres (128 bits aleatorios, registrado on-chain)
 
 Capacidades principales: rotación de claves, múltiples claves de verificación, endpoints de servicio, transferencia de controlador y desactivación irreversible. Consulta la [documentación de DID:Stellar](#did-stellar-overview) para más detalles.
+
+## IDs de contratos
+
+**Mainnet:**
+
+| Contrato | ID |
+|----------|----|
+| \`vc-vault-factory\` | \`CCWNZ6UMUXCDOVP2TWOPVLI4KP4VY4YF7VKPN6XLYVHNFAT24NDB33CX\` |
+| \`did-stellar-registry\` | \`CD6LSWW5ZSXOO5WAIHKQLQ262TW7BPI37PNEVMMA273BAPC65NN2AYXQ\` |
+| Hash Wasm de plantilla de bóveda | \`2bd0323a98acb8469606808368da6c79824f2dd8391494b94ddbeb3d22c1a957\` |
+
+Tarifa de emisión en mainnet: **1 USDC por credencial**, pagada por el emisor.
+
+**Testnet:**
+
+| Contrato | ID |
+|----------|----|
+| \`vc-vault-factory\` | \`CDRFQRIP4FA3WMPWCSAM3XEY6EM6EGKRYZRSCSVZ5NHCF6AGEVR2XEPQ\` |
+| \`did-stellar-registry\` | \`CBUNQ3GX3ZQ4MF64H7JCYZMXLGOS47VPIQQS7NCR6V3KX6YP7O72L5QF\` |
 
 ## Flujo de credenciales
 

@@ -6,12 +6,12 @@ export const useCredential: DocPage = {
   section: "Credentials SDK",
   tocItems: [
     "Function",
+    "Issuer identity (did:stellar)",
     "issue",
     "Arguments",
     "Signer Type",
     "Return Value",
     "Example",
-    "issueLinked",
     "revoke",
     "Transaction Flow",
     "Notes",
@@ -19,34 +19,37 @@ export const useCredential: DocPage = {
   content: `
 # useCredential
 
-Hook for credential operations: issue, issueLinked, and revoke.
+Hook for credential operations: issue and revoke.
 
 ## Function
 
 \`\`\`ts
 useCredential(): {
   issue: (args: IssueArgs) => Promise<{ txId: string }>;
-  issueLinked: (args: IssueLinkedArgs) => Promise<{ txId: string }>;
   revoke: (args: RevokeArgs) => Promise<{ txId: string }>;
 }
 \`\`\`
 
+## Issuer identity (did:stellar)
+
+Issuing requires the issuer to control a **registered, resolvable \`did:stellar\`** whose on-chain controller equals the issuer account. The SDK auto-onboards this for you: **\`getOrCreateIssuerIdentity\`** resolves the issuer's existing \`did:stellar\` or registers a new one before issuance, so \`issue\` works without you wiring up DID registration. Bare wallet addresses / \`did:pkh\` are no longer accepted as the issuer DID.
+
 ## issue
 
-Issues a credential (stores it in the vault and marks it as valid).
+Issues a credential (stores it in the owner's derived vault and marks it as valid). The on-chain fee (default 1 USDC, paid by the issuer) is charged at this step.
 
 ### Arguments
 
 \`\`\`ts
 {
-  owner: string;                    // Vault owner: G-account or C smart-wallet contract id
-  vcId: string;                    // Unique credential identifier
-  vcData: string | object;         // Credential data (JSON string or object). @context is added automatically when missing
-  issuer: string;                  // Stellar public key of the issuer
-  issuerDid?: string;              // Issuer DID; otherwise derived from issuer address when applicable
-  signTransaction: Signer;         // Function that signs the unsigned XDR returned by ACTA prepare
-  sourcePublicKey?: string;        // G-account signer (omit for defaults; omit for relayer-signed C-owner flows per API)
-  contractId?: string;             // Contract ID (optional, uses the configured default)
+  owner: string;                    // Vault owner: G-account or C smart-wallet contract id (vault derived from it)
+  vcId: string;                     // Unique credential identifier
+  vcData: string | object;          // Credential data (JSON string or object). @context is added automatically when missing
+  issuer: string;                   // Stellar public key of the issuer
+  issuerDid?: string;               // Resolvable did:stellar of the issuer; auto-onboarded via getOrCreateIssuerIdentity when omitted
+  signTransaction: Signer;          // Function that signs the unsigned XDR returned by ACTA prepare
+  userSalt?: string;                // 32-byte salt (hex) selecting the owner's vault; defaults to all-zero
+  sourcePublicKey?: string;         // G-account signer (omit for defaults)
 }
 \`\`\`
 
@@ -85,85 +88,29 @@ const { txId } = await issue({
     }
   }),
   issuer: "G...",
-  issuerDid: "G...",     // wallet address — DID derived when omitted
+  issuerDid: "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi", // auto-onboarded when omitted
   signTransaction: async (xdr, { networkPassphrase }) => {
     // Sign the XDR with your wallet
     return signedXdr;
   }
-});
-\`\`\`
-
-## issueLinked
-
-Issues a credential linked to a parent VC. The parent VC must exist and be valid in its vault. This enables hierarchical credential relationships.
-
-### Arguments
-
-\`\`\`ts
-{
-  owner: string;                    // Vault owner: G-account or C smart-wallet contract id
-  vcId: string;                    // Unique credential identifier
-  vcData: string | object;         // Credential data (JSON string or object). @context is added automatically when missing
-  issuer: string;                  // Stellar public key of the issuer
-  issuerDid?: string;              // Issuer DID; otherwise derived from issuer address when applicable
-  signTransaction: Signer;         // Function that signs the unsigned XDR returned by ACTA prepare
-  sourcePublicKey?: string;        // G-account signer (optional; omit for relayer-signed C-owner flows per API)
-  contractId?: string;             // Contract ID (optional, uses the configured default)
-  parentOwner: string;             // Stellar public key of the parent VC owner
-  parentVcId: string;              // Identifier of the parent VC
-}
-\`\`\`
-
-### Return Value
-
-- \`Promise<{ txId: string }>\`: Transaction ID after sending to the network
-
-### Example
-
-\`\`\`ts
-import { useCredential } from "@acta-team/credentials";
-
-const { issueLinked } = useCredential();
-
-const { txId } = await issueLinked({
-  owner: "G...",
-  vcId: "linked-credential-456",
-  vcData: JSON.stringify({
-    "@context": [
-      "https://www.w3.org/ns/credentials/v2",
-      "https://www.w3.org/ns/credentials/examples/v2"
-    ],
-    type: ["VerifiableCredential"],
-    credentialSubject: {
-      id: "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
-      name: "John Doe",
-      certification: "Advanced Level"
-    }
-  }),
-  issuer: "G...",
-  signTransaction: async (xdr, { networkPassphrase }) => {
-    // Sign the XDR with your wallet
-    return signedXdr;
-  },
-  parentOwner: "G...",             // Owner of the parent VC
-  parentVcId: "credential-123"    // ID of the parent VC
+  // userSalt omitted → canonical vault for this owner
 });
 \`\`\`
 
 ## revoke
 
-Revokes a credential.
+Revokes a credential in the owner's derived vault.
 
 ### Arguments
 
 \`\`\`ts
 {
-  owner: string;                   // Vault owner (G-account or C smart-wallet)
+  owner: string;                   // Vault owner (G-account or C smart-wallet); sent so the SDK can derive the vault
   vcId: string;                    // Unique identifier of the credential to revoke
   signTransaction: Signer;         // Function that signs the unsigned XDR returned by ACTA prepare
   date?: string;                   // Revocation date in ISO format (optional)
-  sourcePublicKey?: string;        // Explicit G signer (omit for defaults / relayer flows)
-  contractId?: string;             // Contract ID (optional, uses the configured default)
+  userSalt?: string;               // Selects the owner's vault; defaults to all-zero
+  sourcePublicKey?: string;        // Explicit G signer (omit for defaults)
 }
 \`\`\`
 
@@ -201,8 +148,8 @@ The hook automatically handles the distinction between prepare and submit respon
 
 ## Notes
 
-- The \`issue\` method automatically stores the credential in the vault and marks it as valid in a single transaction
-- The \`revoke\` method requires the \`owner\` to sign the transaction
-- The revocation date is automatically set to the current date if not provided
+- The \`issue\` method stores the credential in the owner's derived vault and marks it as valid in a single transaction; the on-chain fee is charged then.
+- The \`revoke\` method sends \`owner\` so the SDK derives the correct vault, and requires the owner to sign the transaction.
+- The revocation date is automatically set to the current date if not provided.
     `,
 };

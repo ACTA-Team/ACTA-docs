@@ -7,8 +7,9 @@ export const gettingStarted: DocPage = {
   tocItems: [
     "Step 1: Connect Wallet",
     "Step 2: Create Vault",
-    "Step 3: Authorize Issuers",
+    "Step 3: Register Your DID",
     "Step 4: Issue Credentials",
+    "Managing Issuer Access",
     "Next Steps",
   ],
   content: `
@@ -32,7 +33,7 @@ Once connected, your wallet address will be displayed in the header.
 
 ## Step 2: Create Your Personal Vault
 
-Your vault is your secure storage for credentials. Each wallet address has its own isolated vault.
+Your vault is your secure storage for credentials. Each owner has their **own** single-tenant vault, deployed deterministically by the \`vc-vault-factory\`.
 
 1. Navigate to the **Dashboard** or **Vault** section
 2. If you do not have a vault yet, you will see an option to create one
@@ -40,35 +41,44 @@ Your vault is your secure storage for credentials. Each wallet address has its o
 4. Sign the transaction with your wallet
 5. Your vault is now ready to store credentials
 
-The vault creation is a one-time operation per wallet address.
+The vault creation is a one-time operation per owner.
 
-## Step 3: Authorize Issuers
+## Step 3: Register Your DID
 
-Before you can receive credentials, you need to authorize wallets that can issue credentials to your vault.
+To **issue** credentials you must control a registered, resolvable \`did:stellar\`. (You do **not** need to authorize issuers - issuance is open by default.)
 
-1. Go to the **Authorize** section in the sidebar
-2. Enter the wallet address of the issuer you want to authorize
-3. Click **Authorize Issuer**
-4. Sign the transaction with your wallet
-5. The authorized issuer will appear in your authorized issuers list
+1. Go to the **My DID** section in the sidebar
+2. If you do not have a \`did:stellar\` yet, follow the prompt to register one
+3. Sign the registration transaction with your wallet
+4. Your DID's on-chain controller must match your issuing wallet - the dApp handles this binding for you
 
-**Note:** Only authorized issuers can create credentials in your vault. This gives you control over who can issue credentials to you.
+**Note:** Bare wallet addresses and \`did:pkh\` are no longer accepted as the issuer DID.
 
 ## Step 4: Issue Credentials
 
-Once you have a vault and authorized issuers, you can start issuing credentials.
+Once you have a vault and a registered DID, you can start issuing credentials.
 
 1. Navigate to the **Issue** section
 2. Fill in the credential form:
    - **Credential ID** - Unique identifier
    - **Credential Data** - The actual credential information in JSON format
-   - **Owner** - The wallet address that will receive the credential
-   - **Issuer DID** (optional) - Your issuer DID
+   - **Owner** - The wallet address whose vault will receive the credential
+   - **Issuer DID** - Your registered \`did:stellar\`
 3. Click **Issue Credential**
-4. Sign the transaction with your wallet
+4. Sign the transaction with your wallet (an on-chain fee, default 1 USDC, is charged to you as the issuer)
 5. The credential will be stored in the owner's vault and marked as valid
 
 The credential is now on-chain and can be verified.
+
+## Managing Issuer Access
+
+Because issuance is open by default, you only act when you want to **stop** an issuer:
+
+1. Go to the **Issuer access** section in the sidebar
+2. Enter the wallet address of the issuer you want to block, then **Block** it (and sign)
+3. To restore access later, **Unblock** the issuer (and sign)
+
+Blocked issuers can no longer write to your vault; everyone else can issue freely.
 
 ## Next Steps
 
