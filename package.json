@@ -1,7 +1,7 @@
 {
   "name": "acta-docs",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "workspaces": [
     "packages/docs-mcp"
   ],
@@ -91,5 +91,6 @@
     "tailwindcss": "^4.1.9",
     "tw-animate-css": "1.3.3",
     "typescript": "^5"
-  }
+  },
+  "license": "MIT"
 }
