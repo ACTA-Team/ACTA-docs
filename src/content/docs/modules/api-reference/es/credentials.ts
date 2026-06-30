@@ -47,7 +47,6 @@ X-ACTA-Key: tu_api_key_aqui
   "vcId": "credential-123",
   "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi\\",\\"name\\":\\"John Doe\\"}}",
   "issuer": "G...",
-  "holder": "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
   "issuerDid": "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
   "userSalt": "0000...0000",
   "sourcePublicKey": "G..."
@@ -91,7 +90,6 @@ curl -X POST https://api.testnet.acta.build/contracts/vc/issue \\
     "vcId": "credential-123",
     "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"]}",
     "issuer": "G...",
-    "holder": "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
     "issuerDid": "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
     "sourcePublicKey": "G..."
   }'
@@ -123,13 +121,11 @@ Emite múltiples VC en la bóveda derivada del propietario en una sola transacci
   "vcs": [
     {
       "vcId": "credential-1",
-      "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\"],\\"type\\":[\\"VerifiableCredential\\"]}",
-      "holder": "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi"
+      "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\"],\\"type\\":[\\"VerifiableCredential\\"]}"
     },
     {
       "vcId": "credential-2",
-      "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\"],\\"type\\":[\\"VerifiableCredential\\"]}",
-      "holder": "did:stellar:testnet:abcdefghijklmnopqrstuvwxyz"
+      "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\"],\\"type\\":[\\"VerifiableCredential\\"]}"
     }
   ]
 }
@@ -196,9 +192,8 @@ Las tarifas de emisión se cobran **on-chain** por la bóveda mediante el \`quot
 
 - **owner** (requerido): Dirección del propietario de la bóveda (\`G...\`); la bóveda se deriva de ella.
 - **vcId** (requerido): Identificador de credencial
-- **vcData** (requerido): Payload de datos de la credencial (string JSON). Debe incluir \`@context\` con al menos \`"https://www.w3.org/ns/credentials/v2"\`
+- **vcData** (requerido): Payload de datos de la credencial (string JSON). Debe incluir \`@context\` con al menos \`"https://www.w3.org/ns/credentials/v2"\`. El titular se expresa dentro de \`vcData\` como \`credentialSubject.id\` (p. ej. un \`did:stellar\`), no como un campo aparte.
 - **issuer** (requerido): Dirección del emisor (\`G...\`)
-- **holder** (requerido): DID del titular de la credencial en formato \`did:stellar:{network}:{didId}\`
 - **issuerDid** (requerido): El \`did:stellar\` resoluble del emisor; su controlador on-chain debe ser igual a \`issuer\`
 - **userSalt** (opcional): salt de 32 bytes (hex) que selecciona la bóveda del propietario (por defecto todo en cero)
 - **vaultContract** (opcional): id de bóveda \`C...\` explícito, omitiendo la derivación
@@ -208,7 +203,7 @@ Las tarifas de emisión se cobran **on-chain** por la bóveda mediante el \`quot
 
 - **owner**, **issuer**, **issuerDid**, **sourcePublicKey**: como arriba
 - **userSalt** / **vaultContract** (opcionales): como arriba
-- **vcs** (requerido): Array de entradas \`{ vcId, vcData, holder }\`
+- **vcs** (requerido): Array de entradas \`{ vcId, vcData }\` (el titular va dentro de cada \`vcData\` como \`credentialSubject.id\`)
 
 ### Revocar Credencial
 

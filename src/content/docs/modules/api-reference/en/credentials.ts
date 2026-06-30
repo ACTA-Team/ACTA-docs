@@ -47,7 +47,6 @@ X-ACTA-Key: your_api_key_here
   "vcId": "credential-123",
   "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"],\\"credentialSubject\\":{\\"id\\":\\"did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi\\",\\"name\\":\\"John Doe\\"}}",
   "issuer": "G...",
-  "holder": "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
   "issuerDid": "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
   "userSalt": "0000...0000",
   "sourcePublicKey": "G..."
@@ -91,7 +90,6 @@ curl -X POST https://api.testnet.acta.build/contracts/vc/issue \\
     "vcId": "credential-123",
     "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\",\\"https://www.w3.org/ns/credentials/examples/v2\\"],\\"type\\":[\\"VerifiableCredential\\"]}",
     "issuer": "G...",
-    "holder": "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
     "issuerDid": "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi",
     "sourcePublicKey": "G..."
   }'
@@ -123,13 +121,11 @@ Issues multiple VCs into the owner's derived vault in a single transaction. Same
   "vcs": [
     {
       "vcId": "credential-1",
-      "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\"],\\"type\\":[\\"VerifiableCredential\\"]}",
-      "holder": "did:stellar:testnet:znfxngsh46vkyqu6inrx4omphi"
+      "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\"],\\"type\\":[\\"VerifiableCredential\\"]}"
     },
     {
       "vcId": "credential-2",
-      "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\"],\\"type\\":[\\"VerifiableCredential\\"]}",
-      "holder": "did:stellar:testnet:abcdefghijklmnopqrstuvwxyz"
+      "vcData": "{\\"@context\\":[\\"https://www.w3.org/ns/credentials/v2\\"],\\"type\\":[\\"VerifiableCredential\\"]}"
     }
   ]
 }
@@ -196,9 +192,8 @@ Issuance fees are charged **on-chain** by the vault via the factory's \`quote_fe
 
 - **owner** (required): Vault owner address (\`G...\`); the vault is derived from it.
 - **vcId** (required): Credential identifier
-- **vcData** (required): Credential data payload (JSON string). Must include \`@context\` with at least \`"https://www.w3.org/ns/credentials/v2"\`
+- **vcData** (required): Credential data payload (JSON string). Must include \`@context\` with at least \`"https://www.w3.org/ns/credentials/v2"\`. The holder is expressed inside \`vcData\` as \`credentialSubject.id\` (e.g. a \`did:stellar\`), not as a separate field.
 - **issuer** (required): Issuer address (\`G...\`)
-- **holder** (required): DID of the credential holder in format \`did:stellar:{network}:{didId}\`
 - **issuerDid** (required): The issuer's resolvable \`did:stellar\`; its on-chain controller must equal \`issuer\`
 - **userSalt** (optional): 32-byte salt (hex) selecting the owner's vault (default all-zero)
 - **vaultContract** (optional): Explicit vault \`C...\` id, bypassing derivation
@@ -208,7 +203,7 @@ Issuance fees are charged **on-chain** by the vault via the factory's \`quote_fe
 
 - **owner**, **issuer**, **issuerDid**, **sourcePublicKey**: as above
 - **userSalt** / **vaultContract** (optional): as above
-- **vcs** (required): Array of \`{ vcId, vcData, holder }\` entries
+- **vcs** (required): Array of \`{ vcId, vcData }\` entries (the holder lives inside each \`vcData\` as \`credentialSubject.id\`)
 
 ### Revoke Credential
 
