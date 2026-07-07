@@ -24,11 +24,22 @@ interface NavGroupProps {
   onNavigate: (slug: string) => void;
 }
 
+/* dApp-style active state: soft pill + gold left bar + gold icon */
+const subButtonClass =
+  "relative mx-0.5 min-h-8 px-2 text-[13px] leading-snug transition-colors " +
+  "data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium " +
+  "data-[active=true]:[&_svg]:!text-sidebar-primary " +
+  "data-[active=true]:before:absolute data-[active=true]:before:content-[''] " +
+  "data-[active=true]:before:-left-[9px] data-[active=true]:before:top-1/2 " +
+  "data-[active=true]:before:h-4 data-[active=true]:before:w-0.5 " +
+  "data-[active=true]:before:-translate-y-1/2 data-[active=true]:before:rounded-full " +
+  "data-[active=true]:before:bg-sidebar-primary";
+
 export function NavGroup({ label, items, onNavigate }: NavGroupProps) {
   return (
     <SidebarGroup className="gap-1.5 px-1.5 py-2">
       {label ? (
-        <SidebarGroupLabel className="h-7 px-1.5 text-[11px] font-medium uppercase tracking-widest text-sidebar-foreground/50">
+        <SidebarGroupLabel className="h-7 px-1.5 text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/45">
           {label}
         </SidebarGroupLabel>
       ) : null}
@@ -72,7 +83,7 @@ export function NavGroup({ label, items, onNavigate }: NavGroupProps) {
                             {subItem.externalUrl ? (
                               <SidebarMenuSubButton
                                 size="sm"
-                                className="mx-0.5 min-h-8 px-2 text-[13px] leading-snug"
+                                className={subButtonClass}
                                 href={subItem.externalUrl}
                                 isActive={false}
                               >
@@ -83,7 +94,7 @@ export function NavGroup({ label, items, onNavigate }: NavGroupProps) {
                               <SidebarMenuSubButton
                                 asChild
                                 size="sm"
-                                className="mx-0.5 min-h-8 px-2 text-[13px] leading-snug"
+                                className={subButtonClass}
                                 isActive={subItem.isActive}
                               >
                                 <button

@@ -10,6 +10,16 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
     const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
     const host = process.env.NEXT_PUBLIC_POSTHOG_HOST;
 
+    // Analytics is production-only: in dev it only adds console noise
+    // (ad blockers reject the lazy-loaded PostHog scripts). Set
+    // NEXT_PUBLIC_POSTHOG_DEBUG=true to opt in locally.
+    if (
+      process.env.NODE_ENV === "development" &&
+      process.env.NEXT_PUBLIC_POSTHOG_DEBUG !== "true"
+    ) {
+      return;
+    }
+
     if (!key) {
       if (process.env.NODE_ENV === "development") {
         console.warn("PostHog: NEXT_PUBLIC_POSTHOG_KEY no está definido");

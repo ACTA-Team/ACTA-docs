@@ -204,27 +204,16 @@ export function useMarkdownParser(
               currentLevelItems.forEach((item, idx) => {
                 const isLastParent = idx === currentLevelItems.length - 1;
                 result.push(
-                  <li
-                    key={`${i}-${idx}`}
-                    className={
-                      listType === "ul"
-                        ? "before:content-['-'] before:mr-2"
-                        : ""
-                    }
-                  >
+                  <li key={`${i}-${idx}`} className="pl-1">
                     {processInlineFormatting(item.content)}
                     {isLastParent && nestedItems.length > 0 && (
                       <ListTag
-                        className={`${listType === "ul" ? "list-none" : "list-decimal"} mt-2 ml-4`}
+                        className={`${listType === "ul" ? "list-[circle]" : "list-decimal"} mt-2 ml-4 space-y-1.5`}
                       >
                         {nestedItems.map((nestedItem, nestedIdx) => (
                           <li
                             key={`${i}-${idx}-nested-${nestedIdx}`}
-                            className={
-                              listType === "ul"
-                                ? "before:content-['-'] before:mr-2"
-                                : ""
-                            }
+                            className="pl-1"
                           >
                             {processInlineFormatting(nestedItem.content)}
                           </li>
@@ -238,14 +227,7 @@ export function useMarkdownParser(
               // Render items without nesting
               currentLevelItems.forEach((item, idx) => {
                 result.push(
-                  <li
-                    key={`${i}-${idx}`}
-                    className={
-                      listType === "ul"
-                        ? "before:content-['-'] before:mr-2"
-                        : ""
-                    }
-                  >
+                  <li key={`${i}-${idx}`} className="pl-1">
                     {processInlineFormatting(item.content)}
                   </li>
                 );
@@ -261,8 +243,8 @@ export function useMarkdownParser(
             key={elements.length}
             className={
               isCompact
-                ? `${listType === "ul" ? "list-none" : "list-decimal"} mb-4 ml-1 space-y-2 text-sm text-foreground/85`
-                : `${listType === "ul" ? "list-none" : "list-decimal"} mb-10 ml-1 space-y-3 text-muted-foreground marker:text-muted-foreground/70`
+                ? `${listType === "ul" ? "list-disc" : "list-decimal"} mb-4 ml-4 space-y-2 text-sm text-foreground/85 marker:text-muted-foreground/50`
+                : `${listType === "ul" ? "list-disc" : "list-decimal"} mb-8 ml-5 space-y-2.5 text-[15px] leading-relaxed text-muted-foreground marker:text-muted-foreground/70 md:text-base md:leading-7`
             }
           >
             {renderNestedList(listItems)}
@@ -273,9 +255,106 @@ export function useMarkdownParser(
       }
     };
 
-    // Simple pipe-table support (used for the "Start here" grid)
+    // Blockquote support: consecutive "> " lines become a callout card
+    let quoteLines: string[] = [];
+
+    const flushQuote = () => {
+      if (quoteLines.length === 0) return;
+      const linesToRender = [...quoteLines];
+      quoteLines = [];
+      elements.push(
+        <div
+          key={elements.length}
+          className={
+            isCompact
+              ? "mb-3 rounded-lg border border-primary/25 bg-primary/5 px-3 py-2 text-sm leading-relaxed text-foreground/85"
+              : "mb-8 rounded-xl border border-primary/25 bg-primary/5 px-4 py-3.5 dark:border-primary/20 dark:bg-primary/6"
+          }
+        >
+          {linesToRender.map((quoteLine, idx) => (
+            <p
+              key={idx}
+              className={
+                isCompact
+                  ? "text-sm leading-relaxed text-foreground/85"
+                  : "text-[15px] leading-relaxed text-foreground/85 not-last:mb-2"
+              }
+            >
+              {processInlineFormatting(quoteLine)}
+            </p>
+          ))}
+        </div>
+      );
+    };
+
+    // Pipe-table support: "Topic | Description" renders as a card grid
+    // (welcome page); every other table renders as a real styled table.
     let tableRows: string[] = [];
     let inTable = false;
+
+    const CARD_GRID_HEADERS = new Set(["topic", "tema"]);
+
+    const renderRealTable = (headerCells: string[], dataLines: string[]) => {
+      const rows = dataLines
+        .map(line =>
+          line
+            .split("|")
+            .map(c => c.trim())
+            .filter(Boolean)
+        )
+        .filter(cells => cells.length > 0);
+
+      if (rows.length === 0) return;
+
+      elements.push(
+        <div
+          key={elements.length}
+          className={
+            isCompact
+              ? "mb-4 overflow-hidden rounded-lg border border-border"
+              : "mb-10 overflow-hidden rounded-xl border border-border"
+          }
+        >
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-left">
+              <thead>
+                <tr className="border-b border-border bg-muted/40">
+                  {headerCells.map((h, idx) => (
+                    <th
+                      key={idx}
+                      className="whitespace-nowrap px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground"
+                    >
+                      {processInlineFormatting(h)}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/60">
+                {rows.map((cells, rowIdx) => (
+                  <tr
+                    key={rowIdx}
+                    className="align-top transition-colors hover:bg-muted/20"
+                  >
+                    {cells.map((cell, cellIdx) => (
+                      <td
+                        key={cellIdx}
+                        className={
+                          isCompact
+                            ? "px-4 py-2.5 text-sm leading-relaxed text-muted-foreground"
+                            : "px-4 py-3 text-[14px] leading-relaxed text-muted-foreground md:text-[15px]"
+                        }
+                      >
+                        {processInlineFormatting(cell)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    };
 
     const flushTable = () => {
       if (!inTable || tableRows.length === 0) return;
@@ -287,7 +366,21 @@ export function useMarkdownParser(
         .map(c => c.trim())
         .filter(Boolean);
 
-      // Only handle the simple 2-column table we use in docs
+      // Any table that is not the welcome "Topic | Description" grid renders
+      // as a real table (3+ columns included).
+      if (
+        dataLines.length > 0 &&
+        !(
+          headerCells.length === 2 &&
+          CARD_GRID_HEADERS.has(headerCells[0].toLowerCase())
+        )
+      ) {
+        renderRealTable(headerCells, dataLines);
+        tableRows = [];
+        inTable = false;
+        return;
+      }
+
       if (headerCells.length === 2 && dataLines.length > 0) {
         const cards = dataLines
           .map(line =>
@@ -326,7 +419,7 @@ export function useMarkdownParser(
                   );
 
                   const cardClassName =
-                    "w-full rounded-2xl border border-border/70 bg-card/30 px-5 py-5 text-left shadow-none transition-colors hover:border-primary/40 hover:bg-card/50";
+                    "group w-full rounded-2xl border border-border bg-card/60 px-5 py-5 text-left shadow-none transition-all duration-200 hover:border-primary/40 hover:bg-card";
 
                   if (isExternal) {
                     return (
@@ -491,6 +584,17 @@ export function useMarkdownParser(
         continue;
       }
 
+      // Blockquote line ("> text")
+      const quoteMatch = line.match(/^>\s?(.*)$/);
+      if (quoteMatch) {
+        flushTable();
+        flushList();
+        quoteLines.push(quoteMatch[1]);
+        continue;
+      }
+      // Any non-quote line ends a pending blockquote
+      flushQuote();
+
       // Empty line
       if (line.trim() === "") {
         flushTable();
@@ -523,8 +627,8 @@ export function useMarkdownParser(
             id={slugifyHeading(text)}
             className={
               isCompact
-                ? "mb-3 mt-0 text-base font-medium tracking-tight text-foreground"
-                : "mb-8 mt-0 scroll-mt-24 text-3xl font-medium tracking-tight text-foreground md:text-4xl md:leading-tight"
+                ? "mb-3 mt-0 text-base font-semibold tracking-tight text-foreground"
+                : "mb-8 mt-0 scroll-mt-24 text-3xl font-bold tracking-tight text-foreground md:text-4xl md:leading-tight"
             }
           >
             {text}
@@ -543,8 +647,8 @@ export function useMarkdownParser(
             id={slugifyHeading(text)}
             className={
               isCompact
-                ? "mb-2 mt-4 text-sm font-medium tracking-tight text-foreground"
-                : "mb-5 mt-16 scroll-mt-24 text-xl font-medium tracking-tight text-foreground md:text-2xl [&+h3]:mt-8"
+                ? "mb-2 mt-4 text-sm font-semibold tracking-tight text-foreground"
+                : "mb-5 mt-14 scroll-mt-24 text-xl font-semibold tracking-tight text-foreground md:text-2xl [&+h3]:mt-8"
             }
           >
             {text}
@@ -563,8 +667,8 @@ export function useMarkdownParser(
             id={slugifyHeading(text)}
             className={
               isCompact
-                ? "mb-2 mt-3 text-sm font-medium tracking-tight text-foreground"
-                : "mb-3 mt-10 scroll-mt-24 text-lg font-medium tracking-tight text-foreground md:text-xl"
+                ? "mb-2 mt-3 text-sm font-semibold tracking-tight text-foreground"
+                : "mb-3 mt-10 scroll-mt-24 text-lg font-semibold tracking-tight text-foreground md:text-xl"
             }
           >
             {text}
@@ -581,7 +685,7 @@ export function useMarkdownParser(
           <h4
             key={elements.length}
             id={slugifyHeading(text)}
-            className="mb-2 mt-8 scroll-mt-24 text-base font-medium tracking-tight text-foreground"
+            className="mb-2 mt-8 scroll-mt-24 text-base font-semibold tracking-tight text-foreground"
           >
             {text}
           </h4>
@@ -648,7 +752,7 @@ export function useMarkdownParser(
           className={
             isCompact
               ? "mb-3 text-sm leading-relaxed text-foreground/90"
-              : "mb-5 max-w-[65ch] text-[17px] leading-[1.75] text-muted-foreground md:text-lg md:leading-[1.8]"
+              : "mb-5 text-[15px] leading-relaxed text-muted-foreground md:text-base md:leading-7"
           }
         >
           {processInlineFormatting(line)}
@@ -658,6 +762,7 @@ export function useMarkdownParser(
 
     flushTable();
     flushList();
+    flushQuote();
     return elements;
   };
 

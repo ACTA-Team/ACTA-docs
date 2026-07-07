@@ -35,27 +35,27 @@ export function CodeBlock({
     <div className={cn("group relative max-w-full", compact ? "mb-3" : "mb-8")}>
       <div
         className={cn(
-          "overflow-hidden border border-border/60 bg-[#1e1e1e]",
-          compact ? "rounded-lg" : "rounded-2xl shadow-sm"
+          "overflow-hidden border border-white/8 bg-[#0b0e14]",
+          compact ? "rounded-lg" : "rounded-xl shadow-sm"
         )}
       >
         <div
           className={cn(
-            "flex items-center justify-between border-b border-border/50 bg-[#252526]",
-            compact ? "px-3 py-1.5" : "px-4 py-2.5"
+            "flex items-center justify-between border-b border-white/6 bg-white/3",
+            compact ? "px-3 py-1.5" : "px-4 py-2"
           )}
         >
           {language && (
-            <span className="text-xs text-muted-foreground font-mono">
+            <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-500">
               {language}
             </span>
           )}
           <button
             onClick={handleCopy}
             className={cn(
-              "flex items-center gap-2 px-2 py-1 text-xs rounded transition-colors",
-              "text-muted-foreground hover:text-foreground hover:bg-[#2d2d30]",
-              copied && "text-green-400"
+              "flex items-center gap-2 rounded-md px-2 py-1 text-xs transition-colors",
+              "text-zinc-500 hover:bg-white/5 hover:text-zinc-200",
+              copied && "text-emerald-400"
             )}
             title={copied ? t.copied : t.copy}
           >
@@ -79,7 +79,7 @@ export function CodeBlock({
             customStyle={{
               margin: 0,
               padding: compact ? "0.75rem" : "1rem",
-              background: "#1e1e1e",
+              background: "transparent",
               fontSize: compact ? "0.8125rem" : "0.875rem",
               lineHeight: "1.5",
               minWidth: "100%",

@@ -48,7 +48,12 @@ export function AppSidebar({ currentSlug, onNavigate }: AppSidebarProps) {
               height={20}
               className="size-5 shrink-0 rounded"
             />
-            <span className="text-xs font-medium">ACTA</span>
+            <span className="text-sm font-semibold tracking-wide">
+              ACTA
+              <span className="ml-1.5 text-[10px] font-medium uppercase tracking-widest text-sidebar-foreground/50">
+                Docs
+              </span>
+            </span>
           </button>
         </SidebarMenuButton>
       </SidebarHeader>
