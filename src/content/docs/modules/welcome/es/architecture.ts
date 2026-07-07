@@ -11,7 +11,6 @@ export const architecture: DocPage = {
     "Capa de API",
     "Almacenamiento",
     "Modelo de identidad",
-    "Flujo de credenciales",
     "Direcciones de contratos",
     "Soporte de red",
   ],
@@ -75,12 +74,6 @@ did:stellar:{network}:{address}
 - **Sujeto / titular**: El titular de la credencial se identifica con un DID, expresado como \`credentialSubject.id\` dentro de la credencial.
 
 > **Nota**: v0.4.0 usa \`did:stellar\` para la identidad del emisor, resuelto a través del registro did:stellar on-chain.
-
-## Flujo de credenciales
-
-![Issuance Flow](/issuance-flow.png)
-
-![Verification Flow](/credential-verifier.png)
 
 ## Direcciones de contratos
 

@@ -16,12 +16,10 @@ const topicToSlug: Record<string, string> = {
   "Credentials SDK": "sdk-overview",
   "React SDK": "sdk-overview",
   "API Reference": "api-overview",
-  "Credential Flow": "architecture",
   Arquitectura: "architecture",
   "Primeros Pasos": "getting-started",
   "SDK de credenciales": "sdk-overview",
   "Referencia API": "api-overview",
-  "Flujo de Credenciales": "architecture",
 };
 
 // Topics that leave the docs site (no doc page)

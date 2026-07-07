@@ -11,7 +11,6 @@ export const architecture: DocPage = {
     "API Layer",
     "Storage",
     "Identity Model",
-    "Credential Flow",
     "Contract Addresses",
     "Network Support",
   ],
@@ -75,12 +74,6 @@ did:stellar:{network}:{address}
 - **Subject / holder**: The credential holder is identified by a DID, expressed as \`credentialSubject.id\` inside the credential.
 
 > **Note**: v0.4.0 uses \`did:stellar\` for issuer identity, resolved through the on-chain did:stellar registry.
-
-## Credential Flow
-
-![Issuance Flow](/issuance-flow.png)
-
-![Verification Flow](/credential-verifier.png)
 
 ## Contract Addresses
 
