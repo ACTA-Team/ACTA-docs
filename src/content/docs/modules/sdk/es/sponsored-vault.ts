@@ -10,7 +10,7 @@ export const sponsoredVault: DocPage = {
 
 \`ActaClient.sponsoredVaultCreate\` envuelve **\`POST /contracts/sponsored-vault/create\`** (prepare/submit del \`deploy_sponsored\` del factory), obtenido con \`useActaClient()\` dentro de \`ActaConfig\`.
 
-El patrocinio ahora es **abierto**: cualquier sponsor puede desplegar una bóveda patrocinada para un owner. La llamada de contrato subyacente es el \`deploy_sponsored\` del factory (reemplaza al antiguo método \`create_sponsored_vault\` de la bóveda), y \`userSalt\` es un campo opcional en el payload de creación.
+On-chain el patrocinio es **abierto**: cualquier sponsor puede desplegar una bóveda patrocinada para un owner. La llamada de contrato subyacente es el \`deploy_sponsored\` del factory (reemplaza al antiguo método \`create_sponsored_vault\` de la bóveda). Ten en cuenta que la ruta HTTP requiere una **API key con rol admin**, así que configura \`ActaConfig\` / \`ActaClient\` con una clave admin para usar este método.
 
 Semántica Soroban, modos de autorización y JSON de petición están en **Referencia API → Bóveda patrocinada** (\`api-sponsored-vault\`). Esta página documenta el **uso en TypeScript** solo de la superficie pública.
 
@@ -28,11 +28,10 @@ const client = useActaClient();
 client.sponsoredVaultCreate(
   payload:
     | {
-        sponsor: string;
-        owner: string;
-        didUri: string;
-        sourcePublicKey: string;
-        userSalt?: string;
+        sponsor: string;          // Dirección del sponsor (paga y firma)
+        owner: string;            // Propietario de la bóveda
+        didUri: string;           // URI del DID guardado para la bóveda
+        sourcePublicKey: string;  // Debe ser el sponsor
         contractId?: string;
       }
     | { signedXdr: string }

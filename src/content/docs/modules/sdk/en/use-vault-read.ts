@@ -38,8 +38,7 @@ Lists credential IDs owned by an owner.
 \`\`\`ts
 {
   owner: string;                   // Stellar public key of the owner
-  userSalt?: string;               // 32-byte salt selecting a non-default vault for the owner (optional)
-  contractId?: string;             // Contract ID (optional, uses the configured default)
+  contractId?: string;             // Vault contract ID (optional, skips factory resolution)
 }
 \`\`\`
 
@@ -70,8 +69,7 @@ Gets a credential from the vault.
 {
   owner: string;                   // Stellar public key of the owner
   vcId: string;                    // Unique credential identifier
-  userSalt?: string;               // 32-byte salt selecting a non-default vault for the owner (optional)
-  contractId?: string;             // Contract ID (optional, uses the configured default)
+  contractId?: string;             // Vault contract ID (optional, skips factory resolution)
 }
 \`\`\`
 
@@ -108,8 +106,7 @@ Verifies the status of a credential in the vault.
 {
   owner: string;                   // Stellar public key of the owner
   vcId: string;                    // Unique credential identifier
-  userSalt?: string;               // 32-byte salt selecting a non-default vault for the owner (optional)
-  contractId?: string;             // Contract ID (optional, uses the configured default)
+  contractId?: string;             // Vault contract ID (optional, skips factory resolution)
 }
 \`\`\`
 
@@ -143,9 +140,10 @@ if (verification.since) {
 ## Notes
 
 - All these operations are **read-only** and do not require signing transactions
+- They do require a valid API key; \`listVcIds\` and \`getVc\` only work for the owner bound to your API key (the API enforces ownership), while \`verifyVc\` works for any owner
 - Methods automatically handle different API response formats
 - \`getVc\` returns \`null\` if the credential does not exist in the vault
-- Pass \`userSalt\` to read from a non-default vault belonging to the owner
-- \`verifyVc\` always returns a result with the current status of the credential
+- The hooks always read the owner's **canonical vault** (they do not take \`userSalt\`); to read a non-default vault, pass its resolved address via \`contractId\`
+- \`verifyVc\` always returns a result with the current status of the credential (\`valid\`, \`revoked\`, or \`invalid\`)
     `,
 };

@@ -48,7 +48,7 @@ Include \`metadata.network\`: \`"testnet"\` or \`"mainnet"\` to match the API ba
 \`\`\`json
 {
   "message": "API key created successfully. Save this key - it will not be shown again.",
-  "api_key": "acta_...",
+  "api_key": "64-character hex string",
   "api_key_record": {
     "id": "uuid",
     "name": "My API Key",
@@ -97,8 +97,10 @@ curl -X POST https://api.mainnet.acta.build/public/api-keys \\
 
 ## Response
 
-- \`api_key\`: The API key string (save this - it won't be shown again)
+- \`api_key\`: The API key - a 64-character hex string with no prefix (save this - it won't be shown again)
 - \`api_key_record\`: Metadata about the created key
+
+**One key per wallet:** creating a key again for the same wallet rotates it - the previous key is revoked and replaced. \`metadata.network\` must match the network of the base URL you call; a mismatch returns \`400 network_mismatch\`.
 
 ## Rate Limiting
 
@@ -108,6 +110,6 @@ curl -X POST https://api.mainnet.acta.build/public/api-keys \\
   - \`X-RateLimit-Remaining\`: Remaining requests
   - \`X-RateLimit-Reset\`: Unix timestamp when limit resets
 
-**Note:** API key creation via these endpoints is only allowed from \`dapp.acta.build\` origin. For the easiest experience, we recommend using the [ACTA dApp](https://dapp.acta.build/) to create and manage your API keys.
+**Note:** API key creation via these endpoints is restricted by an Origin allowlist (\`https://dapp.acta.build\`, plus \`localhost\` for development); other origins receive \`403 forbidden_origin\`. For the easiest experience, we recommend using the [ACTA dApp](https://dapp.acta.build/) to create and manage your API keys.
     `,
 };

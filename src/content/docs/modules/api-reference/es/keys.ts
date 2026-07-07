@@ -48,7 +48,7 @@ Incluye \`metadata.network\`: \`"testnet"\` o \`"mainnet"\` según la URL base q
 \`\`\`json
 {
   "message": "API key creada exitosamente. Guarda esta key - no se mostrará de nuevo.",
-  "api_key": "acta_...",
+  "api_key": "cadena hex de 64 caracteres",
   "api_key_record": {
     "id": "uuid",
     "name": "Mi API Key",
@@ -97,8 +97,10 @@ curl -X POST https://api.mainnet.acta.build/public/api-keys \\
 
 ## Respuesta
 
-- \`api_key\`: La cadena de la API key (guarda esto - no se mostrará de nuevo)
+- \`api_key\`: La API key - una cadena hex de 64 caracteres sin prefijo (guarda esto - no se mostrará de nuevo)
 - \`api_key_record\`: Metadatos sobre la key creada
+
+**Una key por wallet:** crear una key de nuevo para la misma wallet la rota - la key anterior se revoca y se reemplaza. \`metadata.network\` debe coincidir con la red de la URL base que llamas; si no coincide, devuelve \`400 network_mismatch\`.
 
 ## Límites de tasa
 
@@ -108,6 +110,6 @@ curl -X POST https://api.mainnet.acta.build/public/api-keys \\
   - \`X-RateLimit-Remaining\`: Solicitudes restantes
   - \`X-RateLimit-Reset\`: Timestamp Unix cuando se reinicia el límite
 
-**Nota:** La creación de API keys mediante estos endpoints solo está permitida desde el origen \`dapp.acta.build\`. Para la mejor experiencia, recomendamos usar la [dApp de ACTA](https://dapp.acta.build/) para crear y gestionar tus API keys.
+**Nota:** La creación de API keys mediante estos endpoints está restringida por una lista de orígenes permitidos (\`https://dapp.acta.build\`, más \`localhost\` para desarrollo); otros orígenes reciben \`403 forbidden_origin\`. Para la mejor experiencia, recomendamos usar la [dApp de ACTA](https://dapp.acta.build/) para crear y gestionar tus API keys.
     `,
 };

@@ -10,7 +10,7 @@ export const sponsoredVault: DocPage = {
 
 \`ActaClient.sponsoredVaultCreate\` wraps **\`POST /contracts/sponsored-vault/create\`** (prepare/submit for the factory's \`deploy_sponsored\`), accessed with \`useActaClient()\` inside \`ActaConfig\`.
 
-Sponsorship is now **open**: any sponsor may deploy a sponsored vault for an owner. The underlying contract call is the factory's \`deploy_sponsored\` (it replaces the old \`create_sponsored_vault\` vault method), and \`userSalt\` is an optional field on the create payload.
+On-chain, sponsorship is **open**: any sponsor may deploy a sponsored vault for an owner. The underlying contract call is the factory's \`deploy_sponsored\` (it replaces the old \`create_sponsored_vault\` vault method). Note that the HTTP route requires an **admin-role API key**, so configure \`ActaConfig\` / \`ActaClient\` with an admin key to use this method.
 
 Soroban semantics, authorization modes, and request JSON are documented under **API Reference → Sponsored Vault** (\`api-sponsored-vault\`). This page documents **TypeScript usage** for the public surface only.
 
@@ -28,11 +28,10 @@ const client = useActaClient();
 client.sponsoredVaultCreate(
   payload:
     | {
-        sponsor: string;
-        owner: string;
-        didUri: string;
-        sourcePublicKey: string;
-        userSalt?: string;
+        sponsor: string;          // Sponsor address (pays and signs)
+        owner: string;            // Vault owner
+        didUri: string;           // DID URI stored for the vault
+        sourcePublicKey: string;  // Must be the sponsor
         contractId?: string;
       }
     | { signedXdr: string }

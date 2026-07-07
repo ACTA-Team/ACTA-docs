@@ -8,6 +8,8 @@ export const vaultWrite: DocPage = {
     "Create Vault",
     "Deny Issuer",
     "Allow Issuer",
+    "Set Vault DID",
+    "Push Credential",
     "Revoke Vault",
     "Set New Owner",
     "Sponsored vault",
@@ -73,7 +75,7 @@ Deploys (and initializes) the owner's vault **through the factory**. The factory
 
 Issuance is **open by default**: any issuer may write to the vault unless the owner blocks it. **Deny Issuer** blocks a specific issuer (adds it to the vault's denied set).
 
-> **Back-compat:** \`POST /contracts/vault/authorize-issuer\` remains available as an alias of this route.
+> **Back-compat:** \`POST /contracts/vault/revoke-issuer\` remains available as an alias of this route (revoke → deny).
 
 **Request Body (Prepare):**
 
@@ -109,7 +111,7 @@ Issuance is **open by default**: any issuer may write to the vault unless the ow
 
 Unblocks a previously denied issuer (removes it from the vault's denied set). Since issuance is open by default, this is only needed to undo a prior **Deny Issuer**.
 
-> **Back-compat:** \`POST /contracts/vault/revoke-issuer\` remains available as an alias of this route.
+> **Back-compat:** \`POST /contracts/vault/authorize-issuer\` remains available as an alias of this route (authorize → allow).
 
 **Request Body (Prepare):**
 
@@ -139,11 +141,52 @@ Unblocks a previously denied issuer (removes it from the vault's denied set). Si
 }
 \`\`\`
 
+## Set Vault DID
+
+### POST /contracts/vault/set-vault-did
+
+Updates the DID URI stored for the owner's vault. Signed by the **vault owner**.
+
+**Request Body (Prepare):**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "didUri": "did:stellar:...",
+  "userSalt": "00...00",
+  "sourcePublicKey": "G..."
+}
+\`\`\`
+
+**Responses:** Prepare returns \`{ xdr, network }\`; Submit (\`{ "signedXdr": "..." }\`) returns \`{ tx_id }\`.
+
+## Push Credential
+
+### POST /contracts/vault/push
+
+Moves a credential from one factory-deployed vault to another vault **with the same owner** (for example, between an owner's canonical vault and a salted vault). The credential is written to the destination vault and removed from the source vault. \`fromOwner\` must match the wallet bound to your API key.
+
+**Request Body (Prepare):**
+
+\`\`\`json
+{
+  "fromOwner": "G...",
+  "toOwner": "G...",
+  "vcId": "credential-123",
+  "userSalt": "00...00",
+  "sourcePublicKey": "G..."
+}
+\`\`\`
+
+- **sourcePublicKey** (required): must be \`fromOwner\` (the source vault admin signs).
+
+**Responses:** Prepare returns \`{ xdr, network }\`; Submit returns \`{ tx_id }\`.
+
 ## Revoke Vault
 
 ### POST /contracts/vault/revoke-vault
 
-Completely revokes the owner's vault.
+Completely revokes the owner's vault. **Irreversible**: all writes into the vault are blocked afterwards.
 
 **Request Body (Prepare):**
 
@@ -208,7 +251,7 @@ Sets the new vault owner (vault admin). Must be signed by the current owner.
 
 ## Sponsored vault
 
-Vault deployment where a **sponsor** invokes \`deploy_sponsored\` on the **vc-vault-factory** instead of the owner deploying their own vault. Sponsorship is **open**: any sponsor may deploy a sponsored vault for an owner. The public HTTP surface is **\`POST /contracts/sponsored-vault/create\`** (same \`X-ACTA-Key\` middleware as other public \`/contracts/*\` writes).
+Vault deployment where a **sponsor** invokes \`deploy_sponsored\` on the **vc-vault-factory** instead of the owner deploying their own vault. On-chain, sponsorship is open (any address may sponsor), but the HTTP route **\`POST /contracts/sponsored-vault/create\`** requires an API key with the **admin** role.
 
 See **Sponsored Vault** (\`api-sponsored-vault\`) for contract semantics, the create endpoint, and \`sponsoredVaultCreate\` in the Credentials SDK.
 

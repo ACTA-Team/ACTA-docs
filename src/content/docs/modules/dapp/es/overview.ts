@@ -13,7 +13,7 @@ export const overview: DocPage = {
   content: `
 # Resumen del dApp de ACTA
 
-El dApp de ACTA es una aplicación web que proporciona una interfaz para emitir, gestionar, compartir y controlar el acceso a credenciales verificables. Construido con Next.js 16, React 19 y el SDK de ACTA, ofrece una interfaz de gestión de credenciales sin requerir conocimientos de programación.
+El dApp de ACTA es una aplicación web que proporciona una interfaz para emitir, gestionar, compartir y controlar el acceso a credenciales verificables. Construido con Next.js 16 y React 19 sobre la API REST de ACTA, ofrece una interfaz de gestión de credenciales sin requerir conocimientos de programación.
 
 ## Qué es el dApp de ACTA
 
@@ -32,10 +32,10 @@ Las operaciones se realizan a través de infraestructura Stellar/Soroban usando 
 
 ### Gestión de Credenciales
 
-- Crear y emitir credenciales verificables
+- Crear y emitir credenciales verificables desde **plantillas** (plantillas integradas como certificados de curso, membresías o recibos de pago, más un constructor de plantillas personalizadas)
 - Almacenar credenciales en tu bóveda personal
 - Buscar y filtrar credenciales
-- Compartir credenciales con divulgación selectiva de campos
+- Compartir credenciales con divulgación selectiva de campos, un código QR y una página pública de verificación
 - Revocar credenciales cuando sea necesario
 
 ### Acceso de Emisores
@@ -52,19 +52,25 @@ Las operaciones se realizan a través de infraestructura Stellar/Soroban usando 
 
 ### Onboarding Guiado
 
-- Tutoriales interactivos para usuarios primerizos
+- Tour guiado interactivo en la primera visita
 - Guía de inicio rápido con instrucciones paso a paso
 - Ayuda contextual en toda la aplicación
+
+### Más
+
+- **Notificaciones**: notificaciones dentro de la aplicación (por ejemplo, cuando tu bóveda recibe una credencial)
+- **Idiomas**: inglés, español y francés
+- **Cambio de red**: cambia entre testnet y mainnet en cualquier momento desde Configuración
 
 ## Primeros pasos
 
 Para comenzar a usar el dApp de ACTA:
 
-1. **Conecta tu wallet** - Vincula tu wallet Stellar
-2. **Elige la red** - Selecciona testnet o mainnet
-3. **Crea tu bóveda** - Inicializa tu bóveda de credenciales dedicada de un solo inquilino
-4. **Gestiona el acceso de emisores** - La emisión está abierta por defecto; bloquea a un emisor solo si quieres detenerlo
-5. **Comienza a emitir** - Crea y gestiona credenciales (requiere un did:stellar registrado; el emisor paga una tarifa on-chain por credencial)
+1. **Conecta tu wallet y elige la red** - Freighter, Albedo o WalletConnect; testnet o mainnet
+2. **Crea tu API key** - requerida para operaciones de bóveda y credenciales
+3. **Registra tu DID de emisor** - una identidad did:stellar (necesaria para emitir credenciales)
+4. **Crea tu bóveda** - Inicializa tu bóveda de credenciales dedicada de un solo inquilino
+5. **Comienza a emitir** - Crea y gestiona credenciales (el emisor paga una tarifa on-chain por credencial)
 
 Consulta la [Guía de Primeros Pasos](#dapp-getting-started) para instrucciones detalladas.
 

@@ -21,9 +21,9 @@ Quick start guides for different integration scenarios.
 Start using the ACTA API to issue and verify credentials:
 
 1. **Choose Network**: Testnet (recommended for development) or Mainnet
-2. **Get API Access**: Base URL and network configuration
-3. **Issue Credentials**: Use \`POST /credentials\` endpoint
-4. **Verify Credentials**: Use \`GET /verify/:vc_id\` or \`POST /verify\`
+2. **Get an API Key**: All \`/contracts/*\` routes require an \`X-ACTA-Key\` header (see [API Keys](doc:api-keys))
+3. **Issue Credentials**: Use the \`POST /contracts/vc/issue\` endpoint
+4. **Verify Credentials**: Use \`POST /contracts/vault/verify-vc\`
 
 For base URLs and the full endpoint map, open **[API Overview](doc:api-overview)**. To confirm the service is up, use **[Health & Status](doc:api-health-status)** (includes a live **GET /health** you can run in the browser).
 

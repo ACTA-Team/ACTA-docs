@@ -12,7 +12,10 @@ export const overview: DocPage = {
     "Environment variables",
     "Accessing the client",
     "Hooks summary",
+    "Issuer identity (auto-onboarding)",
+    "Error handling",
     "sponsoredVault",
+    "Deprecated methods",
   ],
   content: `
 # Credentials SDK Overview
@@ -36,8 +39,11 @@ Issuance is **open by default** (deny-by-exception): owners block issuers with \
 - **\`ActaConfig\`**: Provider - required \`baseURL\`; optional explicit \`apiKey\`.
 - **\`useActaClient\`**: Returns the contextual \`ActaClient\` (must be rendered under \`ActaConfig\`).
 - **Hooks**: \`useVault\`, \`useCredential\`, \`useVaultRead\`.
-- **\`ActaClient\`**: \`sponsoredVaultCreate\` for the public sponsored-vault **create** flow (prepare/submit); see **sponsoredVault**.
-- **URLs**: \`mainNet\`, \`testNet\` (string constants typed as the \`baseURL\` literal union for the two API hosts).
+- **\`ActaClient\`**: direct client methods, including \`getHealth\`, \`getConfig\` (cached ~5 min, \`clearConfigCache()\` to reset), \`vaultSetDid\`, \`vaultSetNewOwner\`, \`vaultPush\`, and \`sponsoredVaultCreate\` (see **sponsoredVault**).
+- **Errors**: \`ActaApiError\` and \`normalizeError\` (see **Error handling**).
+- **Identity**: \`getOrCreateIssuerIdentity\` / \`getIssuerIdentity\` on the client, plus storage helpers (\`IndexedDbIssuerIdentityStorage\`, \`InMemoryIssuerIdentityStorage\`, \`autoSelectStorage\`).
+- **URLs**: \`mainNet\`, \`testNet\` (string constants for the two API hosts; any custom string \`baseURL\` is also accepted, e.g. staging or localhost).
+- **Subpath exports**: \`@acta-team/credentials/types\` and \`@acta-team/credentials/hooks\`. The package ships both ESM and CJS with TypeScript declarations; \`ActaConfig\` is a client component (\`"use client"\`), compatible with the Next.js App Router.
 
 ## Provider (\`ActaConfig\`)
 
@@ -77,16 +83,31 @@ const config = await client.getConfig();
 
 ## Hooks summary
 
-- **\`useVault\`** - \`createVault\`, \`denyIssuer\`, \`allowIssuer\` (\`authorizeIssuer\` / \`revokeIssuer\` remain as back-compat aliases).
+- **\`useVault\`** - \`createVault\`, \`denyIssuer\`, \`allowIssuer\` (plus back-compat aliases: \`authorizeIssuer\` ≙ allow, \`revokeIssuer\` ≙ deny).
 - **\`useCredential\`** - \`issue\`, \`revoke\`.
 - **\`useVaultRead\`** - \`listVcIds\`, \`getVc\`, \`verifyVc\`.
 
-\`userSalt\` is an optional argument on the create / read / issue calls; omit it to use the owner's canonical vault.
+\`userSalt\` is an optional argument on the vault-write and issue calls (\`createVault\`, \`denyIssuer\`, \`allowIssuer\`, \`issue\`, \`revoke\`); omit it to use the owner's canonical vault. The \`useVaultRead\` hooks always target the canonical vault.
+
+## Issuer identity (auto-onboarding)
+
+The SDK owns issuer DID onboarding: when \`issue\` is called without \`issuerDid\`, the client transparently calls \`getOrCreateIssuerIdentity({ controller, signTransaction })\` - it generates an Ed25519 key, mints a \`did:stellar\`, registers it on-chain (one wallet signature, first time only), and persists the identity.
+
+- **Browser**: identities persist in IndexedDB, with the private key encrypted at rest.
+- **Node / server**: the default storage is **in-memory** - a new DID would be minted on every restart. Server-side integrators must supply a persistent \`IssuerIdentityStorage\` via \`ActaClientIdentityOptions\`.
+
+## Error handling
+
+Every client request that fails rejects with an **\`ActaApiError\`** (\`status\`, \`code\`, \`requestId?\`, \`isTimeout\`, \`isNetworkError\`, \`details?\`). Requests time out after 30 seconds by default. Use the exported \`normalizeError(err)\` to convert unknown errors into \`ActaApiError\`.
 
 ## sponsoredVault
 
-\`ActaClient.sponsoredVaultCreate\` prepares/submits the factory's \`deploy_sponsored\` when a **sponsor** pays or signs vault creation for an **owner**. See **sponsoredVault** for signatures and payloads.
+\`ActaClient.sponsoredVaultCreate\` prepares/submits the factory's \`deploy_sponsored\` when a **sponsor** pays or signs vault creation for an **owner**. The API route requires an **admin-role API key**. See **sponsoredVault** for signatures and payloads.
 
 Owners can be ordinary Stellar accounts (\`G...\`) or smart-wallet contract IDs (\`C...\`): when signing is delegated to ACTA infra, omit or follow the signatures described on each hook page.
+
+## Deprecated methods
+
+\`createCredential\`, \`getDefaults\`, \`prepareStoreTx\`, \`prepareListVcIdsTx\`, \`prepareGetVcTx\`, and \`vaultStore\` are deprecated stubs scheduled for removal in **2.0.0**. Migrate to \`vcIssue\`, \`getConfig\`, \`vaultListVcIdsDirect\`, and \`vaultGetVcDirect\` (or the hooks).
     `,
 };

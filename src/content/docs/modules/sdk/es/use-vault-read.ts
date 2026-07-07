@@ -38,14 +38,13 @@ Lista los IDs de credenciales de un propietario.
 \`\`\`ts
 {
   owner: string;                   // Clave pública Stellar del propietario
-  userSalt?: string;               // Salt de 32 bytes que selecciona una bóveda no predeterminada del propietario (opcional)
-  contractId?: string;             // ID de contrato (opcional, usa el configurado por defecto)
+  contractId?: string;             // ID del contrato de la bóveda (opcional, evita la resolución vía factory)
 }
 \`\`\`
 
 ### Valor de retorno
 
-- \`Promise<string[]>\`: array de IDs de credenciales  
+- \`Promise<string[]>\`: array de IDs de credenciales
 
 ### Ejemplo
 
@@ -70,8 +69,7 @@ Obtiene una credencial desde la bóveda.
 {
   owner: string;                   // Clave pública Stellar del propietario
   vcId: string;                    // Identificador único de la credencial
-  userSalt?: string;               // Salt de 32 bytes que selecciona una bóveda no predeterminada del propietario (opcional)
-  contractId?: string;             // ID de contrato (opcional, usa el configurado por defecto)
+  contractId?: string;             // ID del contrato de la bóveda (opcional, evita la resolución vía factory)
 }
 \`\`\`
 
@@ -108,8 +106,7 @@ Verifica el estado de una credencial en la bóveda.
 {
   owner: string;                   // Clave pública Stellar del propietario
   vcId: string;                    // Identificador único de la credencial
-  userSalt?: string;               // Salt de 32 bytes que selecciona una bóveda no predeterminada del propietario (opcional)
-  contractId?: string;             // ID de contrato (opcional, usa el configurado por defecto)
+  contractId?: string;             // ID del contrato de la bóveda (opcional, evita la resolución vía factory)
 }
 \`\`\`
 
@@ -143,9 +140,10 @@ if (verification.since) {
 ## Notas
 
 - Todas estas operaciones son **solo lectura** y no requieren firmar transacciones
+- Sí requieren una API key válida; \`listVcIds\` y \`getVc\` solo funcionan para el propietario ligado a tu API key (la API hace cumplir la propiedad), mientras que \`verifyVc\` funciona para cualquier propietario
 - Los métodos manejan automáticamente distintos formatos de respuesta de la API
 - \`getVc\` devuelve \`null\` si la credencial no existe en la bóveda
-- Pasa \`userSalt\` para leer de una bóveda no predeterminada del propietario
-- \`verifyVc\` siempre devuelve el estado actual de la credencial
+- Los hooks siempre leen la **bóveda canónica** del propietario (no aceptan \`userSalt\`); para leer una bóveda no predeterminada, pasa su dirección resuelta vía \`contractId\`
+- \`verifyVc\` siempre devuelve un resultado con el estado actual de la credencial (\`valid\`, \`revoked\` o \`invalid\`)
     `,
 };

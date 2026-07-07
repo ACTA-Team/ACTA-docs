@@ -20,7 +20,7 @@ export const useVault: DocPage = {
 
 Hook for vault operations: create vault, block (deny) an issuer, unblock (allow) an issuer.
 
-Issuance is open by default, so you only act on exceptions: \`denyIssuer\` blocks an issuer for the vault and \`allowIssuer\` unblocks one that was previously denied. The legacy method names \`authorizeIssuer\` and \`revokeIssuer\` remain available as **back-compat aliases** (\`authorizeIssuer\` -> \`denyIssuer\`, \`revokeIssuer\` -> \`allowIssuer\`).
+Issuance is open by default, so you only act on exceptions: \`denyIssuer\` blocks an issuer for the vault and \`allowIssuer\` unblocks one that was previously denied. The legacy method names \`authorizeIssuer\` and \`revokeIssuer\` remain available as **back-compat aliases** (\`authorizeIssuer\` ≙ \`allowIssuer\`, \`revokeIssuer\` ≙ \`denyIssuer\` - they call the API's back-compat routes with the same semantics).
 
 ## Function
 
@@ -30,8 +30,8 @@ useVault(): {
   denyIssuer: (args: DenyIssuerArgs) => Promise<{ txId: string }>;
   allowIssuer: (args: AllowIssuerArgs) => Promise<{ txId: string }>;
   // back-compat aliases:
-  authorizeIssuer: (args: DenyIssuerArgs) => Promise<{ txId: string }>;  // alias of denyIssuer
-  revokeIssuer: (args: AllowIssuerArgs) => Promise<{ txId: string }>;    // alias of allowIssuer
+  authorizeIssuer: (args: AllowIssuerArgs) => Promise<{ txId: string }>; // same semantics as allowIssuer
+  revokeIssuer: (args: DenyIssuerArgs) => Promise<{ txId: string }>;     // same semantics as denyIssuer
 }
 \`\`\`
 
@@ -86,7 +86,7 @@ const { txId } = await createVault({
 
 ## denyIssuer
 
-Blocks an issuer for a vault. Because issuance is open by default, this is how an owner stops a specific issuer from writing credentials. Also exposed as \`authorizeIssuer\` for back-compat.
+Blocks an issuer for a vault. Because issuance is open by default, this is how an owner stops a specific issuer from writing credentials. Also exposed as \`revokeIssuer\` for back-compat.
 
 ### Arguments
 
@@ -95,8 +95,8 @@ Blocks an issuer for a vault. Because issuance is open by default, this is how a
   owner: string;                    // Vault owner (G or C)
   issuer: string;                   // Issuer account to block
   signTransaction: Signer;
-  sourcePublicKey?: string;
-  contractId?: string;
+  sourcePublicKey?: string;         // Defaults to owner for G owners; ignored for C owners (relayer signs)
+  userSalt?: string;                // 32-byte salt selecting a non-default vault (optional)
 }
 \`\`\`
 
@@ -123,7 +123,7 @@ const { txId } = await denyIssuer({
 
 ## allowIssuer
 
-Unblocks an issuer that was previously denied, restoring its default ability to write credentials to the vault. Also exposed as \`revokeIssuer\` for back-compat.
+Unblocks an issuer that was previously denied, restoring its default ability to write credentials to the vault. Also exposed as \`authorizeIssuer\` for back-compat.
 
 ### Arguments
 
@@ -132,8 +132,8 @@ Unblocks an issuer that was previously denied, restoring its default ability to 
   owner: string;                    // Vault owner (G or C)
   issuer: string;                   // Issuer to unblock
   signTransaction: Signer;
-  sourcePublicKey?: string;
-  contractId?: string;
+  sourcePublicKey?: string;         // Defaults to owner for G owners; ignored for C owners (relayer signs)
+  userSalt?: string;                // 32-byte salt selecting a non-default vault (optional)
 }
 \`\`\`
 

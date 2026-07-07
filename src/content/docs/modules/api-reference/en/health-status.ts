@@ -21,7 +21,8 @@ Checks the API status. No authentication required.
 \`\`\`json
 {
   "status": "OK",
-  "timestamp": "2024-01-01T00:00:00.000Z"
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "service": "ACTA API"
 }
 \`\`\`
 
@@ -37,13 +38,7 @@ curl https://api.testnet.acta.build/health
 
 ### GET /config
 
-Gets public network configuration. Requires API key.
-
-**Headers:**
-
-\`\`\`
-X-ACTA-Key: your_api_key_here
-\`\`\`
+Gets public network configuration. **No authentication required** (public bootstrap endpoint, not rate limited).
 
 **Response:**
 
@@ -68,7 +63,7 @@ X-ACTA-Key: your_api_key_here
 **Example:**
 
 \`\`\`bash
-curl -H "X-ACTA-Key: your_key" https://api.testnet.acta.build/config
+curl https://api.testnet.acta.build/config
 \`\`\`
     `,
 };

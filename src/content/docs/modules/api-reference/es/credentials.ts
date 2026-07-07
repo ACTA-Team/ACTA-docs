@@ -16,7 +16,7 @@ export const credentials: DocPage = {
   content: `
 # Operaciones de Credenciales
 
-Endpoints para emitir y revocar credenciales verificables. Todos soportan flujo prepare/submit. **Emitir Credencial** (\`POST /contracts/vc/issue\`) y **Emisión por Lote** (\`POST /contracts/vc/batch-issue\`) requieren API key; **Revocar Credencial** no requiere autenticación.
+Endpoints para emitir y revocar credenciales verificables. Todos soportan flujo prepare/submit y **todos requieren una API key** (\`X-ACTA-Key\`). **Emitir Credencial** (\`POST /contracts/vc/issue\`) y **Emisión por Lote** (\`POST /contracts/vc/batch-issue\`) requieren además que \`owner\` coincida con la wallet vinculada a tu API key (las keys con rol admin están exentas).
 
 ## Emitir Credencial
 
@@ -102,6 +102,8 @@ curl -X POST https://api.testnet.acta.build/contracts/vc/issue \\
 
 Emite varias VC en la bóveda del mismo owner en una sola transacción. Cada entrada lleva solo \`vcId\` y \`vcData\`; el holder de cada credencial es \`credentialSubject.id\` dentro de su propio \`vcData\` (**no** hay campo \`holder\`). **Requiere API key.**
 
+**Límites:** de 1 a 5 credenciales por lote (\`MAX_BATCH_SIZE\` = 5); \`vcId\` hasta 64 caracteres; \`vcData\` hasta 10,000 caracteres. Excederlos devuelve \`400 batch_too_large\`, \`400 vcs[i].vcId_too_long\` o \`400 vcs[i].vcData_too_long\`.
+
 **Cuerpo de solicitud (Prepare):**
 
 \`\`\`json
@@ -138,7 +140,7 @@ Emite varias VC en la bóveda del mismo owner en una sola transacción. Cada ent
 
 ### POST /contracts/vc/revoke
 
-Revoca una VC por ID en la bóveda de un owner concreto. No requiere autenticación.
+Revoca una VC por ID en la bóveda de un owner concreto. Requiere una API key. La transacción debe firmarla el **propietario de la bóveda** (el contrato exige \`owner.require_auth()\`).
 
 **Cuerpo de solicitud (Prepare):**
 
@@ -190,15 +192,15 @@ El \`issuerDid\` debe ser un **\`did:stellar\`** registrado y resoluble. Las dir
 
 ## Comisiones
 
-La emisión cobra una **comisión on-chain** calculada por la bóveda mediante \`quote_fee\` del factory y **pagada por el emisor** (mainnet: 1 USDC por credencial). La API **no** acepta un override de comisión: hay una única comisión estándar más una comisión personalizada opcional por emisor, ambas resueltas on-chain.
+La emisión cobra una **comisión on-chain** calculada por la bóveda mediante \`quote_fee\` del factory y **pagada por el emisor** (mainnet: 1 USDC por credencial; testnet: 5 XLM). La API **no** acepta un override de comisión: hay una única comisión estándar más una comisión personalizada opcional por emisor, ambas resueltas on-chain.
 
 ## Cuerpo de solicitud
 
 ### Emitir Credencial
 
 - **owner** (requerido): Dirección del propietario de la bóveda (G...)
-- **vcId** (requerido): Identificador de credencial
-- **vcData** (requerido): Payload de datos de la credencial (string JSON). Debe incluir \`@context\` con al menos \`"https://www.w3.org/ns/credentials/v2"\` y \`credentialSubject.id\` (el DID del holder)
+- **vcId** (requerido): Identificador de credencial (máx 64 caracteres)
+- **vcData** (requerido): Payload de datos de la credencial (string JSON, máx 10,000 caracteres). Debe incluir \`@context\` con al menos \`"https://www.w3.org/ns/credentials/v2"\` y \`credentialSubject.id\` (el DID del holder). La API cifra \`vcData\` (AES-256-GCM) antes de almacenarlo on-chain
 - **issuer** (requerido): Dirección del emisor (G...)
 - **issuerDid** (requerido): \`did:stellar\` registrado y resoluble cuyo controlador on-chain es igual a \`issuer\`
 - **userSalt** (opcional): salt de 32 bytes que selecciona la bóveda del owner; por defecto 32 bytes en cero

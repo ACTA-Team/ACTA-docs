@@ -20,10 +20,10 @@ Guías rápidas para distintos escenarios de integración.
 
 Comienza a usar la API de ACTA para emitir y verificar credenciales:
 
-1. **Elegir red**: Testnet (recomendada para desarrollo) o Mainnet  
-2. **Obtener acceso API**: URL base y configuración de red  
-3. **Emitir credenciales**: Usa el endpoint \`POST /credentials\`  
-4. **Verificar credenciales**: Usa \`GET /verify/:vc_id\` o \`POST /verify\`  
+1. **Elegir red**: Testnet (recomendada para desarrollo) o Mainnet
+2. **Obtener una API key**: Todas las rutas \`/contracts/*\` requieren el header \`X-ACTA-Key\` (ver [API Keys](doc:api-keys))
+3. **Emitir credenciales**: Usa el endpoint \`POST /contracts/vc/issue\`
+4. **Verificar credenciales**: Usa \`POST /contracts/vault/verify-vc\`
 
 Para URLs base y el mapa completo de endpoints, abre **[Resumen de API](doc:api-overview)**. Para comprobar que el servicio responde, usa **[Salud y Estado](doc:api-health-status)** (incluye un **GET /health** en vivo desde el navegador).
 

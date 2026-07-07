@@ -25,7 +25,7 @@ Para comparar, \`POST /contracts/vault/create\` prepara el despliegue del propio
 | **Sponsor** | Firma la transacción. Paga red/comisiones como cualquier invocación. |
 | **Owner** | Recibe la bóveda; su dirección se guarda como admin de la bóveda; \`didUri\` se guarda para la bóveda. |
 
-**Patrocinio abierto:** el patrocinio es **abierto**. Cualquier dirección sponsor puede llamar a \`deploy_sponsored\` para un owner (siempre sujeto a la auth y comisiones de Stellar/Soroban). En este modelo no hay lista de sponsors permitidos ni un interruptor de "abierto a todos".
+**Patrocinio abierto on-chain, restringido a admin por HTTP:** en el contrato, cualquier dirección sponsor puede llamar a \`deploy_sponsored\` para un owner (sujeto a la auth y comisiones de Stellar/Soroban) - no hay lista de sponsors permitidos ni un interruptor de "abierto a todos". La ruta de la API de ACTA, sin embargo, requiere una **API key con rol admin** (ver abajo).
 
 El factory deriva la dirección de la bóveda de forma determinista a partir de \`(factory, owner, userSalt)\`, por lo que un despliegue patrocinado y un despliegue autoservicio para el mismo owner + salt resuelven a la misma bóveda. Volver a desplegar para un owner que ya tiene bóveda en ese salt falla on-chain (ya desplegada).
 
@@ -37,13 +37,15 @@ El entrypoint relevante del factory es:
 
 | Función | Auth | Descripción |
 |---------|------|-------------|
-| \`deploy_sponsored(sponsor, owner, did_uri, user_salt)\` | Sponsor | Despliega de forma determinista la bóveda del owner si aún no está desplegada en ese salt. |
+| \`deploy_sponsored(deployer, owner, did_uri, user_salt)\` | Deployer (sponsor) | Despliega de forma determinista la bóveda del owner si aún no está desplegada en ese salt. |
+
+El campo \`sponsor\` de la API se mapea al parámetro \`deployer\` del contrato.
 
 **HTTP público:** la API de ACTA documenta solo **\`POST /contracts/sponsored-vault/create\`** (prepare/submit para \`deploy_sponsored\`).
 
 ## API HTTP
 
-Esta ruta usa el mismo middleware que otras rutas de escritura públicas \`/contracts/*\`: header **\`X-ACTA-Key\`**, API key válida y límites de tasa. Antepón las rutas con la URL base de tu red (ej. \`https://api.testnet.acta.build\`).
+Esta ruta requiere una **API key con rol admin** (header \`X-ACTA-Key\`) y tiene límite de tasa por key. Las keys estándar reciben \`403\`. Antepón las rutas con la URL base de tu red (ej. \`https://api.testnet.acta.build\`).
 
 ### POST /contracts/sponsored-vault/create
 

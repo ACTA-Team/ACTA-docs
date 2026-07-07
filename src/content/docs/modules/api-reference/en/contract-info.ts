@@ -14,15 +14,15 @@ Endpoints for retrieving contract information.
 
 ### GET /contracts/version
 
-Returns the version string of an owner's **vault** contract. Vaults are single-tenant, so the version is per-vault: pass the \`owner\` (and optionally \`userSalt\`) so the factory can resolve the vault to query. No authentication required.
+Returns the version string of an owner's **vault** contract. Vaults are single-tenant, so the version is per-vault: pass the \`owner\` (and optionally \`userSalt\`) so the factory can resolve the vault to query. **Requires an API key** (\`X-ACTA-Key\`).
 
 **Query Parameters:**
 
-- \`owner\` (required): Vault owner address (G...) whose vault version you want
+- \`owner\` (optional): Vault owner address (G...) whose vault version you want. Without it, the endpoint returns the factory id and a note instead of a version (there is no factory-level version).
 - \`userSalt\` (optional): 32-byte salt selecting the owner's vault; defaults to 32 zero bytes
-- \`sourcePublicKey\` (required): An existing Stellar account (G...) used for Soroban simulation
+- \`sourcePublicKey\` (optional): An existing Stellar account (G...) used for Soroban simulation
 
-**Response:**
+**Response (with \`owner\`):**
 
 \`\`\`json
 {
@@ -30,21 +30,31 @@ Returns the version string of an owner's **vault** contract. Vaults are single-t
 }
 \`\`\`
 
+**Response (without \`owner\`):**
+
+\`\`\`json
+{
+  "factory_id": "C...",
+  "note": "No factory-level version; pass ?owner= for a vault version."
+}
+\`\`\`
+
 **Example:**
 
 \`\`\`bash
-curl "https://api.testnet.acta.build/contracts/version?owner=G...&sourcePublicKey=G..."
+curl -H "X-ACTA-Key: your_key" \\
+  "https://api.testnet.acta.build/contracts/version?owner=G...&sourcePublicKey=G..."
 \`\`\`
 
 ## Fees
 
-The issuance fee is read **on-chain from the factory's \`quote_fee\`** only. There are no role-based fee tiers: a single standard fee applies, with an optional per-issuer custom fee, both resolved on-chain. The fee is paid by the issuer at issuance time (mainnet: 1 USDC per credential). The API does not expose a fee-tier endpoint and does not accept a fee override.
+The issuance fee is read **on-chain from the factory's \`quote_fee\`** only. There are no role-based fee tiers: a single standard fee applies, with an optional per-issuer custom fee, both resolved on-chain. The fee is paid by the issuer at issuance time (mainnet: 1 USDC per credential; testnet: 5 XLM). The API does not expose a fee-tier endpoint and does not accept a fee override.
 
 ## Query Parameters
 
-- **owner** (required): Vault owner address (G...)
+- **owner** (optional): Vault owner address (G...); omit to get the factory id instead of a vault version
 - **userSalt** (optional): 32-byte salt selecting the owner's vault; defaults to 32 zero bytes
-- **sourcePublicKey** (required): Stellar public key (G...) used for contract simulation
+- **sourcePublicKey** (optional): Stellar public key (G...) used for contract simulation
 
 ## Response
 

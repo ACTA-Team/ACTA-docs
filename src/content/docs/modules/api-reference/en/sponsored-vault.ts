@@ -25,7 +25,7 @@ For comparison, \`POST /contracts/vault/create\` prepares the owner's own factor
 | **Sponsor** | Signs the transaction. Pays network/fees like any invoke. |
 | **Owner** | Receives the vault; address stored as vault admin; \`didUri\` stored for the vault. |
 
-**Open sponsorship:** sponsorship is **open**. Any sponsor address may call \`deploy_sponsored\` for an owner (still subject to Stellar/Soroban auth and fees). There is no sponsor allowlist and no open-to-all toggle in this model.
+**Open sponsorship on-chain, admin-gated over HTTP:** on the contract, any sponsor address may call \`deploy_sponsored\` for an owner (subject to Stellar/Soroban auth and fees) - there is no sponsor allowlist and no open-to-all toggle. The ACTA API route, however, requires an **admin-role API key** (see below).
 
 The factory derives the vault address deterministically from \`(factory, owner, userSalt)\`, so a sponsored deploy and a self-service deploy for the same owner + salt resolve to the same vault. Calling deploy again for an owner that already has a vault at that salt fails on-chain (already deployed).
 
@@ -37,13 +37,15 @@ The relevant factory entrypoint is:
 
 | Function | Auth | Description |
 |----------|------|-------------|
-| \`deploy_sponsored(sponsor, owner, did_uri, user_salt)\` | Sponsor | Deterministically deploys the owner's vault if not already deployed at that salt. |
+| \`deploy_sponsored(deployer, owner, did_uri, user_salt)\` | Deployer (sponsor) | Deterministically deploys the owner's vault if not already deployed at that salt. |
+
+The API's \`sponsor\` request field maps to the contract's \`deployer\` parameter.
 
 **Public HTTP:** the ACTA API documents only **\`POST /contracts/sponsored-vault/create\`** (prepare/submit for \`deploy_sponsored\`).
 
 ## HTTP API
 
-This route uses the same middleware as other public \`/contracts/*\` write routes: **\`X-ACTA-Key\`** header, valid API key, and rate limits. Prefix paths with your network base URL (e.g. \`https://api.testnet.acta.build\`).
+This route requires an **API key with the admin role** (\`X-ACTA-Key\` header) and is rate limited per key. Standard keys receive \`403\`. Prefix paths with your network base URL (e.g. \`https://api.testnet.acta.build\`).
 
 ### POST /contracts/sponsored-vault/create
 

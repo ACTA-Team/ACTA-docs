@@ -7,7 +7,7 @@ export const contractErrors: DocPage = {
   tocItems: [
     "In one minute",
     "When you see this",
-    "Issuance fee (USDC)",
+    "Issuance fee (USDC / XLM)",
     "Vault (vc-vault)",
     "Factory (vc-vault-factory)",
     "did:stellar registry",
@@ -22,7 +22,7 @@ If something goes wrong inside a Soroban contract, Stellar surfaces **\`Error(Co
 ## In one minute
 
 - **Factory (vc-vault-factory)** - One per network. Deploys single-tenant \`vc-vault\` contracts deterministically from a vault template WASM, and provides the on-chain fee quote (\`quote_fee\`).
-- **Vault (vc-vault)** - One per owner, deployed by the factory. Holds that owner's credentials. Issuance is **open by default** (deny-by-exception): owners block/unblock issuers. The issuance fee is charged on-chain in USDC, paid by the issuer. Vaults are **immutable** (the template is fixed at deploy).
+- **Vault (vc-vault)** - One per owner, deployed by the factory. Holds that owner's credentials. Issuance is **open by default** (deny-by-exception): owners block/unblock issuers. The issuance fee is charged on-chain (USDC on mainnet, XLM on testnet), paid by the issuer. Vaults are **immutable** (the template is fixed at deploy).
 - **did:stellar registry** - A separate contract for issuer DID metadata; it has its own error codes.
 - **USDC token** - Issuance charges a fee, transferred by the USDC token contract. Its errors are about trustlines and balances, not vaults (see below).
 - **API-level errors** - Some failures (like a DID controller mismatch) are returned by the ACTA API, before a contract is ever reached.
@@ -34,9 +34,9 @@ If something goes wrong inside a Soroban contract, Stellar surfaces **\`Error(Co
 - **RPC / Horizon** - Failed simulation or submission responses include the contract error code and a diagnostic event log.
 - **API responses** - API-level errors arrive as a structured error in the HTTP response, before or instead of a Soroban code.
 
-## Issuance fee (USDC)
+## Issuance fee (USDC / XLM)
 
-Issuing a credential charges an **on-chain fee in USDC** (quoted by the factory's \`quote_fee\`, paid by the **issuer**). That transfer runs inside the **USDC token contract**, so when it fails the error comes from the token, not from the vault. This is the most common real-world issuance failure on mainnet.
+Issuing a credential charges an **on-chain fee** (quoted by the factory's \`quote_fee\`, paid by the **issuer**): on **mainnet** the fee token is **USDC** (1 USDC per credential); on **testnet** it is **native XLM** (5 XLM per credential), so no trustline is involved there. The transfer runs inside the fee token's contract, so when it fails the error comes from the token, not from the vault. This is the most common real-world issuance failure on mainnet.
 
 | What you see | What happened & what to try |
 |-------|----------------------------|
@@ -66,12 +66,13 @@ These codes are **only** for \`vc-vault\`, under the **deny-by-exception** model
 | **#17** · BatchTooLarge | A batch issuance exceeds \`MAX_BATCH_SIZE\`. **Try:** split into smaller batches. |
 | **#18** · BatchEmpty | Batch issuance was called with an empty list. **Try:** include at least one credential. |
 | **#19** · InputTooLong | A field (vc_id, vc_data, did_uri, issuer_did, or date) exceeds its maximum length. **Try:** shorten the field. |
+| **#20** · IssuerListTooLong | The vault's **denied-issuer list** reached its maximum (1,000 entries). **Try:** unblock issuers you no longer need to deny before blocking new ones. |
 | **#23** · FeeOutOfBounds | The batch fee total (per-credential fee x batch size) overflowed \`i128\`. **Try:** reduce the batch size. |
 | **#24** · SourceNotAVault | A push source is not a vault deployed by the factory. **Try:** only push between factory-deployed vaults. |
 | **#25** · IssuerDenied | The issuer is in this vault's **denied list**, so issuance is rejected. **Try:** the owner can unblock it with \`allow_issuer\`, or use a different (allowed) issuer. |
 | **#26** · PushOwnerMismatch | A \`receive_push\` source vault has a different owner than this vault. **Try:** only push between vaults with the same owner. |
 
-> Codes **#2** (IssuerNotAuthorized), **#3** (IssuerAlreadyAuthorized), and **#20** (IssuerListTooLong) are retired from the old issuer-whitelist model and are no longer raised, but kept for ABI stability.
+> Codes **#2** (IssuerNotAuthorized) and **#3** (IssuerAlreadyAuthorized) are retired from the old issuer-whitelist model and are no longer raised, but kept for ABI stability.
 
 ## Factory (vc-vault-factory)
 
@@ -123,7 +124,7 @@ Some failures never reach a contract: the ACTA API rejects them first and return
 
 | Code | Meaning & what to try |
 |------|-----------------------|
-| **\`issuerDid_required\`** | No issuer DID was provided. **Try:** register your \`did:stellar\` (Dashboard -> My DID) and pass it. |
+| **\`issuerDid_required\`** | No issuer DID was provided. **Try:** register your \`did:stellar\` (the dApp guides you through this, and the SDK can auto-onboard it) and pass it. |
 | **\`issuerDid_invalid\`** | The value is not a well-formed \`did:stellar\`. **Try:** use the form \`did:stellar:{network}:{id}\`. |
 | **\`issuerDid_unresolvable\`** | The DID does not resolve on this network's registry (not registered, or registered elsewhere). **Try:** register the DID on this network before issuing. |
 | **\`issuerDid_controller_mismatch\`** | The DID's on-chain controller is not the signing issuer. **Try:** sign with the wallet that controls the DID. |

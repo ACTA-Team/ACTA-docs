@@ -8,6 +8,8 @@ export const vaultWrite: DocPage = {
     "Crear Bóveda",
     "Bloquear Emisor",
     "Desbloquear Emisor",
+    "Establecer DID de la Bóveda",
+    "Push de Credencial",
     "Revocar Bóveda",
     "Establecer nuevo propietario",
     "Bóveda patrocinada",
@@ -73,7 +75,7 @@ Despliega (e inicializa) la bóveda del owner **a través del factory**. El fact
 
 La emisión está **abierta por defecto**: cualquier emisor puede escribir en la bóveda salvo que el owner lo bloquee. **Bloquear Emisor** bloquea un emisor concreto (lo añade al conjunto de denegados de la bóveda).
 
-> **Retrocompatibilidad:** \`POST /contracts/vault/authorize-issuer\` sigue disponible como alias de esta ruta.
+> **Retrocompatibilidad:** \`POST /contracts/vault/revoke-issuer\` sigue disponible como alias de esta ruta (revoke → deny).
 
 **Cuerpo de solicitud (Prepare):**
 
@@ -109,7 +111,7 @@ La emisión está **abierta por defecto**: cualquier emisor puede escribir en la
 
 Desbloquea un emisor previamente denegado (lo quita del conjunto de denegados de la bóveda). Como la emisión está abierta por defecto, esto solo hace falta para deshacer un **Bloquear Emisor** anterior.
 
-> **Retrocompatibilidad:** \`POST /contracts/vault/revoke-issuer\` sigue disponible como alias de esta ruta.
+> **Retrocompatibilidad:** \`POST /contracts/vault/authorize-issuer\` sigue disponible como alias de esta ruta (authorize → allow).
 
 **Cuerpo de solicitud (Prepare):**
 
@@ -139,11 +141,52 @@ Desbloquea un emisor previamente denegado (lo quita del conjunto de denegados de
 }
 \`\`\`
 
+## Establecer DID de la Bóveda
+
+### POST /contracts/vault/set-vault-did
+
+Actualiza el DID URI almacenado para la bóveda del owner. Firmado por el **propietario de la bóveda**.
+
+**Cuerpo de solicitud (Prepare):**
+
+\`\`\`json
+{
+  "owner": "G...",
+  "didUri": "did:stellar:...",
+  "userSalt": "00...00",
+  "sourcePublicKey": "G..."
+}
+\`\`\`
+
+**Respuestas:** Prepare devuelve \`{ xdr, network }\`; Submit (\`{ "signedXdr": "..." }\`) devuelve \`{ tx_id }\`.
+
+## Push de Credencial
+
+### POST /contracts/vault/push
+
+Mueve una credencial de una bóveda desplegada por el factory a otra bóveda **con el mismo propietario** (por ejemplo, entre la bóveda canónica de un owner y una bóveda con salt). La credencial se escribe en la bóveda de destino y se elimina de la bóveda de origen. \`fromOwner\` debe coincidir con la wallet vinculada a tu API key.
+
+**Cuerpo de solicitud (Prepare):**
+
+\`\`\`json
+{
+  "fromOwner": "G...",
+  "toOwner": "G...",
+  "vcId": "credential-123",
+  "userSalt": "00...00",
+  "sourcePublicKey": "G..."
+}
+\`\`\`
+
+- **sourcePublicKey** (requerido): debe ser \`fromOwner\` (firma el admin de la bóveda de origen).
+
+**Respuestas:** Prepare devuelve \`{ xdr, network }\`; Submit devuelve \`{ tx_id }\`.
+
 ## Revocar Bóveda
 
 ### POST /contracts/vault/revoke-vault
 
-Revoca completamente la bóveda del owner.
+Revoca completamente la bóveda del owner. **Irreversible**: después, todas las escrituras en la bóveda quedan bloqueadas.
 
 **Cuerpo de solicitud (Prepare):**
 
@@ -208,7 +251,7 @@ Establece el nuevo propietario de la bóveda (admin de bóveda). Debe ser firmad
 
 ## Bóveda patrocinada
 
-Despliegue de bóveda en el que un **sponsor** invoca \`deploy_sponsored\` en el **vc-vault-factory** en lugar de que el owner despliegue su propia bóveda. El patrocinio es **abierto**: cualquier sponsor puede desplegar una bóveda patrocinada para un owner. La superficie HTTP pública es **\`POST /contracts/sponsored-vault/create\`** (mismo middleware \`X-ACTA-Key\` que otros escritos públicos \`/contracts/*\`).
+Despliegue de bóveda en el que un **sponsor** invoca \`deploy_sponsored\` en el **vc-vault-factory** en lugar de que el owner despliegue su propia bóveda. On-chain, el patrocinio es abierto (cualquier dirección puede patrocinar), pero la ruta HTTP **\`POST /contracts/sponsored-vault/create\`** requiere una API key con rol **admin**.
 
 Consulta **Bóveda patrocinada (Sponsored Vault)** (\`api-sponsored-vault\`) para semántica del contrato, el endpoint create y \`sponsoredVaultCreate\` en el SDK de credenciales.
 

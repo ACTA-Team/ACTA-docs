@@ -31,17 +31,19 @@ There is exactly one \`vc-vault-factory\` per network. It is responsible for dep
 - **Deterministic deployment**: Deploys a new \`vc-vault\` for an owner from a template WASM. The vault address is derived from \`(factory, owner, userSalt)\`.
 - **Canonical vault**: The default \`userSalt\` is 32 zero bytes, yielding one canonical vault per owner. Distinct salts allow additional vaults for the same owner.
 - **Immutable vaults**: Vaults are deployed from a fixed template WASM and are immutable once created.
-- **Fee quoting**: Exposes \`quote_fee\`, the on-chain issuance fee paid by the issuer (on mainnet, 1 USDC per credential).
+- **Fee quoting**: Exposes \`quote_fee\`, the on-chain issuance fee paid by the issuer (mainnet: 1 USDC per credential; testnet: 5 XLM per credential).
 
 ### Vault Contract (vc-vault)
 
 Each owner has their **own** single-tenant \`vc-vault\` contract. There is no shared, multi-tenant store. The vault holds the full credential lifecycle on-chain:
 
-- **Issue**: Creates new credentials and anchors the hash on-chain. Issuance charges an on-chain fee via the factory's \`quote_fee\`, paid by the issuer.
-- **Verify**: Public verification of credential status.
-- **Revoke**: Revokes credentials with an optional revocation date.
-- **Store / List / Get**: Stores and retrieves credential IDs and data within the owner's vault.
-- **Issuer control**: Issuance is **open by default** (deny-by-exception). There is no allow-list. The owner can **block** an issuer with \`deny_issuer\` and **unblock** with \`allow_issuer\`.
+- **Issue / Batch issue**: Creates new credentials in the vault (single or up to 5 per batch). Issuance charges an on-chain fee via the factory's \`quote_fee\`, paid by the issuer.
+- **Verify**: Public verification of credential status (\`valid\`, \`revoked\`, or \`invalid\`).
+- **Revoke**: Revokes credentials with an optional revocation date (signed by the vault owner).
+- **List / Get / Count**: Retrieves credential IDs (paginated) and credential data from the owner's vault.
+- **Push**: Moves a credential to another factory-deployed vault with the same owner.
+- **Vault DID**: The vault stores the owner's DID URI, changeable with \`set_vault_did\`.
+- **Issuer control**: Issuance is **open by default** (deny-by-exception). There is no allow-list. The vault admin can **block** an issuer with \`deny_issuer\` and **unblock** with \`allow_issuer\`.
 
 Contract functions are exposed via API endpoints. See API Reference for details.
 
@@ -92,6 +94,9 @@ did:stellar:{network}:{address}
 
 - **vc-vault-factory**: \`CDRFQRIP4FA3WMPWCSAM3XEY6EM6EGKRYZRSCSVZ5NHCF6AGEVR2XEPQ\`
 - **did:stellar registry**: \`CB7ATU7SF5QUKJMSULJDJVWJZVDXC23HTZX6NFUDTSFPVT6MA575NNZJ\`
+- **vc-vault template WASM hash**: \`2bd0323a98acb8469606808368da6c79824f2dd8391494b94ddbeb3d22c1a957\`
+
+> The \`vc-vault\` contract has **no standalone contract ID**: it is a template WASM instantiated per owner by the factory.
 
 ## Network Support
 

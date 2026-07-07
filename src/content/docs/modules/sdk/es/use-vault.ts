@@ -20,7 +20,7 @@ export const useVault: DocPage = {
 
 Hook para operaciones de bóveda: crear bóveda, bloquear (deny) un emisor, desbloquear (allow) un emisor.
 
-La emisión es abierta por defecto, así que solo actúas sobre las excepciones: \`denyIssuer\` bloquea un emisor en la bóveda y \`allowIssuer\` desbloquea uno que fue denegado antes. Los nombres antiguos \`authorizeIssuer\` y \`revokeIssuer\` siguen disponibles como **alias de compatibilidad** (\`authorizeIssuer\` -> \`denyIssuer\`, \`revokeIssuer\` -> \`allowIssuer\`).
+La emisión es abierta por defecto, así que solo actúas sobre las excepciones: \`denyIssuer\` bloquea un emisor en la bóveda y \`allowIssuer\` desbloquea uno que fue denegado antes. Los nombres antiguos \`authorizeIssuer\` y \`revokeIssuer\` siguen disponibles como **alias de compatibilidad** (\`authorizeIssuer\` ≙ \`allowIssuer\`, \`revokeIssuer\` ≙ \`denyIssuer\` - llaman a las rutas de compatibilidad de la API con la misma semántica).
 
 ## Función
 
@@ -30,8 +30,8 @@ useVault(): {
   denyIssuer: (args: DenyIssuerArgs) => Promise<{ txId: string }>;
   allowIssuer: (args: AllowIssuerArgs) => Promise<{ txId: string }>;
   // alias de compatibilidad:
-  authorizeIssuer: (args: DenyIssuerArgs) => Promise<{ txId: string }>;  // alias de denyIssuer
-  revokeIssuer: (args: AllowIssuerArgs) => Promise<{ txId: string }>;    // alias de allowIssuer
+  authorizeIssuer: (args: AllowIssuerArgs) => Promise<{ txId: string }>; // misma semántica que allowIssuer
+  revokeIssuer: (args: DenyIssuerArgs) => Promise<{ txId: string }>;     // misma semántica que denyIssuer
 }
 \`\`\`
 
@@ -86,17 +86,17 @@ const { txId } = await createVault({
 
 ## denyIssuer
 
-Bloquea un emisor en una bóveda. Como la emisión es abierta por defecto, así es como un propietario impide que un emisor concreto escriba credenciales. También expuesto como \`authorizeIssuer\` por compatibilidad.
+Bloquea un emisor en una bóveda. Como la emisión es abierta por defecto, así es como un propietario impide que un emisor concreto escriba credenciales. También expuesto como \`revokeIssuer\` por compatibilidad.
 
 ### Argumentos
 
 \`\`\`ts
 {
-  owner: string;
+  owner: string;                    // Propietario de la bóveda (G o C)
   issuer: string;                   // Emisor a bloquear
   signTransaction: Signer;
-  sourcePublicKey?: string;
-  contractId?: string;
+  sourcePublicKey?: string;         // Por defecto owner para owners G; se ignora para owners C (firma el relayer)
+  userSalt?: string;                // Salt de 32 bytes que selecciona una bóveda no canónica (opcional)
 }
 \`\`\`
 
@@ -123,17 +123,17 @@ const { txId } = await denyIssuer({
 
 ## allowIssuer
 
-Desbloquea un emisor que fue denegado antes, restaurando su capacidad por defecto de escribir credenciales en la bóveda. También expuesto como \`revokeIssuer\` por compatibilidad.
+Desbloquea un emisor que fue denegado antes, restaurando su capacidad por defecto de escribir credenciales en la bóveda. También expuesto como \`authorizeIssuer\` por compatibilidad.
 
 ### Argumentos
 
 \`\`\`ts
 {
-  owner: string;
+  owner: string;                    // Propietario de la bóveda (G o C)
   issuer: string;                   // Emisor a desbloquear
   signTransaction: Signer;
-  sourcePublicKey?: string;
-  contractId?: string;
+  sourcePublicKey?: string;         // Por defecto owner para owners G; se ignora para owners C (firma el relayer)
+  userSalt?: string;                // Salt de 32 bytes que selecciona una bóveda no canónica (opcional)
 }
 \`\`\`
 

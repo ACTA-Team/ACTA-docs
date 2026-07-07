@@ -16,7 +16,7 @@ export const credentials: DocPage = {
   content: `
 # Credential Operations
 
-Endpoints for issuing and revoking verifiable credentials. All support prepare/submit flow. **Issue Credential** (\`POST /contracts/vc/issue\`) and **Batch Issue** (\`POST /contracts/vc/batch-issue\`) require an API key; **Revoke Credential** does not require authentication.
+Endpoints for issuing and revoking verifiable credentials. All support prepare/submit flow and **all require an API key** (\`X-ACTA-Key\`). **Issue Credential** (\`POST /contracts/vc/issue\`) and **Batch Issue** (\`POST /contracts/vc/batch-issue\`) additionally require that \`owner\` matches the wallet bound to your API key (admin-role keys are exempt).
 
 ## Issue Credential
 
@@ -102,6 +102,8 @@ curl -X POST https://api.testnet.acta.build/contracts/vc/issue \\
 
 Issues several VCs into the same owner's vault in a single transaction. Each entry carries only \`vcId\` and \`vcData\`; the holder of each credential is \`credentialSubject.id\` inside its own \`vcData\` (there is **no** \`holder\` field). **Requires API key.**
 
+**Limits:** 1 to 5 credentials per batch (\`MAX_BATCH_SIZE\` = 5); \`vcId\` up to 64 characters; \`vcData\` up to 10,000 characters. Exceeding them returns \`400 batch_too_large\`, \`400 vcs[i].vcId_too_long\`, or \`400 vcs[i].vcData_too_long\`.
+
 **Request Body (Prepare):**
 
 \`\`\`json
@@ -138,7 +140,7 @@ Issues several VCs into the same owner's vault in a single transaction. Each ent
 
 ### POST /contracts/vc/revoke
 
-Revokes a VC by ID in a specific owner's vault. No authentication required.
+Revokes a VC by ID in a specific owner's vault. Requires an API key. The transaction must be signed by the **vault owner** (the contract enforces \`owner.require_auth()\`).
 
 **Request Body (Prepare):**
 
@@ -190,15 +192,15 @@ The \`issuerDid\` must be a registered, resolvable **\`did:stellar\`**. Bare wal
 
 ## Fees
 
-Issuance charges an **on-chain fee** computed by the vault via the factory's \`quote_fee\` and **paid by the issuer** (mainnet: 1 USDC per credential). The API does **not** accept a fee override: there is a single standard fee plus an optional per-issuer custom fee, both resolved on-chain.
+Issuance charges an **on-chain fee** computed by the vault via the factory's \`quote_fee\` and **paid by the issuer** (mainnet: 1 USDC per credential; testnet: 5 XLM). The API does **not** accept a fee override: there is a single standard fee plus an optional per-issuer custom fee, both resolved on-chain.
 
 ## Request Body
 
 ### Issue Credential
 
 - **owner** (required): Vault owner address (G...)
-- **vcId** (required): Credential identifier
-- **vcData** (required): Credential data payload (JSON string). Must include \`@context\` with at least \`"https://www.w3.org/ns/credentials/v2"\`, and \`credentialSubject.id\` (the holder DID)
+- **vcId** (required): Credential identifier (max 64 characters)
+- **vcData** (required): Credential data payload (JSON string, max 10,000 characters). Must include \`@context\` with at least \`"https://www.w3.org/ns/credentials/v2"\`, and \`credentialSubject.id\` (the holder DID). The API encrypts \`vcData\` (AES-256-GCM) before it is stored on-chain
 - **issuer** (required): Issuer address (G...)
 - **issuerDid** (required): Registered, resolvable \`did:stellar\` whose on-chain controller equals \`issuer\`
 - **userSalt** (optional): 32-byte salt selecting the owner's vault; defaults to 32 zero bytes

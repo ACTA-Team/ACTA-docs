@@ -7,7 +7,7 @@ export const contractErrors: DocPage = {
   tocItems: [
     "En un minuto",
     "Cuándo los ves",
-    "Comisión de emisión (USDC)",
+    "Comisión de emisión (USDC / XLM)",
     "Bóveda (vc-vault)",
     "Factory (vc-vault-factory)",
     "Registro did:stellar",
@@ -22,7 +22,7 @@ Si algo falla dentro de un contrato Soroban, Stellar muestra **\`Error(Contract,
 ## En un minuto
 
 - **Factory (vc-vault-factory)** - Uno por red. Despliega contratos \`vc-vault\` single-tenant de forma determinista a partir de un WASM plantilla de bóveda, y entrega la cotización de comisión on-chain (\`quote_fee\`).
-- **Bóveda (vc-vault)** - Una por owner, desplegada por el factory. Guarda las credenciales de ese owner. La emisión es **abierta por defecto** (deny-by-exception): el owner bloquea/desbloquea emisores. La comisión de emisión se cobra on-chain en USDC, la paga el emisor. Las bóvedas son **inmutables** (la plantilla queda fija al desplegar).
+- **Bóveda (vc-vault)** - Una por owner, desplegada por el factory. Guarda las credenciales de ese owner. La emisión es **abierta por defecto** (deny-by-exception): el owner bloquea/desbloquea emisores. La comisión de emisión se cobra on-chain (USDC en mainnet, XLM en testnet), la paga el emisor. Las bóvedas son **inmutables** (la plantilla queda fija al desplegar).
 - **Registro did:stellar** - Otro contrato para los metadatos del DID del emisor; tiene sus propios códigos de error.
 - **Token USDC** - La emisión cobra una comisión que transfiere el contrato del token USDC. Sus errores son de trustline y saldo, no de la bóveda (ver abajo).
 - **Errores de la API** - Algunos fallos (como un controlador de DID que no coincide) los devuelve la API de ACTA antes de llegar a un contrato.
@@ -34,9 +34,9 @@ Si algo falla dentro de un contrato Soroban, Stellar muestra **\`Error(Contract,
 - **RPC / Horizon** - En simulación o envío fallido viene el código de error del contrato y un registro de eventos de diagnóstico.
 - **Respuestas de la API** - Los errores de la API llegan como error estructurado en la respuesta HTTP, antes o en lugar de un código Soroban.
 
-## Comisión de emisión (USDC)
+## Comisión de emisión (USDC / XLM)
 
-Emitir una credencial cobra una **comisión on-chain en USDC** (cotizada por \`quote_fee\` del factory, la paga el **emisor**). Esa transferencia ocurre dentro del **contrato del token USDC**, así que cuando falla el error viene del token, no de la bóveda. Es el fallo de emisión más común en producción (mainnet).
+Emitir una credencial cobra una **comisión on-chain** (cotizada por \`quote_fee\` del factory, la paga el **emisor**): en **mainnet** el token de comisión es **USDC** (1 USDC por credencial); en **testnet** es **XLM nativo** (5 XLM por credencial), así que ahí no hay trustline de por medio. La transferencia ocurre dentro del contrato del token de comisión, así que cuando falla el error viene del token, no de la bóveda. Es el fallo de emisión más común en producción (mainnet).
 
 | Lo que ves | Qué pasó y qué probar |
 |-------|----------------------|
@@ -66,12 +66,13 @@ Estos códigos son **solo** de \`vc-vault\`, bajo el modelo **deny-by-exception*
 | **#17** · BatchTooLarge | Una emisión por lote supera \`MAX_BATCH_SIZE\`. **Prueba:** dividir en lotes más pequeños. |
 | **#18** · BatchEmpty | Se llamó a la emisión por lote con una lista vacía. **Prueba:** incluir al menos una credencial. |
 | **#19** · InputTooLong | Un campo (vc_id, vc_data, did_uri, issuer_did o fecha) supera su largo máximo. **Prueba:** acortar el campo. |
+| **#20** · IssuerListTooLong | La **lista de emisores bloqueados** de la bóveda llegó a su máximo (1,000 entradas). **Prueba:** desbloquear emisores que ya no necesites bloquear antes de bloquear nuevos. |
 | **#23** · FeeOutOfBounds | El total de comisión del lote (comisión por credencial x tamaño del lote) desbordó \`i128\`. **Prueba:** reducir el tamaño del lote. |
 | **#24** · SourceNotAVault | El origen de un push no es una bóveda desplegada por el factory. **Prueba:** hacer push solo entre bóvedas del factory. |
 | **#25** · IssuerDenied | El emisor está en la **lista de bloqueados** de esta bóveda, así que la emisión se rechaza. **Prueba:** el owner puede desbloquearlo con \`allow_issuer\`, o usa otro emisor (permitido). |
 | **#26** · PushOwnerMismatch | La bóveda origen de un \`receive_push\` tiene un owner distinto al de esta bóveda. **Prueba:** hacer push solo entre bóvedas del mismo owner. |
 
-> Los códigos **#2** (IssuerNotAuthorized), **#3** (IssuerAlreadyAuthorized) y **#20** (IssuerListTooLong) están retirados del antiguo modelo de whitelist y ya no se lanzan, pero se conservan por estabilidad de ABI.
+> Los códigos **#2** (IssuerNotAuthorized) y **#3** (IssuerAlreadyAuthorized) están retirados del antiguo modelo de whitelist y ya no se lanzan, pero se conservan por estabilidad de ABI.
 
 ## Factory (vc-vault-factory)
 
@@ -123,7 +124,7 @@ Algunos fallos nunca llegan a un contrato: la API de ACTA los rechaza antes y de
 
 | Code | Significado y qué probar |
 |------|--------------------------|
-| **\`issuerDid_required\`** | No se entregó un DID de emisor. **Prueba:** registrar tu \`did:stellar\` (Dashboard -> Mi DID) y pasarlo. |
+| **\`issuerDid_required\`** | No se entregó un DID de emisor. **Prueba:** registrar tu \`did:stellar\` (la dApp te guía en el proceso, y el SDK puede auto-registrarlo) y pasarlo. |
 | **\`issuerDid_invalid\`** | El valor no es un \`did:stellar\` bien formado. **Prueba:** usar la forma \`did:stellar:{red}:{id}\`. |
 | **\`issuerDid_unresolvable\`** | El DID no resuelve en el registro de esta red (no registrado, o registrado en otra). **Prueba:** registrar el DID en esta red antes de emitir. |
 | **\`issuerDid_controller_mismatch\`** | El controlador on-chain del DID no es el emisor que firma. **Prueba:** firmar con la wallet que controla el DID. |

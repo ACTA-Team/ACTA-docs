@@ -16,6 +16,7 @@ export const overview: DocPage = {
     "Configuración de red",
     "Manejo de errores",
     "Límites de tasa",
+    "Idempotencia",
     "Pruébalo en Swagger",
   ],
   content: `
@@ -53,6 +54,14 @@ Las rutas de **contrato** (\`/contracts/*\` - bóveda lectura/escritura, bóveda
 \`\`\`
 X-ACTA-Key: tu_api_key_aqui
 \`\`\`
+
+\`X-ACTA-Key\` es el header canónico; también se aceptan \`x-api-key\` y \`Authorization: Bearer <key>\`. Las API keys son cadenas hex de 64 caracteres (sin prefijo).
+
+Las **rutas públicas** no necesitan API key: \`GET /health\`, \`GET /config\`, \`POST /public/api-keys\` (con límite de tasa por IP) y \`GET /share/:id\` (protegido por firma).
+
+**Enforcement de propiedad:** los endpoints que exponen o escriben datos de credenciales de un holder (\`/contracts/vc/issue\`, \`/contracts/vc/batch-issue\`, \`/contracts/vault/list-vc-ids\`, \`/contracts/vault/get-vc\`, \`/contracts/vault/push\`) requieren además que el \`owner\` (o \`fromOwner\`) de la solicitud coincida con el \`wallet_address\` vinculado a tu API key. Las keys con rol admin están exentas. \`verify-vc\` está intencionalmente abierto a cualquier key válida para que terceros puedan verificar credenciales.
+
+Las **rutas admin** (\`/admin/*\`, \`/contracts/admin/*\` y \`POST /contracts/sponsored-vault/create\`) requieren una API key con rol **admin**.
 
 ### Obtener una API Key
 
@@ -131,7 +140,7 @@ El modo submit devuelve el ID de la transacción:
 
 ## Comisiones
 
-Las comisiones de emisión se cobran **on-chain en la bóveda** mediante \`quote_fee\` del factory. La comisión la paga el **emisor** al momento de emitir (mainnet: 1 USDC por credencial). La API **ya no acepta un override de comisión** en ningún cuerpo de solicitud. No hay niveles de comisión por rol: hay una única comisión estándar más una comisión personalizada opcional por emisor, ambas resueltas on-chain.
+Las comisiones de emisión se cobran **on-chain en la bóveda** mediante \`quote_fee\` del factory. La comisión la paga el **emisor** al momento de emitir (mainnet: 1 USDC por credencial; testnet: 5 XLM por credencial). La API **ya no acepta un override de comisión** en ningún cuerpo de solicitud. No hay niveles de comisión por rol: hay una única comisión estándar más una comisión personalizada opcional por emisor, ambas resueltas on-chain.
 
 ## Requisito de DID del emisor
 
@@ -143,7 +152,7 @@ El **holder** de la credencial se expresa dentro de \`vcData\` como \`credential
 
 ### GET /config
 
-Devuelve la configuración pública de la red. Requiere API key (\`X-ACTA-Key\`).
+Devuelve la configuración pública de la red. **No requiere API key** y no tiene límite de tasa: es el endpoint público de bootstrap que los SDKs llaman una vez por sesión.
 
 **Respuesta:**
 
@@ -182,12 +191,20 @@ Códigos HTTP comunes:
 
 ## Límites de tasa
 
-- Creación de API key pública: 5 solicitudes por minuto por IP
-- Endpoints autenticados: Pueden aplicar límites según el nivel de la API key
-- Headers de límite de tasa incluidos en respuestas:
-  - \`X-RateLimit-Limit\`: Máximo de solicitudes permitidas
-  - \`X-RateLimit-Remaining\`: Solicitudes restantes en la ventana
-  - \`X-RateLimit-Reset\`: Timestamp Unix cuando se reinicia el límite
+Los endpoints autenticados tienen límite de tasa **por API key** sobre una ventana deslizante de 60 segundos, con buckets separados de lectura y escritura que dependen del rol de la key:
+
+| Rol | Lecturas / min | Escrituras / min |
+|------|-------------|--------------|
+| standard | 60 | 20 |
+| early | 300 | 100 |
+| admin | 200 | 50 |
+
+- Creación de API key pública (\`POST /public/api-keys\`): 5 solicitudes por minuto por IP
+- Headers de respuesta: \`X-RateLimit-Limit\` / \`X-RateLimit-Remaining\` (lecturas), \`X-WriteRateLimit-*\` (escrituras) y \`Retry-After\` en \`429\` (\`rate_limit_exceeded\` / \`write_rate_limit_exceeded\`)
+
+## Idempotencia
+
+Las rutas de escritura de contratos aceptan un header opcional \`Idempotency-Key\` (hasta 200 caracteres). La primera respuesta para una key dada se guarda en caché durante 24 horas y se reproduce en los reintentos con el header \`Idempotency-Replayed: true\` - útil para reintentar submits de forma segura.
 
 ## Pruébalo en Swagger
 
@@ -197,6 +214,6 @@ Usa **[Swagger UI (testnet)](https://api.testnet.acta.build/docs)** para revisar
 2. Despliega una operación, revisa parámetros y ejemplos, y usa **Try it out** si está disponible
 3. En rutas que requieran API key, configura el header **\`X-ACTA-Key\`** (o **Authorize** en Swagger, si existe) tras crear una clave (ver **Obtener una API Key** arriba)
 
-> Testnet es ideal para experimentar. En mainnet, usa el Swagger u OpenAPI que corresponda al host de API de producción si tu despliegue lo expone.
+> Swagger UI está disponible **solo en testnet**: en instancias de mainnet todas las rutas \`/docs\` están deshabilitadas y devuelven 404. Usa testnet para explorar y las mismas rutas contra \`https://api.mainnet.acta.build\` en producción.
     `,
 };

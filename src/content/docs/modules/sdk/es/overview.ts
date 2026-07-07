@@ -12,7 +12,10 @@ export const overview: DocPage = {
     "Variables de entorno",
     "Acceso al cliente",
     "Resumen de hooks",
+    "Identidad del emisor (auto-onboarding)",
+    "Manejo de errores",
     "sponsoredVault",
+    "Métodos deprecados",
   ],
   content: `
 # SDK de credenciales - Resumen
@@ -36,8 +39,11 @@ La emisión es **abierta por defecto** (denegación por excepción): los propiet
 - **\`ActaConfig\`**: provider - \`baseURL\` obligatorio; \`apiKey\` opcional.
 - **\`useActaClient\`**: devuelve el \`ActaClient\` del contexto (hijo de \`ActaConfig\`).
 - **Hooks**: \`useVault\`, \`useCredential\`, \`useVaultRead\`.
-- **\`ActaClient\`**: \`sponsoredVaultCreate\` para el flujo público **create** de bóveda patrocinada (prepare/submit); ver **sponsoredVault**.
-- **URLs**: \`mainNet\`, \`testNet\`.
+- **\`ActaClient\`**: métodos directos del cliente, incluidos \`getHealth\`, \`getConfig\` (con caché de ~5 min, \`clearConfigCache()\` para reiniciarla), \`vaultSetDid\`, \`vaultSetNewOwner\`, \`vaultPush\` y \`sponsoredVaultCreate\` (ver **sponsoredVault**).
+- **Errores**: \`ActaApiError\` y \`normalizeError\` (ver **Manejo de errores**).
+- **Identidad**: \`getOrCreateIssuerIdentity\` / \`getIssuerIdentity\` en el cliente, más helpers de almacenamiento (\`IndexedDbIssuerIdentityStorage\`, \`InMemoryIssuerIdentityStorage\`, \`autoSelectStorage\`).
+- **URLs**: \`mainNet\`, \`testNet\` (constantes string de los dos hosts de la API; también se acepta cualquier string custom como \`baseURL\`, por ejemplo staging o localhost).
+- **Exports por subruta**: \`@acta-team/credentials/types\` y \`@acta-team/credentials/hooks\`. El paquete se publica en ESM y CJS con declaraciones TypeScript; \`ActaConfig\` es un componente cliente (\`"use client"\`), compatible con el App Router de Next.js.
 
 ## Provider (\`ActaConfig\`)
 
@@ -77,16 +83,31 @@ const config = await client.getConfig();
 
 ## Resumen de hooks
 
-- **\`useVault\`** - \`createVault\`, \`denyIssuer\`, \`allowIssuer\` (\`authorizeIssuer\` / \`revokeIssuer\` siguen disponibles como alias de compatibilidad).
+- **\`useVault\`** - \`createVault\`, \`denyIssuer\`, \`allowIssuer\` (más alias de compatibilidad: \`authorizeIssuer\` ≙ allow, \`revokeIssuer\` ≙ deny).
 - **\`useCredential\`** - \`issue\`, \`revoke\`.
 - **\`useVaultRead\`** - \`listVcIds\`, \`getVc\`, \`verifyVc\`.
 
-\`userSalt\` es un argumento opcional en las llamadas de create / read / issue; omítelo para usar la bóveda canónica del propietario.
+\`userSalt\` es un argumento opcional en las llamadas de escritura de bóveda y de emisión (\`createVault\`, \`denyIssuer\`, \`allowIssuer\`, \`issue\`, \`revoke\`); omítelo para usar la bóveda canónica del propietario. Los hooks de \`useVaultRead\` siempre apuntan a la bóveda canónica.
+
+## Identidad del emisor (auto-onboarding)
+
+El SDK es el dueño del onboarding del DID de emisor: cuando se llama a \`issue\` sin \`issuerDid\`, el cliente llama de forma transparente a \`getOrCreateIssuerIdentity({ controller, signTransaction })\` - genera una clave Ed25519, crea un \`did:stellar\`, lo registra on-chain (una firma de wallet, solo la primera vez) y persiste la identidad.
+
+- **Navegador**: las identidades persisten en IndexedDB, con la clave privada cifrada en reposo.
+- **Node / servidor**: el almacenamiento por defecto es **en memoria** - se crearía un DID nuevo en cada reinicio. Los integradores del lado servidor deben proveer un \`IssuerIdentityStorage\` persistente vía \`ActaClientIdentityOptions\`.
+
+## Manejo de errores
+
+Toda solicitud del cliente que falla se rechaza con un **\`ActaApiError\`** (\`status\`, \`code\`, \`requestId?\`, \`isTimeout\`, \`isNetworkError\`, \`details?\`). Las solicitudes expiran a los 30 segundos por defecto. Usa el export \`normalizeError(err)\` para convertir errores desconocidos en \`ActaApiError\`.
 
 ## sponsoredVault
 
-\`ActaClient.sponsoredVaultCreate\` prepara/envía el \`deploy_sponsored\` del factory cuando una cuenta **sponsor** paga o firma la creación de bóveda para un **owner**. Consulta **sponsoredVault** para firmas y payloads.
+\`ActaClient.sponsoredVaultCreate\` prepara/envía el \`deploy_sponsored\` del factory cuando una cuenta **sponsor** paga o firma la creación de bóveda para un **owner**. La ruta de la API requiere una **API key con rol admin**. Consulta **sponsoredVault** para firmas y payloads.
 
 El titular de la bóveda puede ser cuenta clásica (\`G...\`) o smart wallet (\`C...\`); cuando la firma la delega la infraestructura de ACTA, los campos de firmante/signing se comportan como en cada página del hook.
+
+## Métodos deprecados
+
+\`createCredential\`, \`getDefaults\`, \`prepareStoreTx\`, \`prepareListVcIdsTx\`, \`prepareGetVcTx\` y \`vaultStore\` son stubs deprecados que se eliminarán en **2.0.0**. Migra a \`vcIssue\`, \`getConfig\`, \`vaultListVcIdsDirect\` y \`vaultGetVcDirect\` (o a los hooks).
     `,
 };

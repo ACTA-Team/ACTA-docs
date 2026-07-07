@@ -16,6 +16,7 @@ export const overview: DocPage = {
     "Network Configuration",
     "Error Handling",
     "Rate Limiting",
+    "Idempotency",
     "Try it in Swagger",
   ],
   content: `
@@ -53,6 +54,14 @@ https://api.mainnet.acta.build
 \`\`\`
 X-ACTA-Key: your_api_key_here
 \`\`\`
+
+\`X-ACTA-Key\` is the canonical header; \`x-api-key\` and \`Authorization: Bearer <key>\` are also accepted. API keys are 64-character hex strings (no prefix).
+
+**Public routes** need no API key: \`GET /health\`, \`GET /config\`, \`POST /public/api-keys\` (rate limited per IP), and \`GET /share/:id\` (signature-gated).
+
+**Ownership enforcement:** endpoints that expose or write a holder's credential data (\`/contracts/vc/issue\`, \`/contracts/vc/batch-issue\`, \`/contracts/vault/list-vc-ids\`, \`/contracts/vault/get-vc\`, \`/contracts/vault/push\`) additionally require the \`owner\` (or \`fromOwner\`) in the request to match the \`wallet_address\` bound to your API key. Admin-role keys are exempt. \`verify-vc\` is intentionally open to any valid key so third parties can verify credentials.
+
+**Admin routes** (\`/admin/*\`, \`/contracts/admin/*\`, and \`POST /contracts/sponsored-vault/create\`) require an API key with the **admin** role.
 
 ### Getting an API Key
 
@@ -131,7 +140,7 @@ Submit mode returns the transaction ID:
 
 ## Fees
 
-Issuance fees are charged **on-chain by the vault** via the factory's \`quote_fee\`. The fee is paid by the **issuer** at issuance time (mainnet: 1 USDC per credential). The API **no longer accepts a fee override** in any request body. There are no role-based fee tiers: there is a single standard fee plus an optional per-issuer custom fee, both resolved on-chain.
+Issuance fees are charged **on-chain by the vault** via the factory's \`quote_fee\`. The fee is paid by the **issuer** at issuance time (mainnet: 1 USDC per credential; testnet: 5 XLM per credential). The API **no longer accepts a fee override** in any request body. There are no role-based fee tiers: there is a single standard fee plus an optional per-issuer custom fee, both resolved on-chain.
 
 ## Issuer DID requirement
 
@@ -143,7 +152,7 @@ The credential **holder** is expressed inside \`vcData\` as \`credentialSubject.
 
 ### GET /config
 
-Returns public network configuration. Requires an API key (\`X-ACTA-Key\`).
+Returns public network configuration. **No API key required** and no rate limit: it is the public bootstrap endpoint SDKs call once per session.
 
 **Response:**
 
@@ -182,12 +191,20 @@ Common HTTP status codes:
 
 ## Rate Limiting
 
-- Public API key creation: 5 requests per minute per IP
-- Authenticated endpoints: Rate limits may apply based on API key tier
-- Rate limit headers included in responses:
-  - \`X-RateLimit-Limit\`: Maximum requests allowed
-  - \`X-RateLimit-Remaining\`: Remaining requests in window
-  - \`X-RateLimit-Reset\`: Unix timestamp when limit resets
+Authenticated endpoints are rate limited **per API key** over a sliding 60-second window, with separate read and write buckets that depend on the key's role:
+
+| Role | Reads / min | Writes / min |
+|------|-------------|--------------|
+| standard | 60 | 20 |
+| early | 300 | 100 |
+| admin | 200 | 50 |
+
+- Public API key creation (\`POST /public/api-keys\`): 5 requests per minute per IP
+- Response headers: \`X-RateLimit-Limit\` / \`X-RateLimit-Remaining\` (reads), \`X-WriteRateLimit-*\` (writes), and \`Retry-After\` on \`429\` (\`rate_limit_exceeded\` / \`write_rate_limit_exceeded\`)
+
+## Idempotency
+
+Contract write routes accept an optional \`Idempotency-Key\` header (up to 200 chars). The first response for a given key is cached for 24 hours and replayed on retries with the header \`Idempotency-Replayed: true\` - useful for safely retrying submits.
 
 ## Try it in Swagger
 
@@ -197,6 +214,6 @@ Use **[Swagger UI (testnet)](https://api.testnet.acta.build/docs)** to browse th
 2. Expand an operation, review parameters and examples, then use **Try it out** where enabled
 3. For routes that require an API key, set the **\`X-ACTA-Key\`** header (or use Swagger’s **Authorize** control when available) after creating a key (see **Getting an API Key** above)
 
-> Testnet is ideal for experimentation. For mainnet, use the Swagger or OpenAPI entry point that matches your production API host when your deployment exposes one.
+> Swagger UI is available on **testnet only**: on mainnet instances all \`/docs\` routes are disabled and return 404. Use testnet for exploration and the same paths against \`https://api.mainnet.acta.build\` in production.
     `,
 };
