@@ -63,6 +63,10 @@ const translations: Record<Locale, Translations> = {
     poweredByClaude: "Powered by Claude AI",
     toSearch: "to search",
     toClose: "to close",
+    aiSuggestionsLabel: "Try asking",
+    aiExample1: "How do I issue a credential?",
+    aiExample2: "What is a vault and how do I create one?",
+    aiExample3: "How do I get an API key?",
     // FAQ
     faq: "FAQ",
     faqDescription:
@@ -168,6 +172,10 @@ const translations: Record<Locale, Translations> = {
     poweredByClaude: "Con tecnología de Claude AI",
     toSearch: "para buscar",
     toClose: "para cerrar",
+    aiSuggestionsLabel: "Prueba preguntar",
+    aiExample1: "¿Cómo emito una credencial?",
+    aiExample2: "¿Qué es una bóveda y cómo la creo?",
+    aiExample3: "¿Cómo obtengo una API key?",
     // FAQ
     faq: "Preguntas Frecuentes",
     faqDescription:

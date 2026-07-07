@@ -28,8 +28,9 @@ export function useAISearch({ onNavigate, onClose }: UseAISearchProps) {
     return () => window.removeEventListener("keydown", handleEsc);
   }, [onClose]);
 
-  const handleSearch = async () => {
-    if (!query.trim()) return;
+  const handleSearch = async (overrideQuery?: string) => {
+    const effectiveQuery = overrideQuery ?? query;
+    if (!effectiveQuery.trim()) return;
 
     setIsLoading(true);
     setResponse(null);
@@ -39,7 +40,7 @@ export function useAISearch({ onNavigate, onClose }: UseAISearchProps) {
       const res = await fetch("/api/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({ query: effectiveQuery }),
       });
 
       if (!res.ok) throw new Error("Search failed");

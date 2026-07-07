@@ -66,6 +66,10 @@ export interface Translations {
   poweredByClaude: string;
   toSearch: string;
   toClose: string;
+  aiSuggestionsLabel: string;
+  aiExample1: string;
+  aiExample2: string;
+  aiExample3: string;
 
   // FAQ
   faq: string;
