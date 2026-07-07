@@ -22,19 +22,31 @@ interface FooterProps {
 export function Footer({ onNavigate }: FooterProps) {
   const { t } = useI18n();
 
-  const navItems: FooterNavItem[] = [
-    { kind: "internal", slug: "introduction", label: t.introduction },
-    { kind: "internal", slug: "getting-started", label: t.gettingStarted },
-    { kind: "internal", slug: "sdk-overview", label: t.reactSdk },
-    { kind: "internal", slug: "api-overview", label: t.apiReference },
-    { kind: "internal", slug: "faq", label: t.faq },
-    { kind: "internal", slug: "support", label: t.support },
+  const columns: Array<{ heading: string; items: FooterNavItem[] }> = [
     {
-      kind: "external",
-      href: "https://acta.build",
-      label: t.website,
+      heading: t.documentation,
+      items: [
+        { kind: "internal", slug: "introduction", label: t.introduction },
+        { kind: "internal", slug: "getting-started", label: t.gettingStarted },
+        { kind: "internal", slug: "sdk-overview", label: t.reactSdk },
+        { kind: "internal", slug: "api-overview", label: t.apiReference },
+      ],
     },
-    { kind: "external", href: GITHUB_ORG_URL, label: t.footerGithub },
+    {
+      heading: t.supportTitle,
+      items: [
+        { kind: "internal", slug: "faq", label: t.faq },
+        { kind: "internal", slug: "support", label: t.support },
+      ],
+    },
+    {
+      heading: t.community,
+      items: [
+        { kind: "external", href: "https://acta.build", label: t.website },
+        { kind: "external", href: GITHUB_ORG_URL, label: t.footerGithub },
+        { kind: "external", href: DISCORD_INVITE_URL, label: t.discord },
+      ],
+    },
   ];
 
   const socialLinks = [
@@ -50,46 +62,72 @@ export function Footer({ onNavigate }: FooterProps) {
     },
   ] as const;
 
+  const renderItem = (item: FooterNavItem) => {
+    if (item.kind === "internal" && onNavigate) {
+      return (
+        <button
+          type="button"
+          className="transition-colors hover:text-foreground"
+          onClick={() => onNavigate(item.slug)}
+        >
+          {item.label}
+        </button>
+      );
+    }
+    if (item.kind === "internal") {
+      return <span>{item.label}</span>;
+    }
+    return (
+      <a
+        className="transition-colors hover:text-foreground"
+        href={item.href}
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        {item.label}
+      </a>
+    );
+  };
+
   return (
-    <footer className="shrink-0 border-t border-border/50 bg-background/80 px-4 backdrop-blur-sm md:px-6">
-      <div className="mx-auto max-w-5xl *:px-0">
-        <div className="flex flex-col gap-6 py-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2">
-              {onNavigate ? (
-                <button
-                  type="button"
-                  onClick={() => onNavigate("introduction")}
-                  className="flex items-center gap-2 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  aria-label={`ACTA — ${t.introduction}`}
-                >
-                  <Image
-                    src="/acta-logo.png"
-                    alt=""
-                    width={28}
-                    height={28}
-                    className="size-7 shrink-0 rounded-md"
-                  />
-                  <span className="text-sm font-semibold tracking-tight text-foreground">
-                    ACTA
-                  </span>
-                </button>
-              ) : (
-                <span className="flex items-center gap-2">
-                  <Image
-                    src="/acta-logo.png"
-                    alt="ACTA"
-                    width={28}
-                    height={28}
-                    className="size-7 shrink-0 rounded-md"
-                  />
-                  <span className="text-sm font-semibold tracking-tight text-foreground">
-                    ACTA
-                  </span>
+    <footer className="shrink-0 border-t border-border/50 bg-background/80 backdrop-blur-sm">
+      <div className="mx-auto w-full max-w-6xl px-5 md:px-10 lg:px-14">
+        <div className="grid gap-10 py-10 md:grid-cols-[1.5fr_1fr_1fr_1fr] md:gap-8">
+          {/* Brand */}
+          <div className="flex flex-col items-start gap-4">
+            {onNavigate ? (
+              <button
+                type="button"
+                onClick={() => onNavigate("introduction")}
+                className="flex items-center gap-2 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                aria-label={`ACTA — ${t.introduction}`}
+              >
+                <Image
+                  src="/acta-logo.png"
+                  alt=""
+                  width={28}
+                  height={28}
+                  className="size-7 shrink-0 rounded-md"
+                />
+                <span className="text-sm font-semibold tracking-wide text-foreground">
+                  ACTA
                 </span>
-              )}
-            </div>
-            <div className="flex items-center gap-0.5 sm:justify-end">
+              </button>
+            ) : (
+              <span className="flex items-center gap-2">
+                <Image
+                  src="/acta-logo.png"
+                  alt="ACTA"
+                  width={28}
+                  height={28}
+                  className="size-7 shrink-0 rounded-md"
+                />
+                <span className="text-sm font-semibold tracking-wide text-foreground">
+                  ACTA
+                </span>
+              </span>
+            )}
+            <div className="flex items-center gap-0.5">
               {socialLinks.map(({ href, label, icon }) => (
                 <Button asChild key={href} size="icon-sm" variant="ghost">
                   <a
@@ -105,37 +143,24 @@ export function Footer({ onNavigate }: FooterProps) {
             </div>
           </div>
 
-          <nav aria-label={t.documentation}>
-            <ul className="flex flex-wrap gap-4 font-medium text-muted-foreground text-sm md:gap-6">
-              {navItems.map(item => (
-                <li key={item.kind === "internal" ? item.slug : item.href}>
-                  {item.kind === "internal" && onNavigate ? (
-                    <button
-                      type="button"
-                      className="hover:text-foreground"
-                      onClick={() => onNavigate(item.slug)}
-                    >
-                      {item.label}
-                    </button>
-                  ) : item.kind === "internal" ? (
-                    <span className="text-muted-foreground">{item.label}</span>
-                  ) : (
-                    <a
-                      className="hover:text-foreground"
-                      href={item.href}
-                      rel="noopener noreferrer"
-                      target="_blank"
-                    >
-                      {item.label}
-                    </a>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </nav>
+          {/* Link columns */}
+          {columns.map(column => (
+            <nav key={column.heading} aria-label={column.heading}>
+              <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+                {column.heading}
+              </p>
+              <ul className="flex flex-col gap-2.5 text-sm text-muted-foreground">
+                {column.items.map(item => (
+                  <li key={item.kind === "internal" ? item.slug : item.href}>
+                    {renderItem(item)}
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-border/50 py-4 text-muted-foreground text-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 border-t border-border/50 py-5 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>
             &copy; {new Date().getFullYear()} {t.poweredBy}
           </p>
