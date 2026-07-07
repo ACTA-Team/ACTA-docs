@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { X, Sparkles, ArrowRight, CornerDownLeft } from "lucide-react";
+import { X, Bot, ArrowRight, CornerDownLeft } from "lucide-react";
 import { useAISearch } from "../hooks/useAISearch";
 import { MarkdownContent } from "./MarkdownContent";
 
@@ -50,7 +50,7 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
         {/* Search Input */}
         <div className="relative flex items-center gap-3 border-b border-white/6 px-4 py-4">
           <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-            <Sparkles className="size-4 text-primary" />
+            <Bot className="size-4 text-primary" />
           </span>
           <input
             ref={inputRef}
@@ -75,7 +75,7 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
           {isLoading ? (
             <div className="flex flex-col items-center justify-center gap-3 py-16">
               <span className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
-                <Sparkles className="size-5 animate-pulse text-primary" />
+                <Bot className="size-5 animate-pulse text-primary" />
               </span>
               <span className="text-sm text-muted-foreground">
                 {t.searching}
@@ -116,7 +116,7 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
           ) : (
             <div className="flex flex-col items-center py-10 text-center">
               <span className="mb-4 flex size-12 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10">
-                <Sparkles className="size-5 text-primary" />
+                <Bot className="size-5 text-primary" />
               </span>
               <p className="mb-8 max-w-sm text-sm leading-relaxed text-muted-foreground">
                 {t.askAnything}
@@ -143,7 +143,7 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
         {/* Footer */}
         <div className="relative flex items-center justify-between border-t border-white/6 bg-white/2 px-4 py-2.5">
           <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground/80">
-            <Sparkles className="size-3 text-primary/70" />
+            <Bot className="size-3 text-primary/70" />
             {t.poweredByClaude}
           </span>
           <div className="flex items-center gap-2 text-[11px] text-muted-foreground/70">
