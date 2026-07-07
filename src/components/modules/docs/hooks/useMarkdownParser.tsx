@@ -238,13 +238,35 @@ export function useMarkdownParser(
           return result;
         };
 
+        // Flat bullet lists with several short items flow into two columns
+        // on md+ so they use the page width instead of one tall column.
+        // Length is measured on the visible text (links/bold/code stripped).
+        const visibleLength = (s: string) =>
+          s
+            .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+            .replace(/\*\*/g, "")
+            .replace(/`/g, "").length;
+        const isFlat = listItems.every(
+          item => item.indent === listItems[0].indent
+        );
+        const columnize =
+          !isCompact &&
+          listType === "ul" &&
+          isFlat &&
+          listItems.length >= 5 &&
+          listItems.every(item => visibleLength(item.content) <= 90);
+
         elements.push(
           <ListTag
             key={elements.length}
             className={
               isCompact
                 ? `${listType === "ul" ? "list-disc" : "list-decimal"} mb-4 ml-4 space-y-2 text-sm text-foreground/85 marker:text-muted-foreground/50`
-                : `${listType === "ul" ? "list-disc" : "list-decimal"} mb-8 ml-5 space-y-2.5 text-[15px] leading-relaxed text-muted-foreground marker:text-muted-foreground/70 md:text-base md:leading-7`
+                : `${listType === "ul" ? "list-disc" : "list-decimal"} mb-8 ml-5 text-[15px] leading-relaxed text-muted-foreground marker:text-muted-foreground/70 md:text-base md:leading-7 ${
+                    columnize
+                      ? "space-y-2.5 md:grid md:grid-cols-2 md:gap-x-14 md:gap-y-2.5 md:space-y-0"
+                      : "space-y-2.5"
+                  }`
             }
           >
             {renderNestedList(listItems)}

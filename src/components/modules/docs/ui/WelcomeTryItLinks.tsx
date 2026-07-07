@@ -9,10 +9,10 @@ const GITHUB_URL = "https://github.com/ACTA-Team";
 const DISCORD_URL = "https://discord.gg/DsUSE3aMDZ";
 
 const primaryBtn =
-  "inline-flex w-full max-w-md items-center justify-between gap-3 rounded-full bg-primary px-7 py-3.5 text-[15px] font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none sm:w-auto";
+  "inline-flex w-full items-center justify-between gap-3 rounded-2xl bg-primary px-6 py-4 text-[15px] font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none";
 
 const secondaryBtn =
-  "inline-flex w-full max-w-md items-center justify-between gap-3 rounded-full border border-border/80 bg-background px-7 py-3.5 text-[15px] font-medium text-foreground shadow-none transition-colors hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none sm:w-auto";
+  "inline-flex w-full items-center justify-between gap-3 rounded-2xl border border-border bg-card/60 px-6 py-4 text-[15px] font-medium text-foreground shadow-none transition-all duration-200 hover:border-primary/40 hover:bg-card focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none";
 
 function CtaLink({
   href,
@@ -30,7 +30,7 @@ function CtaLink({
       rel="noopener noreferrer"
       className={className}
     >
-      <span className="flex min-w-0 flex-1 flex-col items-center gap-0.5 text-center sm:items-start sm:text-left">
+      <span className="flex min-w-0 flex-1 flex-col items-start gap-0.5 text-left">
         {children}
       </span>
       <ExternalLink className="size-4 shrink-0 opacity-80" aria-hidden />
@@ -42,7 +42,7 @@ export function WelcomeTryItLinks() {
   const { t } = useI18n();
 
   return (
-    <div className="my-8 flex max-w-md flex-col gap-3">
+    <div className="my-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <CtaLink href={DAPP_URL} className={primaryBtn}>
         <span className="leading-tight">{t.welcomeTryItDapp}</span>
         <span className="text-[13px] font-normal opacity-90">
