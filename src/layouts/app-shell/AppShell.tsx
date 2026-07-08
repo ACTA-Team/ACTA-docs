@@ -16,9 +16,29 @@ import { AppHeader } from "./AppHeader";
 export function AppShell() {
   const [currentSlug, setCurrentSlug] = useState("introduction");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const { locale } = useI18n();
+  const { t, locale } = useI18n();
   const docsData = locale === "es" ? docsDataEs : docsDataEn;
   const currentPage = docsData[currentSlug];
+
+  // Dynamic browser-tab title: follows the current page (and locale), and
+  // swaps to a friendly message while the tab is in the background.
+  useEffect(() => {
+    const pageTitle =
+      currentSlug === "faq"
+        ? t.faq
+        : currentSlug === "support"
+          ? t.support
+          : currentPage?.title;
+    const title = pageTitle ? `${pageTitle} · ACTA Docs` : "ACTA Docs";
+
+    const applyTitle = () => {
+      document.title = document.hidden ? t.tabAwayTitle : title;
+    };
+
+    applyTitle();
+    document.addEventListener("visibilitychange", applyTitle);
+    return () => document.removeEventListener("visibilitychange", applyTitle);
+  }, [currentSlug, currentPage, t]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

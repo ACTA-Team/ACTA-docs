@@ -9,6 +9,7 @@ export interface Translations {
   /** Sidebar / breadcrumb label for the AI category (IA / AI). */
   aiCategory: string;
   didCategory: string;
+  tabAwayTitle: string;
   dApp: string;
   introduction: string;
   architecture: string;
