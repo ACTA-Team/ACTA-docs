@@ -3,8 +3,10 @@ import type { NavigationItems } from "@/@types/docs";
 export const navigation: NavigationItems = {
   welcome: [
     { slug: "introduction", title: "Introduction" },
+    { slug: "quickstart", title: "Quickstart" },
     { slug: "architecture", title: "Architecture" },
     { slug: "getting-started", title: "Getting Started" },
+    { slug: "security", title: "Security & Data Model" },
     {
       slug: "links",
       title: "Links",
@@ -27,6 +29,7 @@ export const navigation: NavigationItems = {
     { slug: "api-vault-write", title: "Vault Operations (Write)" },
     { slug: "api-sponsored-vault", title: "Sponsored Vault" },
     { slug: "api-credentials", title: "Credential Operations" },
+    { slug: "api-errors", title: "Errors" },
   ],
   contracts: [{ slug: "contract-errors", title: "Contract errors" }],
   did: [

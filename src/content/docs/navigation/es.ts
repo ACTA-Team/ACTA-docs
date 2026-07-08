@@ -3,8 +3,10 @@ import type { NavigationItems } from "@/@types/docs";
 export const navigation: NavigationItems = {
   welcome: [
     { slug: "introduction", title: "Introducción" },
+    { slug: "quickstart", title: "Quickstart" },
     { slug: "architecture", title: "Arquitectura" },
     { slug: "getting-started", title: "Primeros Pasos" },
+    { slug: "security", title: "Seguridad y Modelo de Datos" },
     {
       slug: "links",
       title: "Enlaces",
@@ -27,6 +29,7 @@ export const navigation: NavigationItems = {
     { slug: "api-vault-write", title: "Operaciones de Bóveda (Escritura)" },
     { slug: "api-sponsored-vault", title: "Bóveda patrocinada" },
     { slug: "api-credentials", title: "Operaciones de Credenciales" },
+    { slug: "api-errors", title: "Errores" },
   ],
   contracts: [{ slug: "contract-errors", title: "Errores de contrato" }],
   did: [

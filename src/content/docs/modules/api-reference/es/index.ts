@@ -7,6 +7,7 @@ import { vaultRead } from "./vault-read";
 import { vaultWrite } from "./vault-write";
 import { sponsoredVault } from "./sponsored-vault";
 import { credentials } from "./credentials";
+import { errors } from "./errors";
 
 export const pages: Record<string, DocPage> = {
   "api-overview": overview,
@@ -17,4 +18,5 @@ export const pages: Record<string, DocPage> = {
   "api-vault-write": vaultWrite,
   "api-sponsored-vault": sponsoredVault,
   "api-credentials": credentials,
+  "api-errors": errors,
 };
