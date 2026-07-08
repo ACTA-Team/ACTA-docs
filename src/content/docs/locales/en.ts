@@ -3,6 +3,7 @@ import { pages as welcomePages } from "../modules/welcome/en";
 import { pages as sdkPages } from "../modules/sdk/en";
 import { pages as apiReferencePages } from "../modules/api-reference/en";
 import { pages as contractsPages } from "../modules/contracts/en";
+import { pages as didPages } from "../modules/did/en";
 import { pages as mcpPages } from "../modules/mcp/en";
 import { pages as dappPages } from "../modules/dapp/en";
 
@@ -11,6 +12,7 @@ export const docsData: Record<string, DocPage> = {
   ...sdkPages,
   ...apiReferencePages,
   ...contractsPages,
+  ...didPages,
   ...mcpPages,
   ...dappPages,
 };

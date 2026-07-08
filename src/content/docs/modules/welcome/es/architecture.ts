@@ -73,7 +73,7 @@ did:stellar:{network}:{address}
 - **DID del emisor**: El emisor debe tener un \`did:stellar\` registrado en un registro did:stellar. Ya no se usa una clave de wallet simple ni \`did:pkh\` como DID del emisor.
 - **Sujeto / titular**: El titular de la credencial se identifica con un DID, expresado como \`credentialSubject.id\` dentro de la credencial.
 
-> **Nota**: v0.4.0 usa \`did:stellar\` para la identidad del emisor, resuelto a través del registro did:stellar on-chain.
+> **Nota**: v0.4.0 usa \`did:stellar\` para la identidad del emisor, resuelto a través del registro did:stellar on-chain. La documentación completa del método (sintaxis, registro, resolver, librería) vive en la **[sección DID](doc:did-overview)**.
 
 ## Direcciones de contratos
 

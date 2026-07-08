@@ -73,7 +73,7 @@ did:stellar:{network}:{address}
 - **Issuer DID**: The issuer must have a \`did:stellar\` registered in a did:stellar registry. A bare wallet key or \`did:pkh\` is no longer used as the issuer DID.
 - **Subject / holder**: The credential holder is identified by a DID, expressed as \`credentialSubject.id\` inside the credential.
 
-> **Note**: v0.4.0 uses \`did:stellar\` for issuer identity, resolved through the on-chain did:stellar registry.
+> **Note**: v0.4.0 uses \`did:stellar\` for issuer identity, resolved through the on-chain did:stellar registry. The full method documentation (syntax, registry, resolver, library) lives in the **[DID section](doc:did-overview)**.
 
 ## Contract Addresses
 

@@ -8,6 +8,7 @@ import {
   BookMarked,
   BookOpen,
   Boxes,
+  Braces,
   Cable,
   CirclePlay,
   Compass,
@@ -19,6 +20,7 @@ import {
   HandCoins,
   HeartPulse,
   Home,
+  IdCard,
   Info,
   KeyRound,
   LayoutDashboard,
@@ -28,6 +30,7 @@ import {
   Network,
   Package,
   ScrollText,
+  Server,
   ShieldAlert,
   Sparkles,
   Vault,
@@ -56,6 +59,7 @@ type SectionKey =
   | "sdk"
   | "api-reference"
   | "contracts"
+  | "did"
   | "ia"
   | "dapp";
 
@@ -80,6 +84,9 @@ const NAV_SUB_ITEM_ICONS: Partial<Record<string, LucideIcon>> = {
   "api-sponsored-vault": Banknote,
   "api-credentials": Fingerprint,
   "contract-errors": ShieldAlert,
+  "did-overview": IdCard,
+  "did-registry": Server,
+  "did-library": Braces,
   mcp: Cable,
   "dapp-overview": LayoutDashboard,
   "dapp-getting-started": CirclePlay,
@@ -97,6 +104,7 @@ const sectionIcons: Record<SectionKey, ReactNode> = {
   sdk: <Package className="size-3.5 shrink-0" />,
   "api-reference": <Network className="size-3.5 shrink-0" />,
   contracts: <ScrollText className="size-3.5 shrink-0" />,
+  did: <IdCard className="size-3.5 shrink-0" />,
   ia: <Sparkles className="size-3.5 shrink-0" />,
   dapp: <AppWindow className="size-3.5 shrink-0" />,
 };
@@ -106,6 +114,7 @@ const SECTION_ORDER: SectionKey[] = [
   "sdk",
   "api-reference",
   "contracts",
+  "did",
   "ia",
   "dapp",
 ];
@@ -113,7 +122,15 @@ const SECTION_ORDER: SectionKey[] = [
 const GROUP_DEFS: Array<{ key: string; sections: SectionKey[] }> = [
   {
     key: "docs",
-    sections: ["welcome", "sdk", "api-reference", "contracts", "ia", "dapp"],
+    sections: [
+      "welcome",
+      "sdk",
+      "api-reference",
+      "contracts",
+      "did",
+      "ia",
+      "dapp",
+    ],
   },
 ];
 
@@ -127,6 +144,8 @@ function getSectionLabel(key: SectionKey, t: Translations): string {
       return t.apiReference;
     case "contracts":
       return t.contracts;
+    case "did":
+      return t.didCategory;
     case "ia":
       return t.aiCategory;
     case "dapp":

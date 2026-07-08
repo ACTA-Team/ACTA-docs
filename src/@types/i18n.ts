@@ -8,6 +8,7 @@ export interface Translations {
   contracts: string;
   /** Sidebar / breadcrumb label for the AI category (IA / AI). */
   aiCategory: string;
+  didCategory: string;
   dApp: string;
   introduction: string;
   architecture: string;

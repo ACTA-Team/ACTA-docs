@@ -29,6 +29,11 @@ export const navigation: NavigationItems = {
     { slug: "api-credentials", title: "Credential Operations" },
   ],
   contracts: [{ slug: "contract-errors", title: "Contract errors" }],
+  did: [
+    { slug: "did-overview", title: "Overview" },
+    { slug: "did-registry", title: "Registry & Resolver" },
+    { slug: "did-library", title: "TypeScript Library" },
+  ],
   ia: [{ slug: "mcp", title: "MCP" }],
   dapp: [
     { slug: "dapp-overview", title: "Overview" },

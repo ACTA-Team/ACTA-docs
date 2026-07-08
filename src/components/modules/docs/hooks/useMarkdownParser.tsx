@@ -16,6 +16,7 @@ const topicToSlug: Record<string, string> = {
   "Credentials SDK": "sdk-overview",
   "React SDK": "sdk-overview",
   "API Reference": "api-overview",
+  "did:stellar": "did-overview",
   Arquitectura: "architecture",
   "Primeros Pasos": "getting-started",
   "SDK de credenciales": "sdk-overview",
