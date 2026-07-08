@@ -72,7 +72,7 @@ Para comenzar a usar el dApp de ACTA:
 4. **Crea tu bóveda** - Inicializa tu bóveda de credenciales dedicada de un solo inquilino
 5. **Comienza a emitir** - Crea y gestiona credenciales (el emisor paga una tarifa on-chain por credencial)
 
-Consulta la [Guía de Primeros Pasos](#dapp-getting-started) para instrucciones detalladas.
+Consulta la [Guía de Primeros Pasos](doc:dapp-getting-started) para instrucciones detalladas.
 
 ## Acceder al dApp
 

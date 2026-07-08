@@ -72,7 +72,7 @@ To start using the ACTA dApp:
 4. **Create your vault** - Initialize your dedicated single-tenant credential vault
 5. **Start issuing** - Create and manage credentials (the issuer pays an on-chain fee per credential)
 
-See the [Getting Started Guide](#dapp-getting-started) for detailed instructions.
+See the [Getting Started Guide](doc:dapp-getting-started) for detailed instructions.
 
 ## Access the dApp
 

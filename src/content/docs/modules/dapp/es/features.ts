@@ -118,7 +118,7 @@ Usa tu API key en solicitudes a la API:
 X-ACTA-Key: tu_api_key_aqui
 \`\`\`
 
-Consulta la [Referencia API](#api-overview) para todos los endpoints disponibles.
+Consulta la [Referencia API](doc:api-overview) para todos los endpoints disponibles.
 
 ## Notificaciones
 

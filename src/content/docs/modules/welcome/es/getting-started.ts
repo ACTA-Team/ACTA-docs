@@ -46,7 +46,7 @@ Consulta **[Resumen del SDK de credenciales](doc:sdk-overview)** y las páginas 
 
 Conecta wallets de Stellar para autenticación de usuarios y firma de transacciones:
 
-1. **UI de wallet**: integra un adaptador Stellar; la documentación oficial cubre **[Wallet Kit](https://developers.stellar.org/docs/tools/developer-tools/wallet-kit)** y herramientas relacionadas.  
+1. **UI de wallet**: integra un adaptador Stellar; **[Stellar Wallets Kit](https://stellarwalletskit.dev)** cubre Freighter, Albedo, WalletConnect y más.
 2. **Conectar wallet**: el usuario conecta Freighter u otra wallet compatible.  
 3. **Firmar transacciones**: usa los endpoints de preparación de ACTA en **[Operaciones de Bóveda (Escritura)](doc:api-vault-write)** y **[Operaciones de Credenciales](doc:api-credentials)**; tu callback \`signTransaction\` firma el XDR sin firmar que devuelve la API.
 
@@ -54,7 +54,7 @@ Conecta wallets de Stellar para autenticación de usuarios y firma de transaccio
 
 Antes de desplegar a mainnet:
 
-1. **Obtener XLM de testnet**: usa **[Friendbot en Stellar Lab](https://lab.stellar.org/friendbot)** o los recursos de **[testnet](https://developers.stellar.org/docs/fundamentals-and-concepts/testnet-and-pubnet)** de Stellar.  
+1. **Obtener XLM de testnet**: usa **[Stellar Lab (fondear cuenta)](https://lab.stellar.org/account/fund)** o los recursos de **[testnet](https://developers.stellar.org/docs/learn/fundamentals/networks)** de Stellar.
 2. **Probar operaciones**: emite, almacena y verifica credenciales de prueba contra testnet (ver **[Resumen de API](doc:api-overview)**).  
 3. **Verificar contratos**: los IDs de testnet vienen preconfigurados con la URL base de testnet de la API.
 

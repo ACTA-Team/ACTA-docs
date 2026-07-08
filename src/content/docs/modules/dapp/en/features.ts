@@ -118,7 +118,7 @@ Use your API key in API requests:
 X-ACTA-Key: your_api_key_here
 \`\`\`
 
-See the [API Reference](#api-overview) for all available endpoints.
+See the [API Reference](doc:api-overview) for all available endpoints.
 
 ## Notifications
 

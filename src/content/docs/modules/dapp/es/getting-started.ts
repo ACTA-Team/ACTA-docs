@@ -92,6 +92,6 @@ Después de completar la configuración inicial:
 - **Notificaciones** - Atento al ícono de campana para eventos como nuevas credenciales recibidas
 - **Explorar Configuración** - Cambia de red o de idioma (inglés, español, francés)
 
-Para más información sobre funcionalidades específicas, consulta la guía de [Funcionalidades del dApp](#dapp-features).
+Para más información sobre funcionalidades específicas, consulta la guía de [Funcionalidades del dApp](doc:dapp-features).
     `,
 };

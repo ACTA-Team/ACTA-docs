@@ -46,7 +46,7 @@ See **[Credentials SDK Overview](doc:sdk-overview)** and the hook pages for deta
 
 Connect Stellar wallets for user authentication and transaction signing:
 
-1. **Wallet UI**: Integrate a Stellar wallet adapter - the Stellar docs cover **[Wallet Kit](https://developers.stellar.org/docs/tools/developer-tools/wallet-kit)** and related tooling.
+1. **Wallet UI**: Integrate a Stellar wallet adapter - **[Stellar Wallets Kit](https://stellarwalletskit.dev)** covers Freighter, Albedo, WalletConnect, and more.
 2. **Connect wallet**: User connects Freighter or another supported Stellar wallet.
 3. **Sign transactions**: Use ACTA’s transaction preparation endpoints from **[Vault Operations (Write)](doc:api-vault-write)** and **[Credential Operations](doc:api-credentials)**; your \`signTransaction\` callback signs the unsigned XDR the API returns.
 
@@ -54,7 +54,7 @@ Connect Stellar wallets for user authentication and transaction signing:
 
 Before deploying to mainnet:
 
-1. **Get testnet XLM**: Use **[Stellar Lab Friendbot](https://lab.stellar.org/friendbot)** or the **[testnet account](https://developers.stellar.org/docs/fundamentals-and-concepts/testnet-and-pubnet)** resources from Stellar.
+1. **Get testnet XLM**: Use **[Stellar Lab (fund account)](https://lab.stellar.org/account/fund)** or the **[testnet](https://developers.stellar.org/docs/learn/fundamentals/networks)** resources from Stellar.
 2. **Test operations**: Issue, store, and verify test credentials against testnet (see **[API Overview](doc:api-overview)**).
 3. **Verify contracts**: Testnet contract IDs are pre-configured when you use the testnet API base URL.
 

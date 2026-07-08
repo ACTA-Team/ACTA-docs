@@ -145,14 +145,14 @@ export function Support({ onNavigate }: SupportProps) {
       icon: Bug,
       title: t.reportIssue,
       description: t.supportIssueLinkDescription,
-      href: "https://github.com/ACTA-Team/issues",
+      href: "https://github.com/ACTA-Team/ACTA-docs/issues",
       external: true,
     },
     {
       icon: Lightbulb,
       title: t.featureRequest,
       description: t.supportFeatureLinkDescription,
-      href: "https://github.com/ACTA-Team/discussions",
+      href: "https://github.com/ACTA-Team/ACTA-docs/issues/new",
       external: true,
     },
   ];

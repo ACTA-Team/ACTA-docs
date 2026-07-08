@@ -92,6 +92,6 @@ After completing the initial setup:
 - **Notifications** - Watch the bell icon for events like new credentials received
 - **Explore Settings** - Switch network or language (English, Spanish, French)
 
-For more information about specific features, see the [dApp Features](#dapp-features) guide.
+For more information about specific features, see the [dApp Features](doc:dapp-features) guide.
     `,
 };

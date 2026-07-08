@@ -70,23 +70,46 @@ export function useMarkdownParser(
           continue;
         }
 
-        // Check for bold link **[text](url)**
+        // Check for bold link **[text](url)** - also supports doc: links
         const boldLinkMatch = remaining.match(
           /^\*\*\[([^\]]+)\]\(([^)]+)\)\*\*/
         );
         if (boldLinkMatch) {
-          parts.push(
-            <strong key={key++} className="font-medium text-foreground">
-              <a
-                href={boldLinkMatch[2]}
-                className="text-primary underline decoration-primary/30 underline-offset-[3px] transition-colors hover:decoration-primary"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {boldLinkMatch[1]}
-              </a>
-            </strong>
-          );
+          const boldHref = boldLinkMatch[2];
+          const boldLabel = boldLinkMatch[1];
+          if (boldHref.startsWith("doc:")) {
+            const slug = boldHref.slice(4);
+            parts.push(
+              <strong key={key++} className="font-medium text-foreground">
+                {onNavigate ? (
+                  <button
+                    type="button"
+                    onClick={() => onNavigate(slug)}
+                    className="cursor-pointer border-0 bg-transparent p-0 font-inherit text-primary underline decoration-primary/30 underline-offset-[3px] transition-colors hover:decoration-primary"
+                  >
+                    {boldLabel}
+                  </button>
+                ) : (
+                  <span className="text-foreground underline decoration-border underline-offset-[3px]">
+                    {boldLabel}
+                  </span>
+                )}
+              </strong>
+            );
+          } else {
+            parts.push(
+              <strong key={key++} className="font-medium text-foreground">
+                <a
+                  href={boldHref}
+                  className="text-primary underline decoration-primary/30 underline-offset-[3px] transition-colors hover:decoration-primary"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {boldLabel}
+                </a>
+              </strong>
+            );
+          }
           remaining = remaining.slice(boldLinkMatch[0].length);
           continue;
         }
