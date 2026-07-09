@@ -224,7 +224,11 @@
       "slug": "sponsoredVault",
       "title": "sponsoredVault",
       "section": "Credentials SDK",
-      "tocItems": ["Client", "sponsoredVaultCreate", "Prepare and submit"],
+      "tocItems": [
+        "Client",
+        "sponsoredVaultCreate",
+        "Prepare and submit"
+      ],
       "content": "\n# sponsoredVault\n\n`ActaClient.sponsoredVaultCreate` wraps **`POST /contracts/sponsored-vault/create`** (prepare/submit for the factory's `deploy_sponsored`), accessed with `useActaClient()` inside `ActaConfig`.\n\nOn-chain, sponsorship is **open**: any sponsor may deploy a sponsored vault for an owner. The underlying contract call is the factory's `deploy_sponsored` (it replaces the old `create_sponsored_vault` vault method). Note that the HTTP route requires an **admin-role API key**, so configure `ActaConfig` / `ActaClient` with an admin key to use this method.\n\nSoroban semantics, authorization modes, and request JSON are documented under **API Reference → Sponsored Vault** (`api-sponsored-vault`). This page documents **TypeScript usage** for the public surface only.\n\n## Client\n\n```ts\nimport { useActaClient } from \"@acta-team/credentials\";\n\nconst client = useActaClient();\n```\n\n## sponsoredVaultCreate\n\n```ts\nclient.sponsoredVaultCreate(\n  payload:\n    | {\n        sponsor: string;          // Sponsor address (pays and signs)\n        owner: string;            // Vault owner\n        didUri: string;           // DID URI stored for the vault\n        sourcePublicKey: string;  // Must be the sponsor\n        contractId?: string;\n      }\n    | { signedXdr: string }\n): Promise<SponsoredVaultCreateResponse>\n```\n\n- **Prepare:** first object → `{ xdr, network }`.\n- **Submit:** `{ signedXdr }` → `{ tx_id }`.\n\n## Prepare and submit\n\nPass prepare fields (no `signedXdr`) or `{ signedXdr }` after signing. Uses the same `baseURL` and API key as the rest of `ActaClient` for public contract routes.\n    "
     },
     "api-overview": {
@@ -252,7 +256,10 @@
       "slug": "api-health-status",
       "title": "Health & Status",
       "section": "API Reference",
-      "tocItems": ["Health Check", "Network Configuration"],
+      "tocItems": [
+        "Health Check",
+        "Network Configuration"
+      ],
       "content": "\n# Health & Status Endpoints\n\nEndpoints for checking API health and retrieving network configuration.\n\n## Health Check\n\n### GET /health\n\nChecks the API status. No authentication required.\n\n**Response:**\n\n```json\n{\n  \"status\": \"OK\",\n  \"timestamp\": \"2024-01-01T00:00:00.000Z\",\n  \"service\": \"ACTA API\"\n}\n```\n\n**Example:**\n\n```bash\ncurl https://api.testnet.acta.build/health\n```\n\n:::health-try:::\n\n## Network Configuration\n\n### GET /config\n\nGets public network configuration. **No authentication required** (public bootstrap endpoint, not rate limited).\n\n**Response:**\n\n```json\n{\n  \"rpcUrl\": \"https://soroban-testnet.stellar.org:443\",\n  \"networkPassphrase\": \"Test SDF Network ; September 2015\",\n  \"networkType\": \"testnet\",\n  \"factoryContractId\": \"C...\",\n  \"vaultWasmHash\": \"2bd0323a...\",\n  \"didStellarRegistryId\": \"C...\",\n  \"actaContractId\": \"C...\"\n}\n```\n\n- **factoryContractId**: the `vc-vault-factory` contract id for this network.\n- **networkType**: `testnet` or `mainnet`.\n- **vaultWasmHash**: the `vc-vault` template WASM hash deployed by the factory.\n- **didStellarRegistryId**: the `did:stellar` registry contract id used to resolve issuer DIDs.\n- **actaContractId**: back-compat alias of `factoryContractId`.\n\n**Example:**\n\n```bash\ncurl https://api.testnet.acta.build/config\n```\n    "
     },
     "api-keys": {
@@ -734,7 +741,11 @@
       "slug": "sponsoredVault",
       "title": "sponsoredVault",
       "section": "Credentials SDK",
-      "tocItems": ["Cliente", "sponsoredVaultCreate", "Prepare y submit"],
+      "tocItems": [
+        "Cliente",
+        "sponsoredVaultCreate",
+        "Prepare y submit"
+      ],
       "content": "\n# sponsoredVault\n\n`ActaClient.sponsoredVaultCreate` envuelve **`POST /contracts/sponsored-vault/create`** (prepare/submit del `deploy_sponsored` del factory), obtenido con `useActaClient()` dentro de `ActaConfig`.\n\nOn-chain el patrocinio es **abierto**: cualquier sponsor puede desplegar una bóveda patrocinada para un owner. La llamada de contrato subyacente es el `deploy_sponsored` del factory (reemplaza al antiguo método `create_sponsored_vault` de la bóveda). Ten en cuenta que la ruta HTTP requiere una **API key con rol admin**, así que configura `ActaConfig` / `ActaClient` con una clave admin para usar este método.\n\nSemántica Soroban, modos de autorización y JSON de petición están en **Referencia API → Bóveda patrocinada** (`api-sponsored-vault`). Esta página documenta el **uso en TypeScript** solo de la superficie pública.\n\n## Cliente\n\n```ts\nimport { useActaClient } from \"@acta-team/credentials\";\n\nconst client = useActaClient();\n```\n\n## sponsoredVaultCreate\n\n```ts\nclient.sponsoredVaultCreate(\n  payload:\n    | {\n        sponsor: string;          // Dirección del sponsor (paga y firma)\n        owner: string;            // Propietario de la bóveda\n        didUri: string;           // URI del DID guardado para la bóveda\n        sourcePublicKey: string;  // Debe ser el sponsor\n        contractId?: string;\n      }\n    | { signedXdr: string }\n): Promise<SponsoredVaultCreateResponse>\n```\n\n- **Prepare:** primer objeto → `{ xdr, network }`.\n- **Submit:** `{ signedXdr }` → `{ tx_id }`.\n\n## Prepare y submit\n\nPasa campos de prepare (sin `signedXdr`) o `{ signedXdr }` tras firmar. Usa el mismo `baseURL` y API key que el resto de `ActaClient` para rutas públicas de contrato.\n    "
     },
     "api-overview": {
@@ -762,7 +773,10 @@
       "slug": "api-health-status",
       "title": "Salud y Estado",
       "section": "Referencia API",
-      "tocItems": ["Verificación de salud", "Configuración de red"],
+      "tocItems": [
+        "Verificación de salud",
+        "Configuración de red"
+      ],
       "content": "\n# Endpoints de Salud y Estado\n\nEndpoints para verificar la salud de la API y recuperar la configuración de red.\n\n## Verificación de salud\n\n### GET /health\n\nVerifica el estado de la API. No requiere autenticación.\n\n**Respuesta:**\n\n```json\n{\n  \"status\": \"OK\",\n  \"timestamp\": \"2024-01-01T00:00:00.000Z\",\n  \"service\": \"ACTA API\"\n}\n```\n\n**Ejemplo:**\n\n```bash\ncurl https://api.testnet.acta.build/health\n```\n\n:::health-try:::\n\n## Configuración de red\n\n### GET /config\n\nObtiene la configuración pública de red. **No requiere autenticación** (endpoint público de bootstrap, sin límite de tasa).\n\n**Respuesta:**\n\n```json\n{\n  \"rpcUrl\": \"https://soroban-testnet.stellar.org:443\",\n  \"networkPassphrase\": \"Test SDF Network ; September 2015\",\n  \"networkType\": \"testnet\",\n  \"factoryContractId\": \"C...\",\n  \"vaultWasmHash\": \"2bd0323a...\",\n  \"didStellarRegistryId\": \"C...\",\n  \"actaContractId\": \"C...\"\n}\n```\n\n- **factoryContractId**: id del contrato `vc-vault-factory` para esta red.\n- **networkType**: `testnet` o `mainnet`.\n- **vaultWasmHash**: hash del WASM plantilla `vc-vault` que despliega el factory.\n- **didStellarRegistryId**: id del contrato del registro `did:stellar` usado para resolver los DID de emisores.\n- **actaContractId**: alias de retrocompatibilidad de `factoryContractId`.\n\n**Ejemplo:**\n\n```bash\ncurl https://api.testnet.acta.build/config\n```\n    "
     },
     "api-keys": {

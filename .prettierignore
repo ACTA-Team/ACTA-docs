@@ -11,3 +11,6 @@ package-lock.json
 yarn.lock
 pnpm-lock.yaml
 .claude
+
+# Generated MCP data: the generator's output is canonical
+packages/docs-mcp/src/generated/docs-data.json
