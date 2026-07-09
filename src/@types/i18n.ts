@@ -66,7 +66,7 @@ export interface Translations {
   aiPowered: string;
   relatedPages: string;
   askAnything: string;
-  poweredByClaude: string;
+  poweredByAI: string;
   toSearch: string;
   toClose: string;
   aiSuggestionsLabel: string;

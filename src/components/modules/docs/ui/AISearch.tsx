@@ -144,7 +144,7 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
         <div className="relative flex items-center justify-between border-t border-white/6 bg-white/2 px-4 py-2.5">
           <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground/80">
             <Bot className="size-3 text-primary/70" />
-            {t.poweredByClaude}
+            {t.poweredByAI}
           </span>
           <div className="flex items-center gap-2 text-[11px] text-muted-foreground/70">
             <kbd className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 font-sans text-[10px]">
