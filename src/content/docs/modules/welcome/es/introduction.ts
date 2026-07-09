@@ -25,7 +25,6 @@ ACTA es **infraestructura de credenciales verificables** para la **blockchain St
 | **SDK de credenciales** | \`npm i @acta-team/credentials\` - hooks para credenciales y bóvedas |
 | **Referencia API** | Documentación completa de endpoints públicos de la API |
 | **did:stellar** | Identidad descentralizada para emisores y titulares |
-| **Enlaces** | Enlaces oficiales, recursos y comunidad |
 
 ## Qué puedes construir
 
