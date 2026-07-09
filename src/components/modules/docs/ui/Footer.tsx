@@ -6,9 +6,9 @@ import { GithubIcon } from "lucide-react";
 import { DiscordIcon } from "@/components/ui/discord-icon";
 import { useI18n } from "@/lib/i18n";
 
-/** Official ACTA org — https://github.com/ACTA-Team */
+/** Official ACTA org - https://github.com/ACTA-Team */
 const GITHUB_ORG_URL = "https://github.com/ACTA-Team";
-/** Community — https://discord.gg/DsUSE3aMDZ */
+/** Community - https://discord.gg/DsUSE3aMDZ */
 const DISCORD_INVITE_URL = "https://discord.gg/DsUSE3aMDZ";
 
 type FooterNavItem =
@@ -100,7 +100,7 @@ export function Footer({ onNavigate }: FooterProps) {
                 type="button"
                 onClick={() => onNavigate("introduction")}
                 className="flex items-center gap-2 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                aria-label={`ACTA — ${t.introduction}`}
+                aria-label={`ACTA - ${t.introduction}`}
               >
                 <Image
                   src="/acta-logo.png"
