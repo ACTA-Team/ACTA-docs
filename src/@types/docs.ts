@@ -17,6 +17,8 @@ export type NavigationItem = {
 
 export type NavigationItems = {
   welcome: NavigationItem[];
+  /** Task-oriented guides (quickstart, mainnet, verification). */
+  guides?: NavigationItem[];
   sdk: NavigationItem[];
   "api-reference": NavigationItem[];
   contracts?: NavigationItem[];

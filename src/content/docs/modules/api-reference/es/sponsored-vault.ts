@@ -47,6 +47,8 @@ El campo \`sponsor\` de la API se mapea al parámetro \`deployer\` del contrato.
 
 Esta ruta requiere una **API key con rol admin** (header \`X-ACTA-Key\`) y tiene límite de tasa por key. Las keys estándar reciben \`403\`. Antepón las rutas con la URL base de tu red (ej. \`https://api.testnet.acta.build\`).
 
+> **Cómo conseguir una key admin:** las keys admin no son de autoservicio; las aprovisiona el equipo de ACTA. Contacta vía **[Soporte](doc:support)** o [Discord](https://discord.gg/DsUSE3aMDZ) si tu organización necesita onboarding patrocinado.
+
 ### POST /contracts/sponsored-vault/create
 
 Prepara o envía \`deploy_sponsored\`.

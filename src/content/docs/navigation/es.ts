@@ -3,18 +3,24 @@ import type { NavigationItems } from "@/@types/docs";
 export const navigation: NavigationItems = {
   welcome: [
     { slug: "introduction", title: "Introducción" },
-    { slug: "quickstart", title: "Quickstart" },
     { slug: "architecture", title: "Arquitectura" },
     { slug: "getting-started", title: "Primeros Pasos" },
     { slug: "security", title: "Seguridad y Modelo de Datos" },
+    { slug: "versions", title: "Versiones y Changelog" },
     {
       slug: "links",
       title: "Enlaces",
       externalUrl: "https://links.acta.build",
     },
   ],
+  guides: [
+    { slug: "quickstart", title: "Quickstart" },
+    { slug: "mainnet-guide", title: "Pasar a Mainnet" },
+    { slug: "verify-credentials", title: "Verificar Credenciales" },
+  ],
   sdk: [
     { slug: "sdk-overview", title: "Resumen" },
+    { slug: "actaClient", title: "ActaClient" },
     { slug: "useCredential", title: "useCredential" },
     { slug: "useVault", title: "useVault" },
     { slug: "useVaultRead", title: "useVaultRead" },
@@ -31,7 +37,10 @@ export const navigation: NavigationItems = {
     { slug: "api-credentials", title: "Operaciones de Credenciales" },
     { slug: "api-errors", title: "Errores" },
   ],
-  contracts: [{ slug: "contract-errors", title: "Errores de contrato" }],
+  contracts: [
+    { slug: "contracts-reference", title: "Referencia de Contratos" },
+    { slug: "contract-errors", title: "Errores de contrato" },
+  ],
   did: [
     { slug: "did-overview", title: "Resumen" },
     { slug: "did-registry", title: "Registro y Resolver" },
@@ -46,5 +55,6 @@ export const navigation: NavigationItems = {
   help: [
     { slug: "faq", title: "Preguntas Frecuentes" },
     { slug: "support", title: "Soporte" },
+    { slug: "glossary", title: "Glosario" },
   ],
 };

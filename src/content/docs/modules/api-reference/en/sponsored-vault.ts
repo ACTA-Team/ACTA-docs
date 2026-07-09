@@ -47,6 +47,8 @@ The API's \`sponsor\` request field maps to the contract's \`deployer\` paramete
 
 This route requires an **API key with the admin role** (\`X-ACTA-Key\` header) and is rate limited per key. Standard keys receive \`403\`. Prefix paths with your network base URL (e.g. \`https://api.testnet.acta.build\`).
 
+> **Getting an admin key:** admin keys are not self-service; they are provisioned by the ACTA team. Reach out via **[Support](doc:support)** or [Discord](https://discord.gg/DsUSE3aMDZ) if your organization needs sponsored onboarding.
+
 ### POST /contracts/sponsored-vault/create
 
 Prepares or submits \`deploy_sponsored\`.

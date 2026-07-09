@@ -7,6 +7,7 @@ import {
   Blocks,
   BookMarked,
   BookOpen,
+  Book,
   Boxes,
   Braces,
   Bug,
@@ -14,12 +15,15 @@ import {
   CirclePlay,
   Compass,
   ExternalLink,
+  FileCode,
   FilePenLine,
   FileSearch,
   Fingerprint,
   FolderOpen,
+  Globe,
   HandCoins,
   HeartPulse,
+  History,
   Home,
   IdCard,
   Info,
@@ -28,14 +32,17 @@ import {
   LayoutList,
   LifeBuoy,
   Lock,
+  Map,
   MessageCircleQuestion,
   Network,
   Package,
   Rocket,
+  ScanSearch,
   ScrollText,
   Server,
   ShieldAlert,
   Sparkles,
+  Terminal,
   Vault,
 } from "lucide-react";
 import type { NavigationItems, NavigationItem } from "@/@types/docs";
@@ -59,6 +66,7 @@ export type SidebarNavGroup = {
 
 type SectionKey =
   | "welcome"
+  | "guides"
   | "sdk"
   | "api-reference"
   | "contracts"
@@ -74,8 +82,13 @@ const NAV_SUB_ITEM_ICONS: Partial<Record<string, LucideIcon>> = {
   architecture: Boxes,
   "getting-started": Compass,
   security: Lock,
+  versions: History,
+  glossary: Book,
+  "mainnet-guide": Globe,
+  "verify-credentials": ScanSearch,
   links: ExternalLink,
   "sdk-overview": BookMarked,
+  actaClient: Terminal,
   useCredential: BadgeCheck,
   useVault: Vault,
   useVaultRead: FileSearch,
@@ -89,6 +102,7 @@ const NAV_SUB_ITEM_ICONS: Partial<Record<string, LucideIcon>> = {
   "api-sponsored-vault": Banknote,
   "api-credentials": Fingerprint,
   "api-errors": Bug,
+  "contracts-reference": FileCode,
   "contract-errors": ShieldAlert,
   "did-overview": IdCard,
   "did-registry": Server,
@@ -107,6 +121,7 @@ function navSubItemIcon(slug: string): ReactNode {
 
 const sectionIcons: Record<SectionKey, ReactNode> = {
   welcome: <Home className="size-3.5 shrink-0" />,
+  guides: <Map className="size-3.5 shrink-0" />,
   sdk: <Package className="size-3.5 shrink-0" />,
   "api-reference": <Network className="size-3.5 shrink-0" />,
   contracts: <ScrollText className="size-3.5 shrink-0" />,
@@ -117,6 +132,7 @@ const sectionIcons: Record<SectionKey, ReactNode> = {
 
 const SECTION_ORDER: SectionKey[] = [
   "welcome",
+  "guides",
   "sdk",
   "api-reference",
   "contracts",
@@ -130,6 +146,7 @@ const GROUP_DEFS: Array<{ key: string; sections: SectionKey[] }> = [
     key: "docs",
     sections: [
       "welcome",
+      "guides",
       "sdk",
       "api-reference",
       "contracts",
@@ -144,6 +161,8 @@ function getSectionLabel(key: SectionKey, t: Translations): string {
   switch (key) {
     case "welcome":
       return t.welcome;
+    case "guides":
+      return t.guidesCategory;
     case "sdk":
       return t.reactSdk;
     case "api-reference":
@@ -226,6 +245,7 @@ export function buildFooterNav(
   const iconFor: Record<string, ReactNode> = {
     faq: <MessageCircleQuestion className="size-3.5 shrink-0" />,
     support: <LifeBuoy className="size-3.5 shrink-0" />,
+    glossary: <Book className="size-3.5 shrink-0" />,
   };
   return items.map(item => ({
     title: item.title,

@@ -3,7 +3,7 @@ import type { DocPage } from "@/@types/docs";
 export const quickstart: DocPage = {
   slug: "quickstart",
   title: "Quickstart",
-  section: "Bienvenida",
+  section: "Guías",
   tocItems: [
     "Qué vas a construir",
     "Requisitos",
