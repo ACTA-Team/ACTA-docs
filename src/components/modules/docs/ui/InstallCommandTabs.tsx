@@ -37,9 +37,9 @@ export function InstallCommandTabs({ packageName }: InstallCommandTabsProps) {
 
   return (
     <div className="mb-8">
-      <div className="overflow-hidden rounded-2xl border border-border/60 bg-[#1e1e1e] shadow-sm">
+      <div className="overflow-hidden rounded-xl border border-white/8 bg-[#0b0e14] shadow-sm">
         {/* Tabs */}
-        <div className="flex items-center justify-between bg-[#252526] border-b border-border">
+        <div className="flex items-center justify-between border-b border-white/6 bg-white/3">
           <div className="flex">
             {packageManagers.map(pm => (
               <button
@@ -52,8 +52,8 @@ export function InstallCommandTabs({ packageName }: InstallCommandTabsProps) {
                   "px-4 py-2 text-xs font-medium transition-colors",
                   "border-b-2 border-transparent",
                   activeTab === pm.name
-                    ? "text-foreground border-primary"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "border-[#ffd21f] text-zinc-100"
+                    : "text-zinc-500 hover:text-zinc-200"
                 )}
               >
                 {pm.name}
@@ -63,9 +63,9 @@ export function InstallCommandTabs({ packageName }: InstallCommandTabsProps) {
           <button
             onClick={handleCopy}
             className={cn(
-              "flex items-center gap-2 px-3 py-2 text-xs rounded transition-colors mr-2",
-              "text-muted-foreground hover:text-foreground hover:bg-[#2d2d30]",
-              copied && "text-green-400"
+              "mr-2 flex items-center gap-2 rounded-md px-3 py-2 text-xs transition-colors",
+              "text-zinc-500 hover:bg-white/5 hover:text-zinc-200",
+              copied && "text-emerald-400"
             )}
             title={copied ? t.copied : t.copy}
           >
@@ -89,7 +89,7 @@ export function InstallCommandTabs({ packageName }: InstallCommandTabsProps) {
           customStyle={{
             margin: 0,
             padding: "1rem",
-            background: "#1e1e1e",
+            background: "transparent",
             fontSize: "0.875rem",
             lineHeight: "1.5",
           }}
