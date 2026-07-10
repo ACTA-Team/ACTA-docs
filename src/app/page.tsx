@@ -1,12 +1,6 @@
-"use client";
+import { permanentRedirect } from "next/navigation";
 
-import { AppShell } from "@/layouts/app-shell/AppShell";
-import { I18nProvider } from "@/lib/i18n";
-
-export default function DocsPage() {
-  return (
-    <I18nProvider>
-      <AppShell />
-    </I18nProvider>
-  );
+/** The docs home is the Introduction page; every page has its own URL. */
+export default function DocsIndex() {
+  permanentRedirect("/introduction");
 }

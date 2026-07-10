@@ -101,6 +101,7 @@ Currently supported locales:
 
 - \`en\`
 - \`es\`
+- \`fr\`
 
 ## When to use this MCP
 

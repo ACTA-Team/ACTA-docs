@@ -10,7 +10,8 @@ import { useI18n } from "@/lib/i18n";
 
 export function FaqsSection() {
   const { t, locale } = useI18n();
-  const questions = locale === "es" ? questionsEs : questionsEn;
+  const questions =
+    locale === "es" ? questionsEs : locale === "fr" ? questionsFr : questionsEn;
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-10 px-4 py-8 md:px-10 md:py-10 xl:max-w-5xl">
@@ -121,5 +122,44 @@ const questionsEs = [
     title: "¿Cómo empiezo con @acta-team/credentials?",
     content:
       "Ejecuta `npm install @acta-team/credentials`, envuelve tu app con `ActaConfig` (`mainNet`/`testNet`) y usa hooks como useCredential/useVault. Revisa Primeros pasos y el resumen del SDK de credenciales.",
+  },
+];
+
+const questionsFr = [
+  {
+    id: "item-1",
+    title: "Qu'est-ce qu'ACTA et quel problème résout-il ?",
+    content:
+      "ACTA est une infrastructure de credentials vérifiables construite sur Stellar. Elle résout les défis de confiance et d'identité numérique en permettant aux émetteurs de publier des credentials vérifiables et aux vérificateurs de les valider cryptographiquement.",
+  },
+  {
+    id: "item-2",
+    title: "Comment intégrer ACTA à mon application ?",
+    content:
+      "Vous pouvez intégrer ACTA via `npm install @acta-team/credentials` et les hooks React côté frontend, ou via les endpoints REST côté backend pour l'émission, la vérification et les flux de coffre.",
+  },
+  {
+    id: "item-3",
+    title: "Que sont les credentials vérifiables et comment fonctionnent-ils ?",
+    content:
+      "Les credentials sont émis et signés par des émetteurs de confiance, ancrés on-chain, chiffrés dans les coffres des utilisateurs, puis vérifiés en validant les signatures et l'état du contrat.",
+  },
+  {
+    id: "item-4",
+    title: "Comment fonctionne le système de coffre ?",
+    content:
+      "Chaque utilisateur dispose d'un coffre sécurisé contrôlé par son propriétaire. Les coffres stockent des payloads chiffrés et prennent en charge les flux de lecture/écriture selon les permissions.",
+  },
+  {
+    id: "item-5",
+    title: "Quelle blockchain ACTA utilise-t-il ?",
+    content:
+      "ACTA est construit sur Stellar et les contrats intelligents Soroban : frais réduits, finalité rapide et opérations de credentials évolutives.",
+  },
+  {
+    id: "item-6",
+    title: "Comment démarrer avec @acta-team/credentials ?",
+    content:
+      "Exécutez `npm install @acta-team/credentials`, enveloppez votre app avec `ActaConfig` (`mainNet` ou `testNet`), puis utilisez les hooks comme `useCredential` / `useVault`. Consultez Premiers Pas et l'aperçu du Credentials SDK.",
   },
 ];

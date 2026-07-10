@@ -11,7 +11,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useI18n } from "@/lib/i18n";
-import { navigationItemsEn, navigationItemsEs } from "@/content/docs";
+import { navigationByLocale } from "@/content/docs";
 import { NavGroup } from "./NavGroup";
 import { LatestChange } from "./LatestChange";
 import { buildFooterNav, buildNavGroups } from "./shared";
@@ -23,7 +23,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({ currentSlug, onNavigate }: AppSidebarProps) {
   const { t, locale } = useI18n();
-  const nav = locale === "es" ? navigationItemsEs : navigationItemsEn;
+  const nav = navigationByLocale[locale];
   const groups = buildNavGroups(nav, currentSlug, t, locale);
   const footerNav = buildFooterNav(nav, currentSlug);
 

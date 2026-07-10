@@ -9,6 +9,8 @@
     "build": "npm run mcp:generate-docs && node --disable-warning=DEP0060 ./node_modules/next/dist/bin/next build",
     "dev": "node --disable-warning=DEP0060 ./node_modules/next/dist/bin/next dev",
     "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "check:links": "node scripts/check-links.mjs",
     "mcp": "npm run mcp -w @acta-team/docs-mcp",
     "mcp:generate-docs": "npm run generate-docs -w @acta-team/docs-mcp",
     "mcp:build": "npm run build -w @acta-team/docs-mcp",

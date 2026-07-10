@@ -4,6 +4,7 @@ import { Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { PostHogProvider } from "@/providers/PostHogProvider";
 import { ThemeProvider } from "@/providers/theme.provider";
+import { I18nProvider } from "@/lib/i18n";
 import "./globals.css";
 
 const geist = Geist({
@@ -22,11 +23,21 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "ACTA Documentation",
-  description: "Documentation for the ACTA project",
+  metadataBase: new URL("https://docs.acta.build"),
+  title: {
+    default: "ACTA Documentation",
+    template: "%s · ACTA Docs",
+  },
+  description:
+    "Official documentation for ACTA: verifiable credentials infrastructure on Stellar. API reference, SDK guides, did:stellar, and smart contracts.",
   generator: "ACTA",
   icons: {
     icon: "/favicon.ico",
+  },
+  openGraph: {
+    siteName: "ACTA Documentation",
+    type: "website",
+    url: "https://docs.acta.build",
   },
 };
 
@@ -45,7 +56,7 @@ export default function RootLayout({
       <body className="font-sans antialiased" suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <PostHogProvider>
-            {children}
+            <I18nProvider>{children}</I18nProvider>
             <Analytics />
           </PostHogProvider>
         </ThemeProvider>

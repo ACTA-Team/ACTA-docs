@@ -12,7 +12,7 @@ import type { DocPage, DocsByLocale, Locale, SearchResult } from "./types.js";
 const DOCS_BASE_URL = "https://docs.acta.build";
 const DEFAULT_DOCS_DATA_URL = `${DOCS_BASE_URL}/api/mcp/docs-data`;
 const DEFAULT_LOCALE: Locale = "en";
-const LOCALES = ["en", "es"] as const;
+const LOCALES = ["en", "es", "fr"] as const;
 
 const docsByLocale = await loadDocsData();
 

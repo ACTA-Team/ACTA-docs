@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useI18n } from "@/lib/i18n";
-import { navigationItemsEn, navigationItemsEs } from "@/content/docs";
+import { navigationByLocale } from "@/content/docs";
 import type { Locale } from "@/@types/i18n";
 import { CustomSidebarTrigger } from "./CustomSidebarTrigger";
 import { AppBreadcrumbs } from "./AppBreadcrumbs";
@@ -26,7 +26,7 @@ interface AppHeaderProps {
 
 export function AppHeader({ currentSlug, onSearchOpen }: AppHeaderProps) {
   const { t, locale, setLocale } = useI18n();
-  const nav = locale === "es" ? navigationItemsEs : navigationItemsEn;
+  const nav = navigationByLocale[locale];
   const activePage = findActivePage(nav, currentSlug);
   const section = findSectionLabel(nav, currentSlug, t);
 
@@ -129,9 +129,7 @@ export function AppHeader({ currentSlug, onSearchOpen }: AppHeaderProps) {
               className="h-8 gap-1.5 rounded-lg border-border/60 bg-transparent font-normal shadow-none"
             >
               <Globe className="size-3.5 opacity-70" />
-              <span className="hidden sm:inline">
-                {locale === "en" ? "EN" : "ES"}
-              </span>
+              <span className="hidden sm:inline">{locale.toUpperCase()}</span>
               <ChevronDown className="size-3.5" />
             </Button>
           </DropdownMenuTrigger>
@@ -141,6 +139,9 @@ export function AppHeader({ currentSlug, onSearchOpen }: AppHeaderProps) {
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setLocale("es" as Locale)}>
               {t.spanish}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setLocale("fr" as Locale)}>
+              {t.french}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

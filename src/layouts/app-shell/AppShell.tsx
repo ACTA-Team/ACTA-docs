@@ -1,23 +1,38 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Content } from "@/components/modules/docs/ui/Content";
 import { TableOfContents } from "@/components/modules/docs/ui/TableOfContents";
 import { AISearch } from "@/components/modules/docs/ui/AISearch";
 import { FAQ } from "@/components/modules/docs/ui/FAQ";
 import { Support } from "@/components/modules/docs/ui/Support";
-import { docsDataEn, docsDataEs } from "@/content/docs";
+import { docsByLocale } from "@/content/docs";
 import { useI18n } from "@/lib/i18n";
 import { Footer } from "@/components/modules/docs/ui/Footer";
 import { AppSidebar } from "./AppSidebar";
 import { AppHeader } from "./AppHeader";
 
 export function AppShell() {
-  const [currentSlug, setCurrentSlug] = useState("introduction");
+  const pathname = usePathname();
+  const router = useRouter();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { t, locale } = useI18n();
-  const docsData = locale === "es" ? docsDataEs : docsDataEn;
+  const docsData = docsByLocale[locale];
+
+  // The URL is the source of truth: /introduction, /quickstart, /faq...
+  const currentSlug = useMemo(() => {
+    const segment = pathname?.split("/").filter(Boolean)[0] ?? "";
+    if (
+      segment &&
+      (docsData[segment] || segment === "faq" || segment === "support")
+    ) {
+      return segment;
+    }
+    return "introduction";
+  }, [pathname, docsData]);
+
   const currentPage = docsData[currentSlug];
 
   // Dynamic browser-tab title: follows the current page (and locale), and
@@ -58,7 +73,7 @@ export function AppShell() {
   }, [currentSlug]);
 
   const handleNavigate = (slug: string) => {
-    setCurrentSlug(slug);
+    router.push(`/${slug}`);
   };
 
   return (

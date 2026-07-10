@@ -1,4 +1,4 @@
-export type Locale = "en" | "es";
+export type Locale = "en" | "es" | "fr";
 
 export interface Translations {
   // Navigation
@@ -24,6 +24,7 @@ export interface Translations {
   website: string;
   english: string;
   spanish: string;
+  french: string;
 
   // Content
   onThisPage: string;

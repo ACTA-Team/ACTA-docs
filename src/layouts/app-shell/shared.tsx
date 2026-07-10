@@ -181,9 +181,13 @@ function getSectionLabel(key: SectionKey, t: Translations): string {
 
 function getGroupLabel(
   key: string,
-  locale: "en" | "es" | string = "en"
+  locale: "en" | "es" | "fr" | string = "en"
 ): string {
-  if (key === "docs") return locale === "es" ? "Documentación" : "Docs";
+  if (key === "docs") {
+    if (locale === "es") return "Documentación";
+    if (locale === "fr") return "Documentation";
+    return "Docs";
+  }
   return "";
 }
 

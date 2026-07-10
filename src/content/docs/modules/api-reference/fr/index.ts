@@ -1,0 +1,22 @@
+import type { DocPage } from "@/@types/docs";
+import { overview } from "./overview";
+import { healthStatus } from "./health-status";
+import { keys } from "./keys";
+import { contractInfo } from "./contract-info";
+import { vaultRead } from "./vault-read";
+import { vaultWrite } from "./vault-write";
+import { sponsoredVault } from "./sponsored-vault";
+import { credentials } from "./credentials";
+import { errors } from "./errors";
+
+export const pages: Record<string, DocPage> = {
+  "api-overview": overview,
+  "api-health-status": healthStatus,
+  "api-keys": keys,
+  "api-contract-info": contractInfo,
+  "api-vault-read": vaultRead,
+  "api-vault-write": vaultWrite,
+  "api-sponsored-vault": sponsoredVault,
+  "api-credentials": credentials,
+  "api-errors": errors,
+};

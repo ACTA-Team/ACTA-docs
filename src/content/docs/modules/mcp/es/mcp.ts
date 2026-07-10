@@ -101,6 +101,7 @@ Los idiomas soportados actualmente son:
 
 - \`en\`
 - \`es\`
+- \`fr\`
 
 ## Cuándo usar este MCP
 

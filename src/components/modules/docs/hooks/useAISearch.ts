@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useI18n } from "@/lib/i18n";
-import { docsDataEn, docsDataEs } from "@/content/docs";
+import { docsByLocale } from "@/content/docs";
 
 interface UseAISearchProps {
   onNavigate: (slug: string) => void;
@@ -14,7 +14,7 @@ export function useAISearch({ onNavigate, onClose }: UseAISearchProps) {
   const [response, setResponse] = useState<string | null>(null);
   const [suggestedPages, setSuggestedPages] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
-  const docsData = locale === "es" ? docsDataEs : docsDataEn;
+  const docsData = docsByLocale[locale];
 
   useEffect(() => {
     inputRef.current?.focus();

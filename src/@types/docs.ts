@@ -6,7 +6,7 @@ export type DocPage = {
   tocItems: string[];
 };
 
-export type Locale = "en" | "es";
+export type Locale = "en" | "es" | "fr";
 
 export type NavigationItem = {
   slug: string;
