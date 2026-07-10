@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { supabaseAdmin } from "@/lib/supabase-server";
+import { getSupabaseAdmin } from "@/lib/supabase-server";
 
 const contactSchema = z.object({
   name: z.string().min(1).max(200),
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     const userAgent = request.headers.get("user-agent") ?? null;
     const acceptLanguage = request.headers.get("accept-language") ?? null;
 
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getSupabaseAdmin()
       .from("contact_messages")
       .insert({
         name,
