@@ -38,7 +38,7 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
       onClick={onClose}
     >
       <div
-        className="relative mt-[10vh] w-full max-w-2xl overflow-hidden rounded-2xl border border-white/10 bg-card shadow-[0_24px_80px_-12px_rgba(0,0,0,0.6)] animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200 dark:bg-[#0d1017]"
+        className="relative mt-[10vh] w-full max-w-2xl overflow-hidden rounded-2xl border border-border bg-card dark:border-white/10 shadow-[0_24px_80px_-12px_rgba(0,0,0,0.6)] animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200 dark:bg-[#0d1017]"
         onClick={e => e.stopPropagation()}
       >
         {/* Subtle gold glow behind the header */}
@@ -48,7 +48,7 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
         />
 
         {/* Search Input */}
-        <div className="relative flex items-center gap-3 border-b border-white/6 px-4 py-4">
+        <div className="relative flex items-center gap-3 border-b border-border/60 px-4 py-4 dark:border-white/6">
           <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
             <Bot className="size-4 text-primary" />
           </span>
@@ -63,7 +63,7 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
           />
           <button
             onClick={onClose}
-            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
+            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground dark:hover:bg-white/5"
             aria-label={t.toClose}
           >
             <X className="size-4" />
@@ -90,7 +90,7 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
               />
 
               {suggestedPages.length > 0 && (
-                <div className="border-t border-white/6 pt-4">
+                <div className="border-t border-border/60 pt-4 dark:border-white/6">
                   <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60">
                     {t.relatedPages}
                   </p>
@@ -102,7 +102,7 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
                         <button
                           key={slug}
                           onClick={() => handlePageClick(slug)}
-                          className="group inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/3 px-3 py-1.5 text-xs text-foreground/90 transition-colors hover:border-primary/40 hover:text-primary"
+                          className="group inline-flex items-center gap-1 rounded-full border border-border bg-muted/40 px-3 py-1.5 dark:border-white/10 dark:bg-white/3 text-xs text-foreground/90 transition-colors hover:border-primary/40 hover:text-primary"
                         >
                           {page.title}
                           <ArrowRight className="size-3 -translate-x-1 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-60" />
@@ -130,7 +130,7 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
                     key={example}
                     type="button"
                     onClick={() => runExample(example)}
-                    className="rounded-full border border-white/10 bg-white/3 px-3.5 py-1.5 text-xs text-foreground/85 transition-colors hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
+                    className="rounded-full border border-border bg-muted/40 px-3.5 py-1.5 dark:border-white/10 dark:bg-white/3 text-xs text-foreground/85 transition-colors hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
                   >
                     {example}
                   </button>
@@ -141,18 +141,18 @@ export function AISearch({ onNavigate, onClose }: AISearchProps) {
         </div>
 
         {/* Footer */}
-        <div className="relative flex items-center justify-between border-t border-white/6 bg-white/2 px-4 py-2.5">
+        <div className="relative flex items-center justify-between border-t border-border/60 bg-muted/30 px-4 py-2.5 dark:border-white/6 dark:bg-white/2">
           <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground/80">
             <Bot className="size-3 text-primary/70" />
             {t.poweredByAI}
           </span>
           <div className="flex items-center gap-2 text-[11px] text-muted-foreground/70">
-            <kbd className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 font-sans text-[10px]">
+            <kbd className="inline-flex items-center gap-1 rounded-md border border-border bg-muted/60 px-1.5 dark:border-white/10 dark:bg-white/5 py-0.5 font-sans text-[10px]">
               <CornerDownLeft className="size-2.5" />
               Enter
             </kbd>
             <span>{t.toSearch}</span>
-            <kbd className="ml-1 rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 font-sans text-[10px]">
+            <kbd className="ml-1 rounded-md border border-border bg-muted/60 px-1.5 dark:border-white/10 dark:bg-white/5 py-0.5 font-sans text-[10px]">
               Esc
             </kbd>
             <span>{t.toClose}</span>
