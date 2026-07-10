@@ -14,25 +14,45 @@ import { Footer } from "@/components/modules/docs/ui/Footer";
 import { AppSidebar } from "./AppSidebar";
 import { AppHeader } from "./AppHeader";
 
+const URL_LOCALES = ["es", "fr"] as const;
+
+/** Parses locale + slug from /quickstart, /es/quickstart, /fr/faq... */
+function parseDocsPath(pathname: string | null): {
+  locale: "en" | "es" | "fr";
+  slug: string;
+} {
+  const segments = pathname?.split("/").filter(Boolean) ?? [];
+  const locale = (URL_LOCALES as readonly string[]).includes(segments[0])
+    ? (segments[0] as "es" | "fr")
+    : "en";
+  const slugSegment = locale === "en" ? segments[0] : segments[1];
+  const data = docsByLocale[locale];
+  const slug =
+    slugSegment &&
+    (data[slugSegment] || slugSegment === "faq" || slugSegment === "support")
+      ? slugSegment
+      : "introduction";
+  return { locale, slug };
+}
+
 export function AppShell() {
   const pathname = usePathname();
   const router = useRouter();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const { t, locale } = useI18n();
-  const docsData = docsByLocale[locale];
+  const { t, locale, setLocale } = useI18n();
 
-  // The URL is the source of truth: /introduction, /quickstart, /faq...
-  const currentSlug = useMemo(() => {
-    const segment = pathname?.split("/").filter(Boolean)[0] ?? "";
-    if (
-      segment &&
-      (docsData[segment] || segment === "faq" || segment === "support")
-    ) {
-      return segment;
-    }
-    return "introduction";
-  }, [pathname, docsData]);
+  // The URL is the source of truth for both locale and page.
+  const { locale: urlLocale, slug: currentSlug } = useMemo(
+    () => parseDocsPath(pathname),
+    [pathname]
+  );
 
+  // Keep the i18n context (UI strings) in sync with the URL locale.
+  useEffect(() => {
+    if (locale !== urlLocale) setLocale(urlLocale);
+  }, [locale, urlLocale, setLocale]);
+
+  const docsData = docsByLocale[urlLocale];
   const currentPage = docsData[currentSlug];
 
   // Dynamic browser-tab title: follows the current page (and locale), and
@@ -73,7 +93,7 @@ export function AppShell() {
   }, [currentSlug]);
 
   const handleNavigate = (slug: string) => {
-    router.push(`/${slug}`);
+    router.push(urlLocale === "en" ? `/${slug}` : `/${urlLocale}/${slug}`);
   };
 
   return (

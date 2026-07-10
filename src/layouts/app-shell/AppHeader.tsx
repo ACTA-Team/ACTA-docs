@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { ChevronDown, Code, Globe, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -25,8 +26,15 @@ interface AppHeaderProps {
 }
 
 export function AppHeader({ currentSlug, onSearchOpen }: AppHeaderProps) {
+  const router = useRouter();
   const { t, locale, setLocale } = useI18n();
   const nav = navigationByLocale[locale];
+
+  // Language switch keeps the reader on the same page, in its localized URL.
+  const switchLocale = (next: Locale) => {
+    setLocale(next);
+    router.push(next === "en" ? `/${currentSlug}` : `/${next}/${currentSlug}`);
+  };
   const activePage = findActivePage(nav, currentSlug);
   const section = findSectionLabel(nav, currentSlug, t);
 
@@ -134,13 +142,13 @@ export function AppHeader({ currentSlug, onSearchOpen }: AppHeaderProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setLocale("en" as Locale)}>
+            <DropdownMenuItem onClick={() => switchLocale("en" as Locale)}>
               {t.english}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setLocale("es" as Locale)}>
+            <DropdownMenuItem onClick={() => switchLocale("es" as Locale)}>
               {t.spanish}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setLocale("fr" as Locale)}>
+            <DropdownMenuItem onClick={() => switchLocale("fr" as Locale)}>
               {t.french}
             </DropdownMenuItem>
           </DropdownMenuContent>

@@ -71,6 +71,9 @@ export interface Translations {
   toSearch: string;
   toClose: string;
   aiSuggestionsLabel: string;
+  searchPagesLabel: string;
+  askAiPrefix: string;
+  toNavigate: string;
   aiExample1: string;
   aiExample2: string;
   aiExample3: string;
