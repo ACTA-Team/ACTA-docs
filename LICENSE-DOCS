@@ -1,0 +1,28 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+Copyright (c) 2024-2026 ACTA
+
+The DOCUMENTATION CONTENT in this repository — the prose, guides, reference
+pages, examples and diagrams published at https://docs.acta.build, including
+the MDX/Markdown sources under `src/` and `packages/` — is licensed under the
+Creative Commons Attribution 4.0 International License.
+
+Full license text: https://creativecommons.org/licenses/by/4.0/legalcode
+Human-readable summary: https://creativecommons.org/licenses/by/4.0/
+
+You are free to share and adapt this content for any purpose, including
+commercially, provided you give appropriate credit to ACTA, link to the
+license, and indicate if changes were made.
+
+WHAT THIS FILE DOES NOT COVER
+
+  - The SOFTWARE in this repository (the Next.js application, the
+    `@acta-team/docs-mcp` package, build scripts, configuration) is licensed
+    under the MIT License — see LICENSE.
+
+  - The ACTA name, the ACTA logo, and other brand assets under `public/` are
+    trademarks of ACTA. Neither the MIT License nor CC BY 4.0 grants any right
+    to use them. Attribution under CC BY 4.0 is a factual credit and does not
+    imply endorsement.
+
+In short: the code is MIT, the words are CC BY 4.0, the brand is neither.
