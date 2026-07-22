@@ -46,7 +46,13 @@ export const navigation: NavigationItems = {
     { slug: "did-registry", title: "Registro y Resolver" },
     { slug: "did-library", title: "Librería TypeScript" },
   ],
-  ia: [{ slug: "mcp", title: "MCP" }],
+  ia: [
+    { slug: "ai-overview", title: "Resumen de IA" },
+    { slug: "mcp", title: "MCP" },
+    { slug: "mcp-clients", title: "Configuración por Cliente" },
+    { slug: "ai-prompts", title: "Recetas de Prompts" },
+    { slug: "agent-identity", title: "Identidad para Agentes" },
+  ],
   dapp: [
     { slug: "dapp-overview", title: "Resumen" },
     { slug: "dapp-getting-started", title: "Primeros Pasos" },
