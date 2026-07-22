@@ -19,7 +19,8 @@ The **ACTA Agent Skill** teaches an AI coding agent how to build with ACTA corre
 
 Use it when you want your coding agent to write ACTA integrations without guessing: the right package name, base URLs, the prepare/submit flow, \`did:stellar\` issuer identity, error codes, and the security model all come from the official docs instead of stale training data.
 
-- **Directory:** [skills.sh/ACTA-Team/skills](https://www.skills.sh/ACTA-Team/skills)
+- **Skill page:** [skills.sh/acta-team/skills/acta](https://www.skills.sh/acta-team/skills/acta)
+- **Repository page:** [skills.sh/acta-team/skills](https://www.skills.sh/acta-team/skills)
 - **Source:** [github.com/ACTA-Team/skills](https://github.com/ACTA-Team/skills)
 
 ## What it is

@@ -19,7 +19,8 @@ L'**Agent Skill ACTA** apprend à un agent de codage IA à construire correcteme
 
 Utilisez-la pour que votre agent écrive des intégrations ACTA sans deviner : le bon nom de paquet, les URLs de base, le flux prepare/submit, l'identité d'émetteur \`did:stellar\`, les codes d'erreur et le modèle de sécurité proviennent de la documentation officielle et non de données d'entraînement obsolètes.
 
-- **Répertoire :** [skills.sh/ACTA-Team/skills](https://www.skills.sh/ACTA-Team/skills)
+- **Page de la skill :** [skills.sh/acta-team/skills/acta](https://www.skills.sh/acta-team/skills/acta)
+- **Page du dépôt :** [skills.sh/acta-team/skills](https://www.skills.sh/acta-team/skills)
 - **Source :** [github.com/ACTA-Team/skills](https://github.com/ACTA-Team/skills)
 
 ## Ce que c'est
