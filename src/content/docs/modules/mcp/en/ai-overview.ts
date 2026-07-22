@@ -37,8 +37,7 @@ See [Identity for AI Agents](/en/agent-identity) for the conceptual detail and i
 
 ## What is in this section
 
-- **[MCP](/en/mcp):** the read-only documentation server and its base configuration.
-- **[MCP Client Setup](/en/mcp-clients):** ready-to-paste blocks for Claude, Cursor, VS Code, and Windsurf, plus troubleshooting.
+- **[MCP](/en/mcp):** the read-only documentation server, per-client setup (Claude, Cursor, VS Code, Windsurf), and troubleshooting.
 - **[Prompt Recipes](/en/ai-prompts):** concrete examples to get the most out of the MCP.
 - **[Identity for AI Agents](/en/agent-identity):** verifiable credentials applied to agents.
 

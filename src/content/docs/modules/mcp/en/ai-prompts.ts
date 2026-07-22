@@ -16,7 +16,7 @@ export const aiPrompts: DocPage = {
   content: `
 # Prompt recipes
 
-With the documentation MCP server connected ([MCP Client Setup](/en/mcp-clients)), your assistant can answer questions about ACTA grounded in the official docs. These are ready-to-use recipes, grouped by task.
+With the documentation MCP server connected ([see MCP](/en/mcp)), your assistant can answer questions about ACTA grounded in the official docs. These are ready-to-use recipes, grouped by task.
 
 ## How to use these recipes
 

@@ -50,7 +50,6 @@ export const navigation: NavigationItems = {
     { slug: "ai-overview", title: "Resumen de IA" },
     { slug: "agent-skills", title: "Agent Skills" },
     { slug: "mcp", title: "MCP" },
-    { slug: "mcp-clients", title: "Configuración por Cliente" },
     { slug: "ai-prompts", title: "Recetas de Prompts" },
     { slug: "agent-identity", title: "Identidad para Agentes" },
   ],

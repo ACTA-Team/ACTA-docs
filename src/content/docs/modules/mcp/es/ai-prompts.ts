@@ -16,7 +16,7 @@ export const aiPrompts: DocPage = {
   content: `
 # Recetas de prompts
 
-Con el servidor MCP de documentación conectado ([Configuración por cliente](/es/mcp-clients)), tu asistente puede responder sobre ACTA apoyándose en la documentación oficial. Estas son recetas listas para usar, agrupadas por tarea.
+Con el servidor MCP de documentación conectado ([ver MCP](/es/mcp)), tu asistente puede responder sobre ACTA apoyándose en la documentación oficial. Estas son recetas listas para usar, agrupadas por tarea.
 
 ## Cómo usar estas recetas
 

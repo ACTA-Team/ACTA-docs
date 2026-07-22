@@ -37,8 +37,7 @@ Consulta [Identidad para agentes de IA](/es/agent-identity) para el detalle conc
 
 ## Qué hay en esta sección
 
-- **[MCP](/es/mcp):** el servidor de documentación de solo lectura y su configuración base.
-- **[Configuración por cliente](/es/mcp-clients):** bloques listos para Claude, Cursor, VS Code y Windsurf, más troubleshooting.
+- **[MCP](/es/mcp):** el servidor de documentación de solo lectura, la configuración por cliente (Claude, Cursor, VS Code, Windsurf) y troubleshooting.
 - **[Recetas de prompts](/es/ai-prompts):** ejemplos concretos para sacarle provecho al MCP.
 - **[Identidad para agentes de IA](/es/agent-identity):** credenciales verificables aplicadas a agentes.
 
