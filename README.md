@@ -77,4 +77,10 @@ MCP data stay in sync.
 
 ## License
 
-MIT.
+Dual-licensed, split by what the thing is:
+
+| What                                                               | License                                           |
+| ------------------------------------------------------------------ | ------------------------------------------------- |
+| Software — the Next.js app, `@acta-team/docs-mcp`, scripts, config | [MIT](./LICENSE)                                  |
+| Documentation content — the prose, guides and reference pages      | [CC BY 4.0](./LICENSE-DOCS)                       |
+| ACTA name, logo and brand assets under `public/`                   | Neither. Trademarks of ACTA, all rights reserved. |
