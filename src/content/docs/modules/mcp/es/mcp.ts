@@ -6,12 +6,19 @@ export const mcp: DocPage = {
   section: "MCP",
   tocItems: [
     "Qué es",
+    "Requisitos",
     "Instalación rápida",
-    "Configuración del cliente MCP",
+    "Claude Desktop",
+    "Claude Code",
+    "Cursor",
+    "VS Code",
+    "Windsurf",
+    "Verificar la conexión",
     "Actualizaciones de documentación",
     "Configuración avanzada",
     "Herramientas disponibles",
     "Recursos disponibles",
+    "Troubleshooting",
     "Cuándo usar este MCP",
   ],
   content: `
@@ -37,6 +44,11 @@ Este servidor MCP:
 - No modifica smart contracts.
 - Solo proporciona acceso de lectura a documentación pública de ACTA.
 
+## Requisitos
+
+- **Node.js 18 o superior** en el PATH (\`npx\` viene incluido).
+- Acceso de red saliente a \`https://docs.acta.build\` para descargar la documentación más reciente. Si no lo tienes, mira el modo offline en Configuración avanzada.
+
 ## Instalación rápida
 
 Ejecuta el servidor directamente con \`npx\`:
@@ -45,11 +57,14 @@ Ejecuta el servidor directamente con \`npx\`:
 npx -y @acta-team/docs-mcp
 \`\`\`
 
-La mayoría de usuarios debería usar este comando sin cambios.
+La mayoría de usuarios debería usar este comando sin cambios. Todos los clientes de abajo ejecutan el mismo comando; solo cambia dónde vive la configuración.
 
-## Configuración del cliente MCP
+## Claude Desktop
 
-Usa esta configuración en un cliente compatible con MCP:
+Edita el archivo de configuración:
+
+- **macOS:** \`~/Library/Application Support/Claude/claude_desktop_config.json\`
+- **Windows:** \`%APPDATA%\\Claude\\claude_desktop_config.json\`
 
 \`\`\`json
 {
@@ -62,7 +77,74 @@ Usa esta configuración en un cliente compatible con MCP:
 }
 \`\`\`
 
-Después de guardar la configuración, reinicia o recarga tu cliente MCP.
+Guarda y reinicia Claude Desktop.
+
+## Claude Code
+
+Desde la terminal, en la raíz de tu proyecto:
+
+\`\`\`bash
+claude mcp add acta-docs -- npx -y @acta-team/docs-mcp
+\`\`\`
+
+Comprueba que quedó registrado con \`claude mcp list\`.
+
+## Cursor
+
+Crea \`.cursor/mcp.json\` en tu proyecto (o el archivo global de MCP de Cursor):
+
+\`\`\`json
+{
+  "mcpServers": {
+    "acta-docs": {
+      "command": "npx",
+      "args": ["-y", "@acta-team/docs-mcp"]
+    }
+  }
+}
+\`\`\`
+
+Abre **Settings > MCP** y confirma que \`acta-docs\` aparece activo.
+
+## VS Code
+
+Crea \`.mcp.json\` en la raíz del workspace (soportado por Copilot Chat en modo agente):
+
+\`\`\`json
+{
+  "servers": {
+    "acta-docs": {
+      "command": "npx",
+      "args": ["-y", "@acta-team/docs-mcp"]
+    }
+  }
+}
+\`\`\`
+
+## Windsurf
+
+Edita \`~/.codeium/windsurf/mcp_config.json\`:
+
+\`\`\`json
+{
+  "mcpServers": {
+    "acta-docs": {
+      "command": "npx",
+      "args": ["-y", "@acta-team/docs-mcp"]
+    }
+  }
+}
+\`\`\`
+
+Recarga los servidores MCP desde el panel de Cascade.
+
+## Verificar la conexión
+
+Con el servidor conectado, pídele al asistente algo que solo pueda responder con la documentación, por ejemplo:
+
+> Lista las páginas de documentación de ACTA disponibles.
+
+Deberías ver que usa la herramienta \`list_acta_docs\`. Si responde de forma genérica sin llamar a ninguna herramienta, revisa el troubleshooting.
 
 ## Actualizaciones de documentación
 
@@ -102,6 +184,14 @@ Los idiomas soportados actualmente son:
 - \`en\`
 - \`es\`
 - \`fr\`
+
+## Troubleshooting
+
+- **\`npx\` o \`node\` no encontrado:** instala Node.js 18+ y asegúrate de que está en el PATH del entorno donde corre el cliente. En Windows, reinicia el cliente después de instalar Node.
+- **El servidor no aparece:** revisa que el JSON sea válido (sin comas colgantes) y reinicia o recarga el cliente por completo.
+- **Sin acceso a red o proxy corporativo:** usa \`ACTA_DOCS_MCP_OFFLINE=1\` para servir la documentación incluida en el paquete, o apunta \`ACTA_DOCS_MCP_DATA_URL\` a una copia interna de confianza.
+- **Documentación desactualizada:** el servidor carga la documentación al iniciar. Reinicia o recarga el cliente para volver a descargarla; no suele hacer falta actualizar el paquete npm.
+- **Primer arranque lento:** la primera ejecución de \`npx\` descarga el paquete. Ejecuciones posteriores usan la caché.
 
 ## Cuándo usar este MCP
 
