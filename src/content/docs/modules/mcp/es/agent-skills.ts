@@ -19,7 +19,7 @@ La **Agent Skill de ACTA** le enseña a un agente de IA de programación a const
 
 Úsala cuando quieras que tu agente escriba integraciones de ACTA sin adivinar: el nombre correcto del paquete, las URLs base, el flujo prepare/submit, la identidad de emisor \`did:stellar\`, los códigos de error y el modelo de seguridad salen de la documentación oficial y no de datos de entrenamiento desactualizados.
 
-- **Página de la skill:** [skills.sh/acta-team/skills/acta](https://www.skills.sh/acta-team/skills/acta)
+- **Página de la skill:** [skills.sh/acta-team/skills/stellar-verifiable-credentials](https://www.skills.sh/acta-team/skills/stellar-verifiable-credentials)
 - **Página del repo:** [skills.sh/acta-team/skills](https://www.skills.sh/acta-team/skills)
 - **Código:** [github.com/ACTA-Team/skills](https://github.com/ACTA-Team/skills)
 
@@ -35,13 +35,13 @@ Instálala en cualquier agente compatible con el CLI de skills:
 # Instalar todas las skills del repo
 npx skills add ACTA-Team/skills
 
-# O solo la skill acta
-npx skills add ACTA-Team/skills/acta
+# O solo la skill de credenciales
+npx skills add ACTA-Team/skills/stellar-verifiable-credentials
 \`\`\`
 
 El CLI escribe la skill en el directorio de skills de tu agente (por ejemplo \`.claude/skills/\` en Claude Code) y el agente la toma automáticamente. Consulta la [documentación de skills.sh](https://www.skills.sh/docs) para detalles por agente.
 
-También puedes copiar la carpeta \`acta/\` del repo directamente en el directorio de skills de tu agente.
+También puedes copiar la carpeta \`stellar-verifiable-credentials/\` del repo directamente en el directorio de skills de tu agente.
 
 ## Qué cubre la skill
 

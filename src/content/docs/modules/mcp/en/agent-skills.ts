@@ -19,7 +19,7 @@ The **ACTA Agent Skill** teaches an AI coding agent how to build with ACTA corre
 
 Use it when you want your coding agent to write ACTA integrations without guessing: the right package name, base URLs, the prepare/submit flow, \`did:stellar\` issuer identity, error codes, and the security model all come from the official docs instead of stale training data.
 
-- **Skill page:** [skills.sh/acta-team/skills/acta](https://www.skills.sh/acta-team/skills/acta)
+- **Skill page:** [skills.sh/acta-team/skills/stellar-verifiable-credentials](https://www.skills.sh/acta-team/skills/stellar-verifiable-credentials)
 - **Repository page:** [skills.sh/acta-team/skills](https://www.skills.sh/acta-team/skills)
 - **Source:** [github.com/ACTA-Team/skills](https://github.com/ACTA-Team/skills)
 
@@ -35,13 +35,13 @@ Install into any supported agent with the skills CLI:
 # Install every skill in the repo
 npx skills add ACTA-Team/skills
 
-# Or install just the acta skill
-npx skills add ACTA-Team/skills/acta
+# Or install just the credentials skill
+npx skills add ACTA-Team/skills/stellar-verifiable-credentials
 \`\`\`
 
 The CLI writes the skill into your agent's skills directory (for example \`.claude/skills/\` for Claude Code) and the agent picks it up automatically. See the [skills.sh docs](https://www.skills.sh/docs) for per-agent details.
 
-You can also copy the \`acta/\` folder from the repo directly into your agent's skills directory.
+You can also copy the \`stellar-verifiable-credentials/\` folder from the repo directly into your agent's skills directory.
 
 ## What the skill covers
 
