@@ -10,6 +10,7 @@ export const registry: DocPage = {
     "Limites de l'enregistrement",
     "Opérations du contrat",
     "Contrats déployés",
+    "États de résolution",
     "Resolver hébergé (did.acta.build)",
     "Endpoints",
     "Endpoint de résolution",
@@ -74,6 +75,25 @@ Les codes d'erreur du contrat sont documentés dans **[Erreurs de contrat](doc:c
 | Mainnet | \`CD6LSWW5ZSXOO5WAIHKQLQ262TW7BPI37PNEVMMA273BAPC65NN2AYXQ\` |
 
 Ce sont les registres utilisés par \`did.acta.build\`, l'API ACTA et les valeurs par défaut des bibliothèques.
+
+## États de résolution
+
+Résoudre un DID qui n'existe pas n'est pas une exception, c'est une réponse. Chaque résultat prend l'une de ces cinq formes : la bibliothèque la signale dans \`didResolutionMetadata.error\`, et le resolver hébergé la traduit en plus en statut HTTP.
+
+| État | \`didDocument\` | \`didResolutionMetadata.error\` | HTTP |
+|------|----------------|--------------------------------|------|
+| **Actif** | Document complet, \`didDocumentMetadata.deactivated: false\` | absent | \`200\` |
+| **Tombstone** | Document dont tous les tableaux de relations sont vides, \`deactivated: true\` | absent | \`410\` |
+| **Introuvable** | \`null\` | \`notFound\` | \`404\` |
+| **DID invalide** | \`null\` | \`invalidDid\` | \`400\` |
+| **RPC injoignable** | \`null\` | \`internalError\` | \`502\` |
+
+- **Un tombstone n'est pas un échec.** Un DID désactivé se résout toujours, et c'est nécessaire : un vérificateur doit distinguer *désactivé* de *n'a jamais existé*. Le drapeau est à sens unique et ne peut pas être remis à zéro.
+- **« Introuvable » ne bascule jamais vers un autre réseau.** Le réseau fait partie du DID, donc les identifiants testnet et mainnet sont lus dans des registres différents.
+- **Le DID invalide est tranché avant tout appel réseau**, par les règles de syntaxe de **[Overview](doc:did-overview)**.
+- **\`internalError\` parle de l'endpoint, pas du DID.** Le nœud RPC Stellar n'a pas répondu. Réessayez, ou pointez \`rpcUrl\` vers un autre nœud.
+
+Dans la bibliothèque TypeScript, \`resolveDidStellar()\` réserve les exceptions aux erreurs de l'appelant : un DID mal formé (\`did_invalid\`) ou une configuration invalide (\`rpc_url_invalid\`, \`contract_id_invalid\`). Tout le reste est renvoyé comme donnée : branchez sur \`didResolutionMetadata.error\`, pas sur \`try/catch\`.
 
 ## Resolver hébergé (did.acta.build)
 

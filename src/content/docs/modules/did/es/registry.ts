@@ -10,6 +10,7 @@ export const registry: DocPage = {
     "Límites del registro",
     "Operaciones del contrato",
     "Contratos desplegados",
+    "Estados de resolución",
     "Resolver alojado (did.acta.build)",
     "Endpoints",
     "Endpoint de resolución",
@@ -74,6 +75,25 @@ Los códigos de error del contrato están documentados en **[Errores de contrato
 | Mainnet | \`CD6LSWW5ZSXOO5WAIHKQLQ262TW7BPI37PNEVMMA273BAPC65NN2AYXQ\` |
 
 Son los registros que usan \`did.acta.build\`, la API de ACTA y los valores por defecto de las librerías.
+
+## Estados de resolución
+
+Resolver un DID que no existe no es una excepción, es una respuesta. Todo resultado llega con una de estas cinco formas: la librería la reporta en \`didResolutionMetadata.error\` y el resolver alojado además la mapea a un estado HTTP.
+
+| Estado | \`didDocument\` | \`didResolutionMetadata.error\` | HTTP |
+|--------|----------------|--------------------------------|------|
+| **Activo** | Documento completo, \`didDocumentMetadata.deactivated: false\` | ausente | \`200\` |
+| **Tombstone** | Documento con todos los arrays de relaciones vacíos, \`deactivated: true\` | ausente | \`410\` |
+| **No encontrado** | \`null\` | \`notFound\` | \`404\` |
+| **DID inválido** | \`null\` | \`invalidDid\` | \`400\` |
+| **RPC inaccesible** | \`null\` | \`internalError\` | \`502\` |
+
+- **Un tombstone no es un fallo.** Un DID desactivado sigue resolviendo, y tiene que hacerlo: un verificador necesita distinguir *desactivado* de *nunca existió*. El flag es de una sola vía y no se puede revertir.
+- **"No encontrado" nunca cae a otra red.** La red es parte del DID, así que los identificadores de testnet y mainnet se leen de registros distintos.
+- **El DID inválido se decide antes de cualquier llamada de red**, con las reglas de sintaxis de **[Overview](doc:did-overview)**.
+- **\`internalError\` habla del endpoint, no del DID.** El nodo RPC de Stellar no respondió. Reintenta, o apunta \`rpcUrl\` a otro nodo.
+
+En la librería de TypeScript, \`resolveDidStellar()\` reserva las excepciones para errores de quien llama: un DID mal formado (\`did_invalid\`) o configuración inválida (\`rpc_url_invalid\`, \`contract_id_invalid\`). Todo lo demás se devuelve como dato, así que ramifica sobre \`didResolutionMetadata.error\` y no sobre \`try/catch\`.
 
 ## Resolver alojado (did.acta.build)
 

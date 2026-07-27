@@ -10,6 +10,7 @@ export const registry: DocPage = {
     "Record limits",
     "Contract operations",
     "Deployed contracts",
+    "Resolution states",
     "Hosted resolver (did.acta.build)",
     "Endpoints",
     "Resolution endpoint",
@@ -74,6 +75,25 @@ Contract error codes are documented in **[Contract errors](doc:contract-errors)*
 | Mainnet | \`CD6LSWW5ZSXOO5WAIHKQLQ262TW7BPI37PNEVMMA273BAPC65NN2AYXQ\` |
 
 These are the registries used by \`did.acta.build\`, the ACTA API, and the libraries' defaults.
+
+## Resolution states
+
+Resolving a DID that does not exist is not an exception, it is an answer. Every outcome comes back as one of five shapes; the library reports it in \`didResolutionMetadata.error\`, and the hosted resolver additionally maps it onto an HTTP status.
+
+| State | \`didDocument\` | \`didResolutionMetadata.error\` | HTTP |
+|-------|----------------|--------------------------------|------|
+| **Active** | Full document, \`didDocumentMetadata.deactivated: false\` | absent | \`200\` |
+| **Tombstone** | Document with every relationship array empty, \`deactivated: true\` | absent | \`410\` |
+| **Not found** | \`null\` | \`notFound\` | \`404\` |
+| **Invalid DID** | \`null\` | \`invalidDid\` | \`400\` |
+| **RPC unreachable** | \`null\` | \`internalError\` | \`502\` |
+
+- **A tombstone is not a failure.** A deactivated DID still resolves, and it has to: a verifier needs to tell *deactivated* apart from *never existed*. The flag is one-way and cannot be reset.
+- **Not found never falls back to another network.** The network is part of the DID, so testnet and mainnet identifiers are read from different registries.
+- **Invalid DID is decided before any network call**, by the syntax rules in **[Overview](doc:did-overview)**.
+- **\`internalError\` is about the endpoint, not the DID.** The Stellar RPC node did not answer. Retry, or point \`rpcUrl\` at another node.
+
+In the TypeScript library, \`resolveDidStellar()\` reserves thrown errors for caller mistakes: a malformed DID string (\`did_invalid\`) or bad configuration (\`rpc_url_invalid\`, \`contract_id_invalid\`). Everything else is returned as data, so branch on \`didResolutionMetadata.error\` rather than on \`try/catch\`.
 
 ## Hosted resolver (did.acta.build)
 
