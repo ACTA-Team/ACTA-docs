@@ -1,10 +1,26 @@
 {
   "name": "@acta-team/docs-mcp",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "MCP server for ACTA documentation.",
+  "mcpName": "io.github.ACTA-Team/docs-mcp",
+  "license": "MIT",
+  "homepage": "https://docs.acta.build",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ACTA-Team/ACTA-docs.git",
+    "directory": "packages/docs-mcp"
+  },
+  "keywords": [
+    "mcp",
+    "modelcontextprotocol",
+    "acta",
+    "verifiable-credentials",
+    "stellar",
+    "documentation"
+  ],
   "type": "module",
   "bin": {
-    "acta-docs-mcp": "./dist/server.js"
+    "acta-docs-mcp": "dist/server.js"
   },
   "files": [
     "dist",

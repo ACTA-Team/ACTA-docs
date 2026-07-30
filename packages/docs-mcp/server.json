@@ -1,0 +1,38 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.ACTA-Team/docs-mcp",
+  "description": "Read-only MCP server for the official ACTA verifiable credentials documentation.",
+  "repository": {
+    "url": "https://github.com/ACTA-Team/ACTA-docs",
+    "source": "github",
+    "subfolder": "packages/docs-mcp"
+  },
+  "version": "0.1.3",
+  "websiteUrl": "https://docs.acta.build",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@acta-team/docs-mcp",
+      "version": "0.1.3",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "ACTA_DOCS_MCP_OFFLINE",
+          "description": "Set to 1 to skip the remote docs fetch and use only the documentation bundled in the package.",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        },
+        {
+          "name": "ACTA_DOCS_MCP_DATA_URL",
+          "description": "Override the remote documentation JSON URL. Only use a source you fully trust.",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}
