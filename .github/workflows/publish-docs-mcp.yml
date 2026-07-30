@@ -1,0 +1,78 @@
+name: Publish docs-mcp
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "docs-mcp-v*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        working-directory: packages/docs-mcp
+        run: npm run build
+
+      - name: Smoke test
+        working-directory: packages/docs-mcp
+        run: node scripts/smoke-test.mjs
+
+      # npmjs.org is the registry end users install from (npx -y @acta-team/docs-mcp).
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          scope: "@acta-team"
+
+      - name: Publish to npmjs.org
+        working-directory: packages/docs-mcp
+        run: npm publish --access public --ignore-scripts
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        continue-on-error: true
+
+      # GitHub Packages: this is what populates the "Packages" panel on the repo page.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://npm.pkg.github.com
+          scope: "@acta-team"
+
+      - name: Publish to GitHub Packages
+        working-directory: packages/docs-mcp
+        run: npm publish --registry=https://npm.pkg.github.com --ignore-scripts
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # OIDC auth: no stored secret, and it does not depend on anyone's org membership.
+      - name: Install mcp-publisher
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" \
+            | tar xz mcp-publisher
+          sudo mv mcp-publisher /usr/local/bin/
+
+      # Re-running for a version that is already published is expected (manual
+      # dispatch, re-run of a tag), and both registries reject it. Tolerate that
+      # here so a repeat run is a no-op instead of a hard failure.
+      - name: Publish to MCP Registry
+        working-directory: packages/docs-mcp
+        run: |
+          mcp-publisher login github-oidc
+          mcp-publisher publish
+        continue-on-error: true
