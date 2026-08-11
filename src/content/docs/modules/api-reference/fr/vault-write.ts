@@ -251,7 +251,7 @@ Définit le nouveau propriétaire du coffre (admin du coffre). Doit être signé
 
 ## Coffre sponsorisé
 
-Déploiement de coffre dans lequel un **sponsor** invoque \`deploy_sponsored\` sur la **vc-vault-factory** au lieu que le propriétaire déploie son propre coffre. On-chain, le sponsoring est ouvert (toute adresse peut sponsoriser), mais la route HTTP **\`POST /contracts/sponsored-vault/create\`** exige une API key avec le rôle **admin**.
+Déploiement de coffre dans lequel un **sponsor** invoque \`deploy_sponsored\` sur la **vc-vault-factory** au lieu que le propriétaire déploie son propre coffre. On-chain, le sponsoring est ouvert (toute adresse peut sponsoriser), et la route HTTP **\`POST /contracts/sponsored-vault/create\`** fait de même : toute API key standard peut sponsoriser, à condition que \`sponsor\` soit le portefeuille lié à cette clé.
 
 Voir **Coffre sponsorisé** (\`api-sponsored-vault\`) pour la sémantique du contrat, l'endpoint de création et \`sponsoredVaultCreate\` dans le Credentials SDK.
 

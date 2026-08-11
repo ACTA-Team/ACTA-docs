@@ -61,7 +61,9 @@ Las **rutas públicas** no necesitan API key: \`GET /health\`, \`GET /config\`, 
 
 **Enforcement de propiedad:** los endpoints que exponen o escriben datos de credenciales de un holder (\`/contracts/vc/issue\`, \`/contracts/vc/batch-issue\`, \`/contracts/vault/list-vc-ids\`, \`/contracts/vault/get-vc\`, \`/contracts/vault/push\`) requieren además que el \`owner\` (o \`fromOwner\`) de la solicitud coincida con el \`wallet_address\` vinculado a tu API key. Las keys con rol admin están exentas. \`verify-vc\` está intencionalmente abierto a cualquier key válida para que terceros puedan verificar credenciales.
 
-Las **rutas admin** (\`/admin/*\`, \`/contracts/admin/*\` y \`POST /contracts/sponsored-vault/create\`) requieren una API key con rol **admin**.
+**Enforcement de sponsor:** \`POST /contracts/sponsored-vault/create\` está abierto a keys estándar, pero el \`sponsor\` (y el \`sourcePublicKey\`, si se envía) debe coincidir con el \`wallet_address\` vinculado a tu API key, de modo que solo puedas pagar un despliegue con tu propia cuenta. El \`owner\` queda deliberadamente sin restricción: patrocinar la bóveda de otra persona es justamente para lo que sirve el endpoint.
+
+Las **rutas admin** (\`/admin/*\` y \`/contracts/admin/*\`) requieren una API key con rol **admin**.
 
 ### Obtener una API Key
 

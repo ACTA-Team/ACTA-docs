@@ -251,7 +251,7 @@ Establece el nuevo propietario de la bóveda (admin de bóveda). Debe ser firmad
 
 ## Bóveda patrocinada
 
-Despliegue de bóveda en el que un **sponsor** invoca \`deploy_sponsored\` en el **vc-vault-factory** en lugar de que el owner despliegue su propia bóveda. On-chain, el patrocinio es abierto (cualquier dirección puede patrocinar), pero la ruta HTTP **\`POST /contracts/sponsored-vault/create\`** requiere una API key con rol **admin**.
+Despliegue de bóveda en el que un **sponsor** invoca \`deploy_sponsored\` en el **vc-vault-factory** en lugar de que el owner despliegue su propia bóveda. On-chain, el patrocinio es abierto (cualquier dirección puede patrocinar), y la ruta HTTP **\`POST /contracts/sponsored-vault/create\`** hace lo mismo: cualquier API key estándar puede patrocinar, siempre que \`sponsor\` sea la wallet vinculada a esa key.
 
 Consulta **Bóveda patrocinada (Sponsored Vault)** (\`api-sponsored-vault\`) para semántica del contrato, el endpoint create y \`sponsoredVaultCreate\` en el SDK de credenciales.
 

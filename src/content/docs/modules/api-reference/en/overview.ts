@@ -61,7 +61,9 @@ X-ACTA-Key: your_api_key_here
 
 **Ownership enforcement:** endpoints that expose or write a holder's credential data (\`/contracts/vc/issue\`, \`/contracts/vc/batch-issue\`, \`/contracts/vault/list-vc-ids\`, \`/contracts/vault/get-vc\`, \`/contracts/vault/push\`) additionally require the \`owner\` (or \`fromOwner\`) in the request to match the \`wallet_address\` bound to your API key. Admin-role keys are exempt. \`verify-vc\` is intentionally open to any valid key so third parties can verify credentials.
 
-**Admin routes** (\`/admin/*\`, \`/contracts/admin/*\`, and \`POST /contracts/sponsored-vault/create\`) require an API key with the **admin** role.
+**Sponsor enforcement:** \`POST /contracts/sponsored-vault/create\` is open to standard keys, but the \`sponsor\` (and \`sourcePublicKey\`, when sent) must match the \`wallet_address\` bound to your API key, so you can only pay for a deployment with your own account. The \`owner\` is deliberately unrestricted: sponsoring somebody else's vault is what the endpoint is for.
+
+**Admin routes** (\`/admin/*\` and \`/contracts/admin/*\`) require an API key with the **admin** role.
 
 ### Getting an API Key
 

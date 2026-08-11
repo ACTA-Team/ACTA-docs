@@ -98,7 +98,7 @@ Cada escritura acepta un payload de unión: el objeto de **prepare** (los campos
 | \`vaultSetNewOwner\` | \`/contracts/vault/set-new-owner\` | \`owner\`, \`newOwner\`, \`sourcePublicKey\` |
 | \`vaultSetDid\` | \`/contracts/vault/set-vault-did\` | \`owner\`, \`didUri\`, \`sourcePublicKey?\`, \`userSalt?\`, \`vaultContract?\` |
 | \`vaultPush\` | \`/contracts/vault/push\` | \`fromOwner\`, \`toOwner\`, \`vcId\`, \`issuer\`, \`sourcePublicKey\` |
-| \`sponsoredVaultCreate\` | \`/contracts/sponsored-vault/create\` | \`sponsor\`, \`owner\`, \`didUri\`, \`sourcePublicKey\` (**requiere API key de admin**) |
+| \`sponsoredVaultCreate\` | \`/contracts/sponsored-vault/create\` | \`sponsor\`, \`owner\`, \`didUri\`, \`sourcePublicKey\` (\`sponsor\` debe ser la wallet de la key) |
 
 ## Ejemplo manual de prepare/submit
 

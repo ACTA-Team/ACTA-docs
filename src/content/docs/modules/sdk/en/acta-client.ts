@@ -98,7 +98,7 @@ Every write accepts a union payload: the **prepare** object (operation fields) o
 | \`vaultSetNewOwner\` | \`/contracts/vault/set-new-owner\` | \`owner\`, \`newOwner\`, \`sourcePublicKey\` |
 | \`vaultSetDid\` | \`/contracts/vault/set-vault-did\` | \`owner\`, \`didUri\`, \`sourcePublicKey?\`, \`userSalt?\`, \`vaultContract?\` |
 | \`vaultPush\` | \`/contracts/vault/push\` | \`fromOwner\`, \`toOwner\`, \`vcId\`, \`issuer\`, \`sourcePublicKey\` |
-| \`sponsoredVaultCreate\` | \`/contracts/sponsored-vault/create\` | \`sponsor\`, \`owner\`, \`didUri\`, \`sourcePublicKey\` (**admin API key required**) |
+| \`sponsoredVaultCreate\` | \`/contracts/sponsored-vault/create\` | \`sponsor\`, \`owner\`, \`didUri\`, \`sourcePublicKey\` (\`sponsor\` must be the key's wallet) |
 
 ## Manual prepare/submit example
 

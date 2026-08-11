@@ -25,7 +25,7 @@ For comparison, \`POST /contracts/vault/create\` prepares the owner's own factor
 | **Sponsor** | Signs the transaction. Pays network/fees like any invoke. |
 | **Owner** | Receives the vault; address stored as vault admin; \`didUri\` stored for the vault. |
 
-**Open sponsorship on-chain, admin-gated over HTTP:** on the contract, any sponsor address may call \`deploy_sponsored\` for an owner (subject to Stellar/Soroban auth and fees) - there is no sponsor allowlist and no open-to-all toggle. The ACTA API route, however, requires an **admin-role API key** (see below).
+**Open sponsorship, on-chain and over HTTP:** on the contract, any sponsor address may call \`deploy_sponsored\` for an owner (subject to Stellar/Soroban auth and fees) - there is no sponsor allowlist and no open-to-all toggle. The ACTA API route matches that: any **standard API key** can sponsor, paying with its own wallet.
 
 The factory derives the vault address deterministically from \`(factory, owner, userSalt)\`, so a sponsored deploy and a self-service deploy for the same owner + salt resolve to the same vault. Calling deploy again for an owner that already has a vault at that salt fails on-chain (already deployed).
 
@@ -45,9 +45,9 @@ The API's \`sponsor\` request field maps to the contract's \`deployer\` paramete
 
 ## HTTP API
 
-This route requires an **API key with the admin role** (\`X-ACTA-Key\` header) and is rate limited per key. Standard keys receive \`403\`. Prefix paths with your network base URL (e.g. \`https://api.testnet.acta.build\`).
+This route accepts any **standard API key** (\`X-ACTA-Key\` header) and is rate limited per key. Prefix paths with your network base URL (e.g. \`https://api.testnet.acta.build\`).
 
-> **Getting an admin key:** admin keys are not self-service; they are provisioned by the ACTA team. Reach out via **[Support](doc:support)** or [Discord](https://discord.gg/DsUSE3aMDZ) if your organization needs sponsored onboarding.
+> **You can only sponsor with your own account.** \`sponsor\` must be the \`wallet_address\` linked to your API key, and \`sourcePublicKey\`, when sent, must be that same address; anything else returns \`403\`. A key with no linked wallet also returns \`403\`. The **owner** is deliberately unrestricted: paying for somebody else's vault is the whole point of the endpoint.
 
 ### POST /contracts/sponsored-vault/create
 
@@ -69,7 +69,7 @@ Prepares or submits \`deploy_sponsored\`.
 - **owner** (required): Vault owner (\`G...\`).
 - **didUri** (required): DID URI stored for the vault.
 - **userSalt** (optional): 32-byte salt selecting the owner's vault; defaults to 32 zero bytes (one canonical vault per owner).
-- **sourcePublicKey** (required): Stellar account used as the **transaction source** when the API prepares the XDR. The signed invoke must still authorize **sponsor** on the contract; typically the sponsor account is both \`sponsor\` and the signing/source account.
+- **sourcePublicKey** (required): Stellar account used as the **transaction source** when the API prepares the XDR, which makes it the account that pays the network fee. For standard keys it must equal \`sponsor\`, so the sponsor is always both the authorizing and the paying account.
 
 **Submit body:** \`{ "signedXdr": "AAAA..." }\`
 
@@ -86,6 +86,7 @@ This write endpoint follows the standard two-step flow:
 ## Operational notes
 
 - Avoid calling **create** when the owner already has a vault at the chosen \`userSalt\`; the on-chain deploy fails if the vault already exists. Prefer an on-chain or API read of vault existence first (see vault read operations).
+- **The vault address is deterministic, so it can be claimed first.** Because \`(factory, owner, userSalt)\` fixes the address and sponsorship is open, anyone can deploy an owner's canonical vault before the owner does, with a \`didUri\` of their choosing. This is not a takeover: the constructor stores the **owner** as both vault owner and vault admin, and \`set_vault_did\` requires the owner's auth, so the owner can correct the DID. What it does mean is that an owner's own deploy can fail because the address is already taken, and that a vault's initial \`didUri\` is only as trustworthy as whoever deployed it. Read \`vault_did\` and confirm it before treating it as the owner's.
 - Issuance fees are charged on-chain by the vault (via the factory's \`quote_fee\`) and paid by the issuer at issuance time, independently of who sponsored the vault deploy.
     `,
 };

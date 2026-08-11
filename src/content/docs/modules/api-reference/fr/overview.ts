@@ -61,7 +61,9 @@ X-ACTA-Key: your_api_key_here
 
 **Contrôle de propriété :** les endpoints qui exposent ou écrivent les données de credential d'un titulaire (\`/contracts/vc/issue\`, \`/contracts/vc/batch-issue\`, \`/contracts/vault/list-vc-ids\`, \`/contracts/vault/get-vc\`, \`/contracts/vault/push\`) exigent en plus que l'\`owner\` (ou le \`fromOwner\`) de la requête corresponde à la \`wallet_address\` liée à votre API key. Les clés de rôle admin en sont exemptées. \`verify-vc\` est volontairement ouvert à toute clé valide afin que des tiers puissent vérifier des credentials.
 
-**Les routes admin** (\`/admin/*\`, \`/contracts/admin/*\` et \`POST /contracts/sponsored-vault/create\`) exigent une API key avec le rôle **admin**.
+**Contrôle du sponsor :** \`POST /contracts/sponsored-vault/create\` est ouvert aux clés standard, mais le \`sponsor\` (et le \`sourcePublicKey\`, s'il est envoyé) doit correspondre à la \`wallet_address\` liée à votre API key, de sorte que vous ne puissiez payer un déploiement qu'avec votre propre compte. L'\`owner\` reste délibérément sans restriction : sponsoriser le coffre de quelqu'un d'autre est la raison d'être de cet endpoint.
+
+**Les routes admin** (\`/admin/*\` et \`/contracts/admin/*\`) exigent une API key avec le rôle **admin**.
 
 ### Obtenir une API Key
 

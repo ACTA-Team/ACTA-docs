@@ -25,7 +25,7 @@ Un **coffre sponsorisé** est un coffre ACTA mono-locataire normal, déployé vi
 | **Sponsor** | Signe la transaction. Paie le réseau/les frais comme pour tout invoke. |
 | **Propriétaire** | Reçoit le coffre ; adresse stockée comme admin du coffre ; \`didUri\` stocké pour le coffre. |
 
-**Sponsoring ouvert on-chain, restreint aux admins en HTTP :** sur le contrat, toute adresse sponsor peut appeler \`deploy_sponsored\` pour un propriétaire (sous réserve de l'auth et des frais Stellar/Soroban) - il n'y a ni liste d'autorisation de sponsors ni interrupteur d'ouverture à tous. La route de l'API ACTA, en revanche, exige une **API key de rôle admin** (voir ci-dessous).
+**Sponsoring ouvert, on-chain comme en HTTP :** sur le contrat, toute adresse sponsor peut appeler \`deploy_sponsored\` pour un propriétaire (sous réserve de l'auth et des frais Stellar/Soroban) - il n'y a ni liste d'autorisation de sponsors ni interrupteur d'ouverture à tous. La route de l'API ACTA fait de même : toute **API key standard** peut sponsoriser, en payant avec son propre portefeuille.
 
 La factory dérive l'adresse du coffre de manière déterministe à partir de \`(factory, owner, userSalt)\`, si bien qu'un déploiement sponsorisé et un déploiement en libre-service pour le même propriétaire + sel résolvent le même coffre. Appeler à nouveau le déploiement pour un propriétaire qui possède déjà un coffre à ce sel échoue on-chain (déjà déployé).
 
@@ -45,9 +45,9 @@ Le champ de requête \`sponsor\` de l'API correspond au paramètre \`deployer\` 
 
 ## API HTTP
 
-Cette route exige une **API key avec le rôle admin** (en-tête \`X-ACTA-Key\`) et est soumise à un rate limit par clé. Les clés standard reçoivent \`403\`. Préfixez les chemins avec l'URL de base de votre réseau (par exemple \`https://api.testnet.acta.build\`).
+Cette route accepte toute **API key standard** (en-tête \`X-ACTA-Key\`) et est soumise à un rate limit par clé. Préfixez les chemins avec l'URL de base de votre réseau (par exemple \`https://api.testnet.acta.build\`).
 
-> **Obtenir une clé admin :** les clés admin ne sont pas en libre-service ; elles sont provisionnées par l'équipe ACTA. Contactez-nous via le **[Support](doc:support)** ou [Discord](https://discord.gg/DsUSE3aMDZ) si votre organisation a besoin d'un onboarding sponsorisé.
+> **Vous ne pouvez sponsoriser qu'avec votre propre compte.** \`sponsor\` doit être la \`wallet_address\` liée à votre API key, et \`sourcePublicKey\`, s'il est envoyé, doit être cette même adresse ; toute autre valeur renvoie \`403\`. Une clé sans portefeuille lié reçoit également \`403\`. Le **propriétaire** reste délibérément sans restriction : payer le coffre de quelqu'un d'autre est précisément la raison d'être de cet endpoint.
 
 ### POST /contracts/sponsored-vault/create
 
@@ -69,7 +69,7 @@ Prépare ou soumet \`deploy_sponsored\`.
 - **owner** (requis) : propriétaire du coffre (\`G...\`).
 - **didUri** (requis) : URI du DID stocké pour le coffre.
 - **userSalt** (optionnel) : sel de 32 octets sélectionnant le coffre du propriétaire ; 32 octets à zéro par défaut (un coffre canonique par propriétaire).
-- **sourcePublicKey** (requis) : compte Stellar utilisé comme **source de la transaction** lorsque l'API prépare le XDR. L'invoke signé doit tout de même autoriser **sponsor** sur le contrat ; en général, le compte sponsor est à la fois \`sponsor\` et le compte signataire/source.
+- **sourcePublicKey** (requis) : compte Stellar utilisé comme **source de la transaction** lorsque l'API prépare le XDR, ce qui en fait le compte qui paie les frais de réseau. Pour les clés standard, il doit être égal à \`sponsor\`, de sorte que le sponsor soit toujours à la fois le compte qui autorise et celui qui paie.
 
 **Corps submit :** \`{ "signedXdr": "AAAA..." }\`
 
@@ -86,6 +86,7 @@ Cet endpoint d'écriture suit le flux standard en deux étapes :
 ## Notes opérationnelles
 
 - Évitez d'appeler **create** lorsque le propriétaire possède déjà un coffre au \`userSalt\` choisi ; le déploiement on-chain échoue si le coffre existe déjà. Privilégiez d'abord une lecture on-chain ou via l'API de l'existence du coffre (voir les opérations de lecture de coffre).
+- **L'adresse du coffre est déterministe, elle peut donc être occupée en premier.** Comme \`(factory, owner, userSalt)\` fixe l'adresse et que le sponsoring est ouvert, n'importe qui peut déployer le coffre canonique d'un propriétaire avant lui, avec le \`didUri\` de son choix. Ce n'est pas une prise de contrôle : le constructeur enregistre le **propriétaire** comme propriétaire et admin du coffre, et \`set_vault_did\` exige son auth, il peut donc corriger le DID. En revanche, le déploiement du propriétaire lui-même peut échouer car l'adresse est déjà prise, et le \`didUri\` initial d'un coffre ne vaut que ce que vaut celui qui l'a déployé. Lisez \`vault_did\` et vérifiez-le avant de le considérer comme celui du propriétaire.
 - Les frais d'émission sont prélevés on-chain par le coffre (via le \`quote_fee\` de la factory) et payés par l'émetteur au moment de l'émission, indépendamment de qui a sponsorisé le déploiement du coffre.
     `,
 };

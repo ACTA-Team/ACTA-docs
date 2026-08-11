@@ -251,7 +251,7 @@ Sets the new vault owner (vault admin). Must be signed by the current owner.
 
 ## Sponsored vault
 
-Vault deployment where a **sponsor** invokes \`deploy_sponsored\` on the **vc-vault-factory** instead of the owner deploying their own vault. On-chain, sponsorship is open (any address may sponsor), but the HTTP route **\`POST /contracts/sponsored-vault/create\`** requires an API key with the **admin** role.
+Vault deployment where a **sponsor** invokes \`deploy_sponsored\` on the **vc-vault-factory** instead of the owner deploying their own vault. On-chain, sponsorship is open (any address may sponsor), and the HTTP route **\`POST /contracts/sponsored-vault/create\`** matches that: any standard API key can sponsor, provided \`sponsor\` is the wallet bound to that key.
 
 See **Sponsored Vault** (\`api-sponsored-vault\`) for contract semantics, the create endpoint, and \`sponsoredVaultCreate\` in the Credentials SDK.
 

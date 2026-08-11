@@ -25,7 +25,7 @@ Para comparar, \`POST /contracts/vault/create\` prepara el despliegue del propio
 | **Sponsor** | Firma la transacción. Paga red/comisiones como cualquier invocación. |
 | **Owner** | Recibe la bóveda; su dirección se guarda como admin de la bóveda; \`didUri\` se guarda para la bóveda. |
 
-**Patrocinio abierto on-chain, restringido a admin por HTTP:** en el contrato, cualquier dirección sponsor puede llamar a \`deploy_sponsored\` para un owner (sujeto a la auth y comisiones de Stellar/Soroban) - no hay lista de sponsors permitidos ni un interruptor de "abierto a todos". La ruta de la API de ACTA, sin embargo, requiere una **API key con rol admin** (ver abajo).
+**Patrocinio abierto, on-chain y por HTTP:** en el contrato, cualquier dirección sponsor puede llamar a \`deploy_sponsored\` para un owner (sujeto a la auth y comisiones de Stellar/Soroban) - no hay lista de sponsors permitidos ni un interruptor de "abierto a todos". La ruta de la API de ACTA hace lo mismo: cualquier **API key estándar** puede patrocinar, pagando con su propia wallet.
 
 El factory deriva la dirección de la bóveda de forma determinista a partir de \`(factory, owner, userSalt)\`, por lo que un despliegue patrocinado y un despliegue autoservicio para el mismo owner + salt resuelven a la misma bóveda. Volver a desplegar para un owner que ya tiene bóveda en ese salt falla on-chain (ya desplegada).
 
@@ -45,9 +45,9 @@ El campo \`sponsor\` de la API se mapea al parámetro \`deployer\` del contrato.
 
 ## API HTTP
 
-Esta ruta requiere una **API key con rol admin** (header \`X-ACTA-Key\`) y tiene límite de tasa por key. Las keys estándar reciben \`403\`. Antepón las rutas con la URL base de tu red (ej. \`https://api.testnet.acta.build\`).
+Esta ruta acepta cualquier **API key estándar** (header \`X-ACTA-Key\`) y tiene límite de tasa por key. Antepón las rutas con la URL base de tu red (ej. \`https://api.testnet.acta.build\`).
 
-> **Cómo conseguir una key admin:** las keys admin no son de autoservicio; las aprovisiona el equipo de ACTA. Contacta vía **[Soporte](doc:support)** o [Discord](https://discord.gg/DsUSE3aMDZ) si tu organización necesita onboarding patrocinado.
+> **Solo puedes patrocinar con tu propia cuenta.** \`sponsor\` debe ser la \`wallet_address\` vinculada a tu API key, y \`sourcePublicKey\`, si lo envías, debe ser esa misma dirección; cualquier otra cosa devuelve \`403\`. Una key sin wallet vinculada también recibe \`403\`. El **owner** queda deliberadamente sin restricción: pagar la bóveda de otra persona es justamente para lo que sirve el endpoint.
 
 ### POST /contracts/sponsored-vault/create
 
@@ -69,7 +69,7 @@ Prepara o envía \`deploy_sponsored\`.
 - **owner** (requerido): Owner de la bóveda (\`G...\`).
 - **didUri** (requerido): URI del DID guardado para la bóveda.
 - **userSalt** (opcional): salt de 32 bytes que selecciona la bóveda del owner; por defecto 32 bytes en cero (una bóveda canónica por owner).
-- **sourcePublicKey** (requerido): Cuenta Stellar usada como **fuente de transacción** cuando la API prepara el XDR. La invocación firmada debe autorizar igualmente al **sponsor** en el contrato; normalmente la cuenta del sponsor es a la vez \`sponsor\` y la cuenta firmante/fuente.
+- **sourcePublicKey** (requerido): Cuenta Stellar usada como **fuente de transacción** cuando la API prepara el XDR, lo que la convierte en la cuenta que paga la comisión de red. Para keys estándar debe ser igual a \`sponsor\`, de modo que el sponsor sea siempre a la vez la cuenta que autoriza y la que paga.
 
 **Cuerpo submit:** \`{ "signedXdr": "AAAA..." }\`
 
@@ -86,6 +86,7 @@ Este endpoint de escritura sigue el flujo estándar de dos pasos:
 ## Notas operativas
 
 - Evita llamar a **create** cuando el owner ya tiene bóveda en el \`userSalt\` elegido; el despliegue on-chain falla si la bóveda ya existe. Mejor consulta la existencia de la bóveda on-chain o por API primero (ver operaciones de lectura de bóveda).
+- **La dirección de la bóveda es determinista, así que se puede ocupar primero.** Como \`(factory, owner, userSalt)\` fija la dirección y el patrocinio es abierto, cualquiera puede desplegar la bóveda canónica de un owner antes que él, con el \`didUri\` que elija. No es una toma de control: el constructor guarda al **owner** como dueño y admin de la bóveda, y \`set_vault_did\` exige la auth del owner, así que él puede corregir el DID. Lo que sí implica es que el despliegue propio del owner puede fallar porque la dirección ya está ocupada, y que el \`didUri\` inicial de una bóveda solo es tan confiable como quien la desplegó. Lee \`vault_did\` y confírmalo antes de tratarlo como del owner.
 - Las comisiones de emisión se cobran on-chain en la bóveda (vía \`quote_fee\` del factory) y las paga el emisor al momento de emitir, con independencia de quién patrocinó el despliegue de la bóveda.
     `,
 };
