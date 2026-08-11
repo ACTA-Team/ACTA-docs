@@ -59,7 +59,15 @@ X-ACTA-Key: your_api_key_here
 
 **Public routes** need no API key: \`GET /health\`, \`GET /config\`, \`POST /public/api-keys\` (rate limited per IP), and \`GET /share/:id\` (signature-gated).
 
-**Ownership enforcement:** endpoints that expose or write a holder's credential data (\`/contracts/vc/issue\`, \`/contracts/vc/batch-issue\`, \`/contracts/vault/list-vc-ids\`, \`/contracts/vault/get-vc\`, \`/contracts/vault/push\`) additionally require the \`owner\` (or \`fromOwner\`) in the request to match the \`wallet_address\` bound to your API key. Admin-role keys are exempt. \`verify-vc\` is intentionally open to any valid key so third parties can verify credentials.
+**Ownership enforcement:** endpoints that read or move a holder's credential data (\`/contracts/vault/list-vc-ids\`, \`/contracts/vault/get-vc\`, \`/contracts/vault/push\`) require the \`owner\` (or \`fromOwner\`) in the request to match the \`wallet_address\` bound to your API key. Admin-role keys are exempt. \`verify-vc\` is intentionally open to any valid key so third parties can verify credentials.
+
+**Issuer enforcement:** \`/contracts/vc/issue\` and \`/contracts/vc/batch-issue\` bind the **\`issuer\`** instead (and \`sourcePublicKey\`, when sent). The \`owner\` is the recipient and is deliberately unrestricted, so you can issue to anyone. Binding the recipient, as these routes previously did, meant you could only issue credentials to yourself.
+
+Issuance is authorized on-chain regardless: \`issue\` calls \`issuer_addr.require_auth()\`, so no API key can issue in a wallet's name without that wallet's signature.
+
+**Scopes:** a key may optionally carry scopes that narrow what it can do: \`credentials:issue\`, \`credentials:read\`, \`credentials:revoke\`, \`vault:write\`, \`vault:admin\`, \`sponsor\`. Pass a \`scopes\` array to \`POST /public/api-keys\` to get a narrow key, for example an integration that issues but can never read a vault's contents. A key with no scopes is unrestricted, so every key issued before scopes existed keeps working unchanged. A missing scope answers \`403 insufficient_scope\`.
+
+**Wallet sign-in (browsers):** \`POST /auth/challenge\` returns a transaction for a wallet to sign and \`POST /auth/verify\` exchanges the signed result for a session token, usable as \`Authorization: Bearer <token>\` anywhere an API key is. A session can only be minted by whoever controls the wallet, which a bearer API key can never prove, so browser apps should prefer it over storing a key. The challenge is built to be unsubmittable (sequence 0, two minute time bound, a \`manageData\` operation that changes nothing), so signing it moves no funds. API keys remain the right credential for server-side integrations.
 
 **Sponsor enforcement:** \`POST /contracts/sponsored-vault/create\` is open to standard keys, but the \`sponsor\` (and \`sourcePublicKey\`, when sent) must match the \`wallet_address\` bound to your API key, so you can only pay for a deployment with your own account. The \`owner\` is deliberately unrestricted: sponsoring somebody else's vault is what the endpoint is for.
 
