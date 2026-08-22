@@ -29,7 +29,7 @@ Checks the API status. No authentication required.
 **Example:**
 
 \`\`\`bash
-curl https://api.testnet.acta.build/health
+curl https://sandbox-api.acta.build/health
 \`\`\`
 
 :::health-try:::
@@ -63,7 +63,7 @@ Gets public network configuration. **No authentication required** (public bootst
 **Example:**
 
 \`\`\`bash
-curl https://api.testnet.acta.build/config
+curl https://sandbox-api.acta.build/config
 \`\`\`
     `,
 };

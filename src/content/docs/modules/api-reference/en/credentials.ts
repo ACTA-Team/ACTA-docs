@@ -75,7 +75,7 @@ The credential **holder** is identified by \`credentialSubject.id\` (a DID) insi
 
 \`\`\`bash
 # Prepare
-curl -X POST https://api.testnet.acta.build/contracts/vc/issue \\
+curl -X POST https://sandbox-api.acta.build/contracts/vc/issue \\
   -H "X-ACTA-Key: your_key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -88,7 +88,7 @@ curl -X POST https://api.testnet.acta.build/contracts/vc/issue \\
   }'
 
 # Submit (after signing)
-curl -X POST https://api.testnet.acta.build/contracts/vc/issue \\
+curl -X POST https://sandbox-api.acta.build/contracts/vc/issue \\
   -H "X-ACTA-Key: your_key" \\
   -H "Content-Type: application/json" \\
   -d '{

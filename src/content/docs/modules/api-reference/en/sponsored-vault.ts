@@ -45,7 +45,7 @@ The API's \`sponsor\` request field maps to the contract's \`deployer\` paramete
 
 ## HTTP API
 
-This route accepts any **standard API key** (\`X-ACTA-Key\` header) and is rate limited per key. Prefix paths with your network base URL (e.g. \`https://api.testnet.acta.build\`).
+This route accepts any **standard API key** (\`X-ACTA-Key\` header) and is rate limited per key. Prefix paths with your network base URL (e.g. \`https://sandbox-api.acta.build\`).
 
 > **You can only sponsor with your own account.** \`sponsor\` must be the \`wallet_address\` linked to your API key, and \`sourcePublicKey\`, when sent, must be that same address; anything else returns \`403\`. A key with no linked wallet also returns \`403\`. The **owner** is deliberately unrestricted: paying for somebody else's vault is the whole point of the endpoint.
 

@@ -60,7 +60,6 @@ Las rutas desconocidas devuelven \`404 not_found\`; las excepciones no manejadas
 | Código | Estado | Significado y qué intentar |
 |--------|--------|----------------------------|
 | \`401\` (key ausente/inválida) | 401 | Falta el header \`X-ACTA-Key\`, la key es desconocida o expiró. **Intenta:** crea una key (ver [API Keys](doc:api-keys)) y envíala en cada request a \`/contracts/*\`. |
-| \`forbidden_origin\` | 403 | \`POST /public/api-keys\` llamado desde un Origin fuera de la allowlist. **Intenta:** crea las keys desde el dApp. |
 | \`network_mismatch\` | 400 | \`metadata.network\` no coincide con la red de la URL base. **Intenta:** alinea el body con el host que llamas. |
 | Violación de propiedad | 403 | En \`issue\`, \`batch-issue\`, \`list-vc-ids\`, \`get-vc\` y \`push\`, el \`owner\` / \`fromOwner\` debe ser la wallet vinculada a tu API key (las keys admin están exentas). **Intenta:** usa la key creada para esa wallet. |
 

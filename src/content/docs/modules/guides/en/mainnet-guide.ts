@@ -24,7 +24,7 @@ Everything you validated on testnet works the same on mainnet, but four things c
 
 | Aspect | Testnet | Mainnet |
 |--------|---------|---------|
-| Base URL | \`https://api.testnet.acta.build\` | \`https://api.mainnet.acta.build\` |
+| Base URL | \`https://sandbox-api.acta.build\` | \`https://production-api.acta.build\` |
 | SDK constant | \`testNet\` | \`mainNet\` |
 | Issuance fee | 5 XLM (native, no trustline needed) | **1 USDC** per credential |
 | Fee prerequisite | Funded testnet account | **USDC trustline + balance** on the issuer wallet |
@@ -88,7 +88,7 @@ Network passphrase: \`Public Global Stellar Network ; September 2015\`. You can 
 
 ## Gotchas
 
-- **Swagger is testnet-only**: \`https://api.mainnet.acta.build/docs\` returns 404 by design. Explore on testnet; the paths are identical.
+- **Swagger is testnet-only**: \`https://production-api.acta.build/docs\` returns 404 by design. Explore on testnet; the paths are identical.
 - **Wallet network**: make sure your wallet (e.g. Freighter) is switched to Mainnet before signing, or signatures will carry the wrong network passphrase.
 - **Keep both environments**: nothing forces you to abandon testnet; use it for development forever and reserve mainnet keys for production.
     `,

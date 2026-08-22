@@ -40,7 +40,7 @@ Cuando un holder comparte una credencial desde la dApp, el enlace (o su código 
 \`verify-vc\` está abierto intencionalmente a **cualquier API key válida**, sin comprobación de propiedad, precisamente para que terceros puedan verificar credenciales que no les pertenecen. Devuelve solo el estado, nunca el contenido.
 
 \`\`\`bash
-curl -X POST https://api.testnet.acta.build/contracts/vault/verify-vc \\
+curl -X POST https://sandbox-api.acta.build/contracts/vault/verify-vc \\
   -H "X-ACTA-Key: your_key" \\
   -H "Content-Type: application/json" \\
   -d '{ "owner": "G...", "vcId": "credential-123" }'

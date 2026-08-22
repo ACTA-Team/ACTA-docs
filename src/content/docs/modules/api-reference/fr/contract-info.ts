@@ -48,7 +48,7 @@ Renvoie la chaîne de version du contrat de **coffre** d'un propriétaire. Les c
 
 \`\`\`bash
 curl -H "X-ACTA-Key: your_key" \\
-  "https://api.testnet.acta.build/contracts/version?owner=G...&sourcePublicKey=G..."
+  "https://sandbox-api.acta.build/contracts/version?owner=G...&sourcePublicKey=G..."
 \`\`\`
 
 ## Frais

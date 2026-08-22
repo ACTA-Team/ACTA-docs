@@ -48,7 +48,7 @@ Devuelve la cadena de versión del contrato de **bóveda** de un owner. Las bóv
 
 \`\`\`bash
 curl -H "X-ACTA-Key: your_key" \\
-  "https://api.testnet.acta.build/contracts/version?owner=G...&sourcePublicKey=G..."
+  "https://sandbox-api.acta.build/contracts/version?owner=G...&sourcePublicKey=G..."
 \`\`\`
 
 ## Comisiones

@@ -24,7 +24,7 @@ Todo lo que validaste en testnet funciona igual en mainnet, pero cambian cuatro 
 
 | Aspecto | Testnet | Mainnet |
 |--------|---------|---------|
-| URL base | \`https://api.testnet.acta.build\` | \`https://api.mainnet.acta.build\` |
+| URL base | \`https://sandbox-api.acta.build\` | \`https://production-api.acta.build\` |
 | Constante del SDK | \`testNet\` | \`mainNet\` |
 | Comisión de emisión | 5 XLM (nativo, sin trustline) | **1 USDC** por credencial |
 | Prerrequisito de la comisión | Cuenta de testnet fondeada | **Trustline de USDC + saldo** en la wallet del emisor |
@@ -88,7 +88,7 @@ Passphrase de red: \`Public Global Stellar Network ; September 2015\`. Puedes co
 
 ## Puntos a tener en cuenta
 
-- **Swagger es solo de testnet**: \`https://api.mainnet.acta.build/docs\` devuelve 404 por diseño. Explora en testnet; las rutas son idénticas.
+- **Swagger es solo de testnet**: \`https://production-api.acta.build/docs\` devuelve 404 por diseño. Explora en testnet; las rutas son idénticas.
 - **Red de la wallet**: asegúrate de que tu wallet (p. ej. Freighter) esté en Mainnet antes de firmar, o las firmas llevarán la passphrase de red equivocada.
 - **Mantén ambos entornos**: nada te obliga a abandonar testnet; úsalo para desarrollo siempre y reserva las claves de mainnet para producción.
     `,

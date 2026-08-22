@@ -95,8 +95,8 @@ did:stellar:{network}:{address}
 
 ACTA automatically handles network configuration:
 
-- **Testnet**: \`https://api.testnet.acta.build\` or \`NETWORK_TYPE=testnet\`
-- **Mainnet**: \`https://api.mainnet.acta.build\` or \`NETWORK_TYPE=mainnet\`
+- **Testnet**: \`https://sandbox-api.acta.build\` or \`NETWORK_TYPE=testnet\`
+- **Mainnet**: \`https://production-api.acta.build\` or \`NETWORK_TYPE=mainnet\`
 
 Contract IDs, RPC URLs, and network passphrases are configured automatically based on network type.
     `,

@@ -63,7 +63,7 @@ Lists verifiable credential (VC) IDs stored in an owner's vault, paginated.
 **Example:**
 
 \`\`\`bash
-curl -X POST https://api.testnet.acta.build/contracts/vault/list-vc-ids \\
+curl -X POST https://sandbox-api.acta.build/contracts/vault/list-vc-ids \\
   -H "X-ACTA-Key: your_key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -91,7 +91,7 @@ Returns the number of VCs stored in an owner's vault. Use it to size pagination 
 
 \`\`\`bash
 curl -H "X-ACTA-Key: your_key" \\
-  "https://api.testnet.acta.build/contracts/vault/vc-count?owner=G..."
+  "https://sandbox-api.acta.build/contracts/vault/vc-count?owner=G..."
 \`\`\`
 
 ## Get VC
@@ -131,7 +131,7 @@ Gets a specific verifiable credential from a vault. Credential data is stored en
 **Example:**
 
 \`\`\`bash
-curl -X POST https://api.testnet.acta.build/contracts/vault/get-vc \\
+curl -X POST https://sandbox-api.acta.build/contracts/vault/get-vc \\
   -H "X-ACTA-Key: your_key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -179,7 +179,7 @@ Or if revoked:
 **Example:**
 
 \`\`\`bash
-curl -X POST https://api.testnet.acta.build/contracts/vault/verify-vc \\
+curl -X POST https://sandbox-api.acta.build/contracts/vault/verify-vc \\
   -H "X-ACTA-Key: your_key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -211,7 +211,7 @@ Returns metadata for the owner's vault. Accepts an optional \`userSalt\` query p
 
 \`\`\`bash
 curl -H "X-ACTA-Key: your_key" \\
-  "https://api.testnet.acta.build/contracts/vault/G..."
+  "https://sandbox-api.acta.build/contracts/vault/G..."
 \`\`\`
 
 ## Denied Issuers

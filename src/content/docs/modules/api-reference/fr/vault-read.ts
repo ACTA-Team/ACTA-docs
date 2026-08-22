@@ -63,7 +63,7 @@ Liste les identifiants de verifiable credentials (VC) stockés dans le coffre d'
 **Exemple :**
 
 \`\`\`bash
-curl -X POST https://api.testnet.acta.build/contracts/vault/list-vc-ids \\
+curl -X POST https://sandbox-api.acta.build/contracts/vault/list-vc-ids \\
   -H "X-ACTA-Key: your_key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -91,7 +91,7 @@ Renvoie le nombre de VCs stockés dans le coffre d'un propriétaire. Utilisez-le
 
 \`\`\`bash
 curl -H "X-ACTA-Key: your_key" \\
-  "https://api.testnet.acta.build/contracts/vault/vc-count?owner=G..."
+  "https://sandbox-api.acta.build/contracts/vault/vc-count?owner=G..."
 \`\`\`
 
 ## Obtenir un VC
@@ -131,7 +131,7 @@ Récupère un verifiable credential spécifique depuis un coffre. Les données d
 **Exemple :**
 
 \`\`\`bash
-curl -X POST https://api.testnet.acta.build/contracts/vault/get-vc \\
+curl -X POST https://sandbox-api.acta.build/contracts/vault/get-vc \\
   -H "X-ACTA-Key: your_key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -179,7 +179,7 @@ Ou si révoqué :
 **Exemple :**
 
 \`\`\`bash
-curl -X POST https://api.testnet.acta.build/contracts/vault/verify-vc \\
+curl -X POST https://sandbox-api.acta.build/contracts/vault/verify-vc \\
   -H "X-ACTA-Key: your_key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -211,7 +211,7 @@ Renvoie les métadonnées du coffre du propriétaire. Accepte un paramètre de r
 
 \`\`\`bash
 curl -H "X-ACTA-Key: your_key" \\
-  "https://api.testnet.acta.build/contracts/vault/G..."
+  "https://sandbox-api.acta.build/contracts/vault/G..."
 \`\`\`
 
 ## Émetteurs bloqués

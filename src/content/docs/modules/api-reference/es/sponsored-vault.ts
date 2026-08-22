@@ -45,7 +45,7 @@ El campo \`sponsor\` de la API se mapea al parámetro \`deployer\` del contrato.
 
 ## API HTTP
 
-Esta ruta acepta cualquier **API key estándar** (header \`X-ACTA-Key\`) y tiene límite de tasa por key. Antepón las rutas con la URL base de tu red (ej. \`https://api.testnet.acta.build\`).
+Esta ruta acepta cualquier **API key estándar** (header \`X-ACTA-Key\`) y tiene límite de tasa por key. Antepón las rutas con la URL base de tu red (ej. \`https://sandbox-api.acta.build\`).
 
 > **Solo puedes patrocinar con tu propia cuenta.** \`sponsor\` debe ser la \`wallet_address\` vinculada a tu API key, y \`sourcePublicKey\`, si lo envías, debe ser esa misma dirección; cualquier otra cosa devuelve \`403\`. Una key sin wallet vinculada también recibe \`403\`. El **owner** queda deliberadamente sin restricción: pagar la bóveda de otra persona es justamente para lo que sirve el endpoint.
 

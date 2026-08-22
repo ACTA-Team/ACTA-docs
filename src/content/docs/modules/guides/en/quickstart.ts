@@ -161,7 +161,7 @@ const vc = await getVc({ owner: walletAddress, vcId: "employee-badge-001" });
 Or from any terminal against the API:
 
 \`\`\`bash
-curl -X POST https://api.testnet.acta.build/contracts/vault/verify-vc \\
+curl -X POST https://sandbox-api.acta.build/contracts/vault/verify-vc \\
   -H "X-ACTA-Key: your_key" \\
   -H "Content-Type: application/json" \\
   -d '{ "owner": "G...", "vcId": "employee-badge-001" }'

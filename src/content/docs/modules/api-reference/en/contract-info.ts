@@ -43,7 +43,7 @@ Returns the version string of an owner's **vault** contract. Vaults are single-t
 
 \`\`\`bash
 curl -H "X-ACTA-Key: your_key" \\
-  "https://api.testnet.acta.build/contracts/version?owner=G...&sourcePublicKey=G..."
+  "https://sandbox-api.acta.build/contracts/version?owner=G...&sourcePublicKey=G..."
 \`\`\`
 
 ## Fees

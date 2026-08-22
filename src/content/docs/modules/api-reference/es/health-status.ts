@@ -29,7 +29,7 @@ Verifica el estado de la API. No requiere autenticación.
 **Ejemplo:**
 
 \`\`\`bash
-curl https://api.testnet.acta.build/health
+curl https://sandbox-api.acta.build/health
 \`\`\`
 
 :::health-try:::
@@ -63,7 +63,7 @@ Obtiene la configuración pública de red. **No requiere autenticación** (endpo
 **Ejemplo:**
 
 \`\`\`bash
-curl https://api.testnet.acta.build/config
+curl https://sandbox-api.acta.build/config
 \`\`\`
     `,
 };

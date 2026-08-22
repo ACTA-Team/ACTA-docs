@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
-/** Testnet API host (Swagger: https://api.testnet.acta.build/docs). */
-const ACTA_TESTNET_API_HEALTH = "https://api.testnet.acta.build/health";
+/** Testnet API host (Swagger: https://sandbox-api.acta.build/docs). */
+const ACTA_TESTNET_API_HEALTH = "https://sandbox-api.acta.build/health";
 
 export async function GET() {
   try {

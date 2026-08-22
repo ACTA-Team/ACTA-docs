@@ -63,7 +63,7 @@ Lista los IDs de credenciales verificables (VC) almacenados en la bóveda de un 
 **Ejemplo:**
 
 \`\`\`bash
-curl -X POST https://api.testnet.acta.build/contracts/vault/list-vc-ids \\
+curl -X POST https://sandbox-api.acta.build/contracts/vault/list-vc-ids \\
   -H "X-ACTA-Key: your_key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -91,7 +91,7 @@ Devuelve el número de VC almacenadas en la bóveda de un propietario. Úsalo pa
 
 \`\`\`bash
 curl -H "X-ACTA-Key: your_key" \\
-  "https://api.testnet.acta.build/contracts/vault/vc-count?owner=G..."
+  "https://sandbox-api.acta.build/contracts/vault/vc-count?owner=G..."
 \`\`\`
 
 ## Obtener VC
@@ -131,7 +131,7 @@ Obtiene una credencial verificable específica de una bóveda. Los datos de la c
 **Ejemplo:**
 
 \`\`\`bash
-curl -X POST https://api.testnet.acta.build/contracts/vault/get-vc \\
+curl -X POST https://sandbox-api.acta.build/contracts/vault/get-vc \\
   -H "X-ACTA-Key: your_key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -179,7 +179,7 @@ O si está revocada:
 **Ejemplo:**
 
 \`\`\`bash
-curl -X POST https://api.testnet.acta.build/contracts/vault/verify-vc \\
+curl -X POST https://sandbox-api.acta.build/contracts/vault/verify-vc \\
   -H "X-ACTA-Key: your_key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -211,7 +211,7 @@ Devuelve los metadatos de la bóveda del owner. Acepta un parámetro de consulta
 
 \`\`\`bash
 curl -H "X-ACTA-Key: your_key" \\
-  "https://api.testnet.acta.build/contracts/vault/G..."
+  "https://sandbox-api.acta.build/contracts/vault/G..."
 \`\`\`
 
 ## Emisores Bloqueados

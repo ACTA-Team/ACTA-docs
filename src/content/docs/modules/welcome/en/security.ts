@@ -79,7 +79,7 @@ If your threat model requires that ACTA never sees the payload, encrypt \`vcData
 ## API access control
 
 - API keys are 64-char random hex, stored hashed, with a **6-month expiry** and per-role rate limits (see **[API Overview](doc:api-overview)**).
-- **Ownership binding**: endpoints that expose or write a holder's data (\`issue\`, \`batch-issue\`, \`list-vc-ids\`, \`get-vc\`, \`push\`) require the request's \`owner\` to match the key's wallet. Admin-only surfaces (\`/admin/*\`, sponsored vault) require the admin role.
+- **Ownership binding**: endpoints that expose or write a holder's data (\`issue\`, \`batch-issue\`, \`list-vc-ids\`, \`get-vc\`, \`push\`) require the request's \`owner\` to match the key's wallet. The issuer-registry mutations are the only admin-role surface left.
 - Writes support \`Idempotency-Key\` for safe retries; all errors carry a \`request_id\` for traceability (see **[Errors](doc:api-errors)**).
 
 ## Contract immutability

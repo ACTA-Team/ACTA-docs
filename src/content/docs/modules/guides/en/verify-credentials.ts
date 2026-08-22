@@ -40,7 +40,7 @@ When a holder shares a credential from the dApp, the link (or its QR code) opens
 \`verify-vc\` is intentionally open to **any valid API key**, with no ownership check, precisely so third parties can verify credentials they do not own. It returns only the status, never the contents.
 
 \`\`\`bash
-curl -X POST https://api.testnet.acta.build/contracts/vault/verify-vc \\
+curl -X POST https://sandbox-api.acta.build/contracts/vault/verify-vc \\
   -H "X-ACTA-Key: your_key" \\
   -H "Content-Type: application/json" \\
   -d '{ "owner": "G...", "vcId": "credential-123" }'

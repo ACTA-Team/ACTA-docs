@@ -5,111 +5,84 @@ export const keys: DocPage = {
   title: "API Keys",
   section: "API Reference",
   tocItems: [
-    "Create Testnet API Key",
-    "Create Mainnet API Key",
-    "Request Body",
-    "Response",
-    "Rate Limiting",
+    "Getting a Key",
+    "Using the Key",
+    "Scopes",
+    "Limits",
+    "Losing a Key",
   ],
   content: `
-# API Keys Endpoints
+# API Keys
 
-Public endpoint for creating API keys. No authentication required, but rate limited.
+Every protected endpoint is authenticated with an API key. Keys are issued from
+the [ACTA dApp](https://dapp.acta.build/), not from this API.
 
-> **Note:** You can also request API keys directly from the [ACTA dApp](https://dapp.acta.build/). The dApp provides a user-friendly interface to create and manage your API keys.
+## Getting a Key
 
-## Create API Key
+1. Open the [ACTA dApp](https://dapp.acta.build/) and connect your Stellar wallet.
+2. Sign in. You will be asked to sign a challenge transaction, which is built so
+   it can never be submitted (sequence number 0, a two minute time bound, and a
+   single operation that changes nothing). Signing it moves no funds.
+3. Create a key from the API keys section.
 
-### POST /public/api-keys
+The key is bound to the wallet that signed in, and that binding is what makes
+ownership checks meaningful: a key can only act for its own wallet, and nobody
+can mint a key naming a wallet they do not control.
 
-Creates an API key (standard role, expires in 6 months). Use the **testnet** or **mainnet** base URL depending on the network you need.
+Keys are issued with the **standard** role and **do not expire**. The secret is
+shown once and cannot be recovered, so store it before closing the dialog.
 
-- Testnet: \`https://api.testnet.acta.build/public/api-keys\`
-- Mainnet: \`https://api.mainnet.acta.build/public/api-keys\`
+> Create a separate key per network. A key belongs to the network it was created
+> on, and using a testnet key against mainnet answers \`401\`.
 
-**Rate Limit:** 5 requests per minute per IP
+## Using the Key
 
-**Request Body:**
-
-\`\`\`json
-{
-  "name": "My API Key",
-  "wallet_address": "G...",
-  "metadata": {
-    "network": "testnet"
-  }
-}
-\`\`\`
-
-Include \`metadata.network\`: \`"testnet"\` or \`"mainnet"\` to match the API base URL you are calling.
-
-**Response:**
-
-\`\`\`json
-{
-  "message": "API key created successfully. Save this key - it will not be shown again.",
-  "api_key": "64-character hex string",
-  "api_key_record": {
-    "id": "uuid",
-    "name": "My API Key",
-    "role": "standard",
-    "is_active": true,
-    "expires_at": "2024-07-01T00:00:00.000Z",
-    "created_at": "2024-01-01T00:00:00.000Z"
-  }
-}
-\`\`\`
-
-**Example (testnet):**
+Send it on every protected request:
 
 \`\`\`bash
-curl -X POST https://api.testnet.acta.build/public/api-keys \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "name": "My Testnet Key",
-    "wallet_address": "G...",
-    "metadata": {
-      "network": "testnet"
-    }
-  }'
+curl https://sandbox-api.acta.build/contracts/version \\
+  -H "X-ACTA-Key: your_api_key_here"
 \`\`\`
 
-**Example (mainnet):**
+\`X-ACTA-Key\` is the canonical header. \`x-api-key\` and
+\`Authorization: Bearer <key>\` are also accepted. Keys are 64-character hex
+strings with no prefix.
 
-\`\`\`bash
-curl -X POST https://api.mainnet.acta.build/public/api-keys \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "name": "My Mainnet Key",
-    "wallet_address": "G...",
-    "metadata": {
-      "network": "mainnet"
-    }
-  }'
-\`\`\`
+Keep the key server-side. Anything shipped to a browser is readable by anyone
+who opens the developer tools, and a bearer key proves possession rather than
+identity: whoever holds the string can use it.
 
-## Request Body
+## Scopes
 
-- \`name\` (optional): Name for the API key (max 120 chars)
-- \`wallet_address\` (optional): Stellar wallet address (G...)
-- \`metadata\` (optional): Additional metadata object
-  - \`network\` (required): "testnet" or "mainnet"
+A key can optionally be narrowed to a subset of what its role allows:
 
-## Response
+| Scope | Allows |
+| --- | --- |
+| \`credentials:issue\` | Issue and batch-issue credentials |
+| \`credentials:read\` | Read a vault's credential list and payloads |
+| \`credentials:revoke\` | Revoke a credential |
+| \`vault:write\` | Create a vault and push credentials into it |
+| \`vault:admin\` | Change vault ownership, DID and issuer permissions |
+| \`sponsor\` | Pay for someone else's vault deployment |
 
-- \`api_key\`: The API key - a 64-character hex string with no prefix (save this - it won't be shown again)
-- \`api_key_record\`: Metadata about the created key
+Choose them when creating the key. An integration that issues but must never
+read a holder's credentials is the common case.
 
-**One key per wallet:** creating a key again for the same wallet rotates it - the previous key is revoked and replaced. \`metadata.network\` must match the network of the base URL you call; a mismatch returns \`400 network_mismatch\`.
+A key with **no** scopes is unrestricted within its role, so keys created before
+scopes existed keep working unchanged. A request missing a required scope
+answers \`403 insufficient_scope\`.
 
-## Rate Limiting
+## Limits
 
-- Maximum 5 requests per minute per IP address
-- Rate limit headers included in response:
-  - \`X-RateLimit-Limit\`: 5
-  - \`X-RateLimit-Remaining\`: Remaining requests
-  - \`X-RateLimit-Reset\`: Unix timestamp when limit resets
+- Up to **5 active keys per wallet, per network**. Revoke one you no longer use
+  before creating another.
+- Creating a key never revokes an existing one, so rotating on one device does
+  not break the others.
 
-**Note:** API key creation via these endpoints is restricted by an Origin allowlist (\`https://dapp.acta.build\`, plus \`localhost\` for development); other origins receive \`403 forbidden_origin\`. For the easiest experience, we recommend using the [ACTA dApp](https://dapp.acta.build/) to create and manage your API keys.
+## Losing a Key
+
+The secret is stored hashed and cannot be shown again. If you lose it, revoke
+that key from the dApp and create a new one. Revocation takes effect on the next
+request; there is no grace period.
     `,
 };

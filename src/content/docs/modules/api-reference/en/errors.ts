@@ -60,7 +60,6 @@ Unknown paths return \`404 not_found\`; unhandled exceptions return \`500 intern
 | Code | Status | Meaning & what to try |
 |------|--------|-----------------------|
 | \`401\` (missing/invalid key) | 401 | No \`X-ACTA-Key\` header, unknown key, or expired key. **Try:** create a key (see [API Keys](doc:api-keys)) and send it on every \`/contracts/*\` request. |
-| \`forbidden_origin\` | 403 | \`POST /public/api-keys\` called from a non-allowlisted Origin. **Try:** create keys from the dApp. |
 | \`network_mismatch\` | 400 | \`metadata.network\` does not match the base URL's network. **Try:** align the body with the host you call. |
 | Ownership violation | 403 | On \`issue\`, \`batch-issue\`, \`list-vc-ids\`, \`get-vc\`, and \`push\`, the \`owner\` / \`fromOwner\` must equal the wallet bound to your API key (admin keys exempt). **Try:** use the key created for that wallet. |
 

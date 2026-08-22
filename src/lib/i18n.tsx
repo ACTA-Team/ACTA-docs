@@ -45,7 +45,7 @@ const translations: Record<Locale, Translations> = {
     welcomeTryItDiscordHint: "Connect with the community",
     healthTryBadge: "Live",
     healthTryDescription:
-      "Runs GET https://api.testnet.acta.build/health through this site’s proxy - no API key required. OpenAPI UI: https://api.testnet.acta.build/docs",
+      "Runs GET https://sandbox-api.acta.build/health through this site’s proxy - no API key required. OpenAPI UI: https://sandbox-api.acta.build/docs",
     healthTryButton: "Run health check",
     healthTryLoading: "Calling API…",
     healthTryHttpLabel: "HTTP status",
@@ -160,7 +160,7 @@ const translations: Record<Locale, Translations> = {
     welcomeTryItDiscordHint: "Conéctate con la comunidad",
     healthTryBadge: "En vivo",
     healthTryDescription:
-      "Ejecuta GET https://api.testnet.acta.build/health a través del proxy de este sitio - sin API key. Interfaz OpenAPI: https://api.testnet.acta.build/docs",
+      "Ejecuta GET https://sandbox-api.acta.build/health a través del proxy de este sitio - sin API key. Interfaz OpenAPI: https://sandbox-api.acta.build/docs",
     healthTryButton: "Ejecutar health check",
     healthTryLoading: "Llamando a la API…",
     healthTryHttpLabel: "Estado HTTP",
@@ -278,7 +278,7 @@ const translations: Record<Locale, Translations> = {
     welcomeTryItDiscordHint: "Connectez-vous avec la communauté",
     healthTryBadge: "En direct",
     healthTryDescription:
-      "Exécute GET https://api.testnet.acta.build/health via le proxy de ce site - aucune API key requise. Interface OpenAPI : https://api.testnet.acta.build/docs",
+      "Exécute GET https://sandbox-api.acta.build/health via le proxy de ce site - aucune API key requise. Interface OpenAPI : https://sandbox-api.acta.build/docs",
     healthTryButton: "Lancer le health check",
     healthTryLoading: "Appel de l'API...",
     healthTryHttpLabel: "Statut HTTP",

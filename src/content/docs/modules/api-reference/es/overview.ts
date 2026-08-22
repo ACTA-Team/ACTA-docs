@@ -38,13 +38,13 @@ La mayoría de los endpoints reciben \`owner\` (y opcionalmente \`userSalt\`). Y
 **Testnet:**
 
 \`\`\`
-https://api.testnet.acta.build
+https://sandbox-api.acta.build
 \`\`\`
 
 **Mainnet:**
 
 \`\`\`
-https://api.mainnet.acta.build
+https://production-api.acta.build
 \`\`\`
 
 ## Autenticación
@@ -57,7 +57,7 @@ X-ACTA-Key: tu_api_key_aqui
 
 \`X-ACTA-Key\` es el header canónico; también se aceptan \`x-api-key\` y \`Authorization: Bearer <key>\`. Las API keys son cadenas hex de 64 caracteres (sin prefijo).
 
-Las **rutas públicas** no necesitan API key: \`GET /health\`, \`GET /config\`, \`POST /public/api-keys\` (con límite de tasa por IP) y \`GET /share/:id\` (protegido por firma).
+Las **rutas públicas** no necesitan API key: \`GET /health\` y \`GET /config\`. Todo lo demás requiere una key.
 
 **Enforcement de propiedad:** los endpoints que leen o mueven datos de credenciales de un holder (\`/contracts/vault/list-vc-ids\`, \`/contracts/vault/get-vc\`, \`/contracts/vault/push\`) requieren que el \`owner\` (o \`fromOwner\`) de la solicitud coincida con el \`wallet_address\` vinculado a tu API key. Las keys con rol admin están exentas. \`verify-vc\` está intencionalmente abierto a cualquier key válida para que terceros puedan verificar credenciales.
 
@@ -65,21 +65,15 @@ Las **rutas públicas** no necesitan API key: \`GET /health\`, \`GET /config\`, 
 
 La emisión se autoriza on-chain de todos modos: \`issue\` llama a \`issuer_addr.require_auth()\`, así que ninguna API key puede emitir en nombre de una wallet sin la firma de esa wallet.
 
-**Scopes:** una key puede llevar scopes que acotan lo que puede hacer: \`credentials:issue\`, \`credentials:read\`, \`credentials:revoke\`, \`vault:write\`, \`vault:admin\`, \`sponsor\`. Pasá un arreglo \`scopes\` a \`POST /public/api-keys\` para obtener una key acotada, por ejemplo una integración que emite pero nunca puede leer el contenido de un vault. Una key sin scopes no tiene restricción, así que toda key emitida antes de que existieran sigue funcionando igual. Un scope faltante responde \`403 insufficient_scope\`.
-
-**Sign-in con wallet (navegadores):** \`POST /auth/challenge\` devuelve una transacción para que la firme una wallet y \`POST /auth/verify\` cambia el resultado firmado por un token de sesión, usable como \`Authorization: Bearer <token>\` en cualquier lugar donde va una API key. Una sesión solo la puede obtener quien controla la wallet, algo que una API key bearer nunca puede demostrar, así que las apps de navegador deberían preferirla antes que guardar una key. El challenge se construye para no ser enviable (sequence 0, ventana de dos minutos, una operación \`manageData\` que no cambia nada), así que firmarlo no mueve fondos. Las API keys siguen siendo la credencial correcta para integraciones de servidor.
+**Scopes:** una key puede llevar scopes que acotan lo que puede hacer: \`credentials:issue\`, \`credentials:read\`, \`credentials:revoke\`, \`vault:write\`, \`vault:admin\`, \`sponsor\`. Se eligen al crear la key, por ejemplo una integración que emite pero nunca puede leer el contenido de un vault. Una key sin scopes no tiene restricción, así que toda key emitida antes de que existieran sigue funcionando igual. Un scope faltante responde \`403 insufficient_scope\`.
 
 **Enforcement de sponsor:** \`POST /contracts/sponsored-vault/create\` está abierto a keys estándar, pero el \`sponsor\` (y el \`sourcePublicKey\`, si se envía) debe coincidir con el \`wallet_address\` vinculado a tu API key, de modo que solo puedas pagar un despliegue con tu propia cuenta. El \`owner\` queda deliberadamente sin restricción: patrocinar la bóveda de otra persona es justamente para lo que sirve el endpoint.
 
-Las **rutas admin** (\`/admin/*\` y \`/contracts/admin/*\`) requieren una API key con rol **admin**.
+**Rol admin:** las mutaciones del issuer-registry (\`POST\`, \`PATCH\` y \`DELETE\` bajo \`/contracts/issuer-registry/\`) requieren una key con rol **admin**. El resto de endpoints documentados aquí acepta una key standard.
 
 ### Obtener una API Key
 
-Puedes crear una API key pública (rol estándar, expira en 6 meses) vía:
-
-- **POST** \`/public/api-keys\` en la URL base de la red (ej. \`https://api.testnet.acta.build/public/api-keys\` o \`https://api.mainnet.acta.build/public/api-keys\`)
-
-No requiere autenticación, pero tiene límite de 5 solicitudes por minuto por IP.
+Creá una desde la [dApp de ACTA](https://dapp.acta.build/) conectando tu wallet de Stellar e iniciando sesión. La key queda ligada a esa wallet, lleva rol standard y no caduca. Ver [API Keys](/docs/api-keys) para el detalle.
 
 ## Formato de solicitud
 
@@ -209,7 +203,6 @@ Los endpoints autenticados tienen límite de tasa **por API key** sobre una vent
 | early | 300 | 100 |
 | admin | 200 | 50 |
 
-- Creación de API key pública (\`POST /public/api-keys\`): 5 solicitudes por minuto por IP
 - Headers de respuesta: \`X-RateLimit-Limit\` / \`X-RateLimit-Remaining\` (lecturas), \`X-WriteRateLimit-*\` (escrituras) y \`Retry-After\` en \`429\` (\`rate_limit_exceeded\` / \`write_rate_limit_exceeded\`)
 
 ## Idempotencia
@@ -218,12 +211,12 @@ Las rutas de escritura de contratos aceptan un header opcional \`Idempotency-Key
 
 ## Pruébalo en Swagger
 
-Usa **[Swagger UI (testnet)](https://api.testnet.acta.build/docs)** para revisar el OpenAPI, ver esquemas de petición y respuesta, y ejecutar **Try it out** en el navegador cuando el endpoint lo permita.
+Usa **[Swagger UI (testnet)](https://sandbox-api.acta.build/docs)** para revisar el OpenAPI, ver esquemas de petición y respuesta, y ejecutar **Try it out** en el navegador cuando el endpoint lo permita.
 
-1. Abre **[https://api.testnet.acta.build/docs](https://api.testnet.acta.build/docs)**
+1. Abre **[https://sandbox-api.acta.build/docs](https://sandbox-api.acta.build/docs)**
 2. Despliega una operación, revisa parámetros y ejemplos, y usa **Try it out** si está disponible
 3. En rutas que requieran API key, configura el header **\`X-ACTA-Key\`** (o **Authorize** en Swagger, si existe) tras crear una clave (ver **Obtener una API Key** arriba)
 
-> Swagger UI está disponible **solo en testnet**: en instancias de mainnet todas las rutas \`/docs\` están deshabilitadas y devuelven 404. Usa testnet para explorar y las mismas rutas contra \`https://api.mainnet.acta.build\` en producción.
+> Swagger UI está disponible **solo en testnet**: en instancias de mainnet todas las rutas \`/docs\` están deshabilitadas y devuelven 404. Usa testnet para explorar y las mismas rutas contra \`https://production-api.acta.build\` en producción.
     `,
 };

@@ -95,8 +95,8 @@ did:stellar:{network}:{address}
 
 ACTA maneja automáticamente la configuración de red:
 
-- **Testnet**: \`https://api.testnet.acta.build\` o \`NETWORK_TYPE=testnet\`
-- **Mainnet**: \`https://api.mainnet.acta.build\` o \`NETWORK_TYPE=mainnet\`
+- **Testnet**: \`https://sandbox-api.acta.build\` o \`NETWORK_TYPE=testnet\`
+- **Mainnet**: \`https://production-api.acta.build\` o \`NETWORK_TYPE=mainnet\`
 
 Los IDs de contratos, URLs RPC y passphrases de red se configuran automáticamente según el tipo de red.
     `,

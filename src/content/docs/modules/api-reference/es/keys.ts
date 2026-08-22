@@ -5,111 +5,86 @@ export const keys: DocPage = {
   title: "API Keys",
   section: "Referencia API",
   tocItems: [
-    "Crear API Key de Testnet",
-    "Crear API Key de Mainnet",
-    "Cuerpo de solicitud",
-    "Respuesta",
-    "Límites de tasa",
+    "Obtener una clave",
+    "Usar la clave",
+    "Scopes",
+    "Límites",
+    "Si pierdes una clave",
   ],
   content: `
-# Endpoints de API Keys
+# API Keys
 
-Endpoint público para crear API keys. No requiere autenticación, pero tiene límite de tasa.
+Cada endpoint protegido se autentica con una API key. Las claves se emiten desde
+la [dApp de ACTA](https://dapp.acta.build/), no desde esta API.
 
-> **Nota:** También puedes solicitar API keys directamente desde la [dApp de ACTA](https://dapp.acta.build/). La dApp proporciona una interfaz amigable para crear y gestionar tus API keys.
+## Obtener una clave
 
-## Crear API Key
+1. Abre la [dApp de ACTA](https://dapp.acta.build/) y conecta tu wallet de Stellar.
+2. Inicia sesión. Se te pedirá firmar una transacción de reto, construida para
+   que nunca pueda enviarse (número de secuencia 0, límite temporal de dos
+   minutos y una sola operación que no cambia nada). Firmarla no mueve fondos.
+3. Crea la clave desde la sección de API keys.
 
-### POST /public/api-keys
+La clave queda ligada a la wallet que inició sesión, y esa ligadura es lo que da
+sentido a las comprobaciones de propiedad: una clave solo puede actuar por su
+propia wallet, y nadie puede emitir una clave a nombre de una wallet que no
+controla.
 
-Crea una API key (rol estándar, expira en 6 meses). Usa la URL base de **testnet** o **mainnet** según la red que necesites.
+Las claves se emiten con rol **standard** y **no caducan**. El secreto se
+muestra una sola vez y no se puede recuperar, así que guárdalo antes de cerrar
+el diálogo.
 
-- Testnet: \`https://api.testnet.acta.build/public/api-keys\`
-- Mainnet: \`https://api.mainnet.acta.build/public/api-keys\`
+> Crea una clave por red. Una clave pertenece a la red en la que se creó, y usar
+> una de testnet contra mainnet responde \`401\`.
 
-**Límite de tasa:** 5 solicitudes por minuto por IP
+## Usar la clave
 
-**Cuerpo de solicitud:**
-
-\`\`\`json
-{
-  "name": "Mi API Key",
-  "wallet_address": "G...",
-  "metadata": {
-    "network": "testnet"
-  }
-}
-\`\`\`
-
-Incluye \`metadata.network\`: \`"testnet"\` o \`"mainnet"\` según la URL base que uses.
-
-**Respuesta:**
-
-\`\`\`json
-{
-  "message": "API key creada exitosamente. Guarda esta key - no se mostrará de nuevo.",
-  "api_key": "cadena hex de 64 caracteres",
-  "api_key_record": {
-    "id": "uuid",
-    "name": "Mi API Key",
-    "role": "standard",
-    "is_active": true,
-    "expires_at": "2024-07-01T00:00:00.000Z",
-    "created_at": "2024-01-01T00:00:00.000Z"
-  }
-}
-\`\`\`
-
-**Ejemplo (testnet):**
+Envíala en cada petición protegida:
 
 \`\`\`bash
-curl -X POST https://api.testnet.acta.build/public/api-keys \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "name": "Mi Key de Testnet",
-    "wallet_address": "G...",
-    "metadata": {
-      "network": "testnet"
-    }
-  }'
+curl https://sandbox-api.acta.build/contracts/version \\
+  -H "X-ACTA-Key: tu_api_key"
 \`\`\`
 
-**Ejemplo (mainnet):**
+\`X-ACTA-Key\` es la cabecera canónica. También se aceptan \`x-api-key\` y
+\`Authorization: Bearer <clave>\`. Las claves son cadenas hexadecimales de 64
+caracteres, sin prefijo.
 
-\`\`\`bash
-curl -X POST https://api.mainnet.acta.build/public/api-keys \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "name": "Mi Key de Mainnet",
-    "wallet_address": "G...",
-    "metadata": {
-      "network": "mainnet"
-    }
-  }'
-\`\`\`
+Mantén la clave del lado del servidor. Todo lo que llegue al navegador puede
+leerlo cualquiera que abra las herramientas de desarrollo, y una clave portadora
+demuestra posesión, no identidad: quien tenga la cadena puede usarla.
 
-## Cuerpo de solicitud
+## Scopes
 
-- \`name\` (opcional): Nombre para la API key (máx 120 caracteres)
-- \`wallet_address\` (opcional): Dirección de wallet Stellar (G...)
-- \`metadata\` (opcional): Objeto de metadatos adicionales
-  - \`network\` (requerido): "testnet" o "mainnet"
+Una clave puede acotarse a un subconjunto de lo que su rol permite:
 
-## Respuesta
+| Scope | Permite |
+| --- | --- |
+| \`credentials:issue\` | Emitir credenciales, individuales y por lote |
+| \`credentials:read\` | Leer la lista de credenciales de un vault y su contenido |
+| \`credentials:revoke\` | Revocar una credencial |
+| \`vault:write\` | Crear un vault y empujar credenciales a él |
+| \`vault:admin\` | Cambiar la propiedad, el DID y los permisos de emisor del vault |
+| \`sponsor\` | Pagar el despliegue del vault de otra persona |
 
-- \`api_key\`: La API key - una cadena hex de 64 caracteres sin prefijo (guarda esto - no se mostrará de nuevo)
-- \`api_key_record\`: Metadatos sobre la key creada
+Se eligen al crear la clave. El caso habitual es una integración que emite pero
+nunca debe leer las credenciales del titular.
 
-**Una key por wallet:** crear una key de nuevo para la misma wallet la rota - la key anterior se revoca y se reemplaza. \`metadata.network\` debe coincidir con la red de la URL base que llamas; si no coincide, devuelve \`400 network_mismatch\`.
+Una clave **sin** scopes no tiene restricción dentro de su rol, así que las
+claves creadas antes de que existieran los scopes siguen funcionando igual. Una
+petición a la que le falte un scope responde \`403 insufficient_scope\`.
 
-## Límites de tasa
+## Límites
 
-- Máximo 5 solicitudes por minuto por dirección IP
-- Headers de límite de tasa incluidos en la respuesta:
-  - \`X-RateLimit-Limit\`: 5
-  - \`X-RateLimit-Remaining\`: Solicitudes restantes
-  - \`X-RateLimit-Reset\`: Timestamp Unix cuando se reinicia el límite
+- Hasta **5 claves activas por wallet y por red**. Revoca una que ya no uses
+  antes de crear otra.
+- Crear una clave nunca revoca las anteriores, así que rotar en un dispositivo
+  no rompe los demás.
 
-**Nota:** La creación de API keys mediante estos endpoints está restringida por una lista de orígenes permitidos (\`https://dapp.acta.build\`, más \`localhost\` para desarrollo); otros orígenes reciben \`403 forbidden_origin\`. Para la mejor experiencia, recomendamos usar la [dApp de ACTA](https://dapp.acta.build/) para crear y gestionar tus API keys.
+## Si pierdes una clave
+
+El secreto se guarda hasheado y no se puede volver a mostrar. Si lo pierdes,
+revoca esa clave desde la dApp y crea otra. La revocación surte efecto en la
+siguiente petición; no hay periodo de gracia.
     `,
 };

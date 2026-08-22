@@ -38,13 +38,13 @@ La plupart des endpoints prennent \`owner\` (et éventuellement \`userSalt\`). I
 **Testnet :**
 
 \`\`\`
-https://api.testnet.acta.build
+https://sandbox-api.acta.build
 \`\`\`
 
 **Mainnet :**
 
 \`\`\`
-https://api.mainnet.acta.build
+https://production-api.acta.build
 \`\`\`
 
 ## Authentification
@@ -57,7 +57,7 @@ X-ACTA-Key: your_api_key_here
 
 \`X-ACTA-Key\` est l'en-tête canonique ; \`x-api-key\` et \`Authorization: Bearer <key>\` sont également acceptés. Les API keys sont des chaînes hexadécimales de 64 caractères (sans préfixe).
 
-**Les routes publiques** ne nécessitent aucune API key : \`GET /health\`, \`GET /config\`, \`POST /public/api-keys\` (rate limit par IP) et \`GET /share/:id\` (protégé par signature).
+**Les routes publiques** ne nécessitent aucune API key : \`GET /health\` et \`GET /config\`. Tout le reste exige une clé.
 
 **Contrôle de propriété :** les endpoints qui lisent ou déplacent les données de credential d'un titulaire (\`/contracts/vault/list-vc-ids\`, \`/contracts/vault/get-vc\`, \`/contracts/vault/push\`) exigent que l'\`owner\` (ou le \`fromOwner\`) de la requête corresponde à la \`wallet_address\` liée à votre API key. Les clés de rôle admin en sont exemptées. \`verify-vc\` est volontairement ouvert à toute clé valide afin que des tiers puissent vérifier des credentials.
 
@@ -65,21 +65,15 @@ X-ACTA-Key: your_api_key_here
 
 L'émission est de toute façon autorisée on-chain : \`issue\` appelle \`issuer_addr.require_auth()\`, donc aucune API key ne peut émettre au nom d'un portefeuille sans la signature de celui-ci.
 
-**Scopes :** une clé peut porter des scopes qui restreignent ce qu'elle peut faire : \`credentials:issue\`, \`credentials:read\`, \`credentials:revoke\`, \`vault:write\`, \`vault:admin\`, \`sponsor\`. Passez un tableau \`scopes\` à \`POST /public/api-keys\` pour obtenir une clé restreinte, par exemple une intégration qui émet mais ne peut jamais lire le contenu d'un coffre. Une clé sans scopes n'est pas restreinte, donc toute clé émise avant leur existence continue de fonctionner. Un scope manquant renvoie \`403 insufficient_scope\`.
-
-**Connexion par portefeuille (navigateurs) :** \`POST /auth/challenge\` renvoie une transaction à faire signer par un portefeuille et \`POST /auth/verify\` échange le résultat signé contre un jeton de session, utilisable en \`Authorization: Bearer <token>\` partout où une API key l'est. Une session ne peut être obtenue que par qui contrôle le portefeuille, ce qu'une API key bearer ne peut jamais prouver ; les applications de navigateur devraient donc la préférer au stockage d'une clé. Le challenge est construit pour ne jamais être soumis (sequence 0, fenêtre de deux minutes, une opération \`manageData\` qui ne change rien), le signer ne déplace donc aucun fonds. Les API keys restent la bonne credential pour les intégrations serveur.
+**Scopes :** une clé peut porter des scopes qui restreignent ce qu'elle peut faire : \`credentials:issue\`, \`credentials:read\`, \`credentials:revoke\`, \`vault:write\`, \`vault:admin\`, \`sponsor\`. Ils se choisissent à la création de la clé, par exemple une intégration qui émet mais ne peut jamais lire le contenu d'un coffre. Une clé sans scopes n'est pas restreinte, donc toute clé émise avant leur existence continue de fonctionner. Un scope manquant renvoie \`403 insufficient_scope\`.
 
 **Contrôle du sponsor :** \`POST /contracts/sponsored-vault/create\` est ouvert aux clés standard, mais le \`sponsor\` (et le \`sourcePublicKey\`, s'il est envoyé) doit correspondre à la \`wallet_address\` liée à votre API key, de sorte que vous ne puissiez payer un déploiement qu'avec votre propre compte. L'\`owner\` reste délibérément sans restriction : sponsoriser le coffre de quelqu'un d'autre est la raison d'être de cet endpoint.
 
-**Les routes admin** (\`/admin/*\` et \`/contracts/admin/*\`) exigent une API key avec le rôle **admin**.
+**Rôle admin :** les mutations de l'issuer-registry (\`POST\`, \`PATCH\` et \`DELETE\` sous \`/contracts/issuer-registry/\`) exigent une clé avec le rôle **admin**. Tous les autres endpoints documentés ici acceptent une clé standard.
 
 ### Obtenir une API Key
 
-Vous pouvez créer une API key publique (rôle standard, expiration dans 6 mois) via :
-
-- **POST** \`/public/api-keys\` sur l'URL de base du réseau (par exemple \`https://api.testnet.acta.build/public/api-keys\` ou \`https://api.mainnet.acta.build/public/api-keys\`)
-
-Aucune authentification requise, mais un rate limit de 5 requêtes par minute et par IP s'applique.
+Créez-en une depuis la [dApp ACTA](https://dapp.acta.build/) en connectant votre portefeuille Stellar et en vous connectant. La clé est liée à ce portefeuille, porte le rôle standard et n'expire pas. Voir [Clés API](/docs/api-keys) pour le détail.
 
 ## Format de requête
 
@@ -209,7 +203,6 @@ Les endpoints authentifiés sont soumis à un rate limit **par API key** sur une
 | early | 300 | 100 |
 | admin | 200 | 50 |
 
-- Création publique d'API key (\`POST /public/api-keys\`) : 5 requêtes par minute et par IP
 - En-têtes de réponse : \`X-RateLimit-Limit\` / \`X-RateLimit-Remaining\` (lectures), \`X-WriteRateLimit-*\` (écritures), et \`Retry-After\` sur \`429\` (\`rate_limit_exceeded\` / \`write_rate_limit_exceeded\`)
 
 ## Idempotence
@@ -218,12 +211,12 @@ Les routes d'écriture de contrat acceptent un en-tête optionnel \`Idempotency-
 
 ## Essayer dans Swagger
 
-Utilisez **[Swagger UI (testnet)](https://api.testnet.acta.build/docs)** pour parcourir la spécification OpenAPI, inspecter les schémas de requête et de réponse, et exécuter des requêtes **Try it out** dans le navigateur pour les endpoints qui le permettent.
+Utilisez **[Swagger UI (testnet)](https://sandbox-api.acta.build/docs)** pour parcourir la spécification OpenAPI, inspecter les schémas de requête et de réponse, et exécuter des requêtes **Try it out** dans le navigateur pour les endpoints qui le permettent.
 
-1. Ouvrez **[https://api.testnet.acta.build/docs](https://api.testnet.acta.build/docs)**
+1. Ouvrez **[https://sandbox-api.acta.build/docs](https://sandbox-api.acta.build/docs)**
 2. Dépliez une opération, examinez les paramètres et les exemples, puis utilisez **Try it out** lorsque c'est activé
 3. Pour les routes qui exigent une API key, définissez l'en-tête **\`X-ACTA-Key\`** (ou utilisez le contrôle **Authorize** de Swagger lorsqu'il est disponible) après avoir créé une clé (voir **Obtenir une API Key** ci-dessus)
 
-> Swagger UI est disponible sur **testnet uniquement** : sur les instances mainnet, toutes les routes \`/docs\` sont désactivées et renvoient 404. Utilisez testnet pour l'exploration et les mêmes chemins vers \`https://api.mainnet.acta.build\` en production.
+> Swagger UI est disponible sur **testnet uniquement** : sur les instances mainnet, toutes les routes \`/docs\` sont désactivées et renvoient 404. Utilisez testnet pour l'exploration et les mêmes chemins vers \`https://production-api.acta.build\` en production.
     `,
 };

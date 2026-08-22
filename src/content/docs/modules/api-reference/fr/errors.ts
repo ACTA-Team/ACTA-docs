@@ -60,7 +60,6 @@ Les chemins inconnus renvoient \`404 not_found\` ; les exceptions non gérées r
 | Code | Statut | Signification et quoi essayer |
 |------|--------|-------------------------------|
 | \`401\` (clé manquante/invalide) | 401 | Pas d'en-tête \`X-ACTA-Key\`, clé inconnue ou clé expirée. **Essayez :** créez une clé (voir [API Keys](doc:api-keys)) et envoyez-la sur chaque requête \`/contracts/*\`. |
-| \`forbidden_origin\` | 403 | \`POST /public/api-keys\` appelé depuis une origine non autorisée. **Essayez :** créez les clés depuis la dApp. |
 | \`network_mismatch\` | 400 | \`metadata.network\` ne correspond pas au réseau de l'URL de base. **Essayez :** alignez le corps sur l'hôte que vous appelez. |
 | Violation de propriété | 403 | Sur \`issue\`, \`batch-issue\`, \`list-vc-ids\`, \`get-vc\` et \`push\`, l'\`owner\` / le \`fromOwner\` doit être égal au wallet lié à votre API key (clés admin exemptées). **Essayez :** utilisez la clé créée pour ce wallet. |
 

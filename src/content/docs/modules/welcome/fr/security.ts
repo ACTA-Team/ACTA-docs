@@ -79,7 +79,7 @@ Si votre modèle de menace exige qu'ACTA ne voie jamais le contenu, chiffrez \`v
 ## Contrôle d'accès à l'API
 
 - Les API keys sont des hexadécimaux aléatoires de 64 caractères, stockées hachées, avec une **expiration de 6 mois** et des limites de débit par rôle (voir l'**[Aperçu de l'API](doc:api-overview)**).
-- **Liaison de propriété** : les endpoints qui exposent ou écrivent les données d'un titulaire (\`issue\`, \`batch-issue\`, \`list-vc-ids\`, \`get-vc\`, \`push\`) exigent que le \`owner\` de la requête corresponde au wallet de la clé. Les surfaces réservées aux admins (\`/admin/*\`, coffre sponsorisé) exigent le rôle admin.
+- **Liaison de propriété** : les endpoints qui exposent ou écrivent les données d'un titulaire (\`issue\`, \`batch-issue\`, \`list-vc-ids\`, \`get-vc\`, \`push\`) exigent que le \`owner\` de la requête corresponde au wallet de la clé. Les mutations de l'issuer-registry sont la seule surface exigeant encore le rôle admin.
 - Les écritures prennent en charge \`Idempotency-Key\` pour des réessais sûrs ; toutes les erreurs portent un \`request_id\` pour la traçabilité (voir **[Erreurs](doc:api-errors)**).
 
 ## Immuabilité des contrats

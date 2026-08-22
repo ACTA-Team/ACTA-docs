@@ -45,7 +45,7 @@ Le champ de requête \`sponsor\` de l'API correspond au paramètre \`deployer\` 
 
 ## API HTTP
 
-Cette route accepte toute **API key standard** (en-tête \`X-ACTA-Key\`) et est soumise à un rate limit par clé. Préfixez les chemins avec l'URL de base de votre réseau (par exemple \`https://api.testnet.acta.build\`).
+Cette route accepte toute **API key standard** (en-tête \`X-ACTA-Key\`) et est soumise à un rate limit par clé. Préfixez les chemins avec l'URL de base de votre réseau (par exemple \`https://sandbox-api.acta.build\`).
 
 > **Vous ne pouvez sponsoriser qu'avec votre propre compte.** \`sponsor\` doit être la \`wallet_address\` liée à votre API key, et \`sourcePublicKey\`, s'il est envoyé, doit être cette même adresse ; toute autre valeur renvoie \`403\`. Une clé sans portefeuille lié reçoit également \`403\`. Le **propriétaire** reste délibérément sans restriction : payer le coffre de quelqu'un d'autre est précisément la raison d'être de cet endpoint.
 

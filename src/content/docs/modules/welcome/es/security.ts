@@ -79,7 +79,7 @@ Si tu modelo de amenazas exige que ACTA nunca vea el payload, cifra \`vcData\` d
 ## Control de acceso de la API
 
 - Las API keys son hex aleatorio de 64 caracteres, guardadas hasheadas, con **expiración de 6 meses** y rate limits por rol (ver **[Resumen de API](doc:api-overview)**).
-- **Vínculo de propiedad**: los endpoints que exponen o escriben datos de un titular (\`issue\`, \`batch-issue\`, \`list-vc-ids\`, \`get-vc\`, \`push\`) exigen que el \`owner\` del request sea la wallet de la key. Las superficies admin (\`/admin/*\`, bóveda patrocinada) requieren rol admin.
+- **Vínculo de propiedad**: los endpoints que exponen o escriben datos de un titular (\`issue\`, \`batch-issue\`, \`list-vc-ids\`, \`get-vc\`, \`push\`) exigen que el \`owner\` del request sea la wallet de la key. Las mutaciones del issuer-registry son la única superficie que aún requiere rol admin.
 - Las escrituras soportan \`Idempotency-Key\` para reintentos seguros; todos los errores llevan \`request_id\` para trazabilidad (ver **[Errores](doc:api-errors)**).
 
 ## Inmutabilidad de contratos
